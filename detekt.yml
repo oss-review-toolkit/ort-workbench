@@ -1,0 +1,36 @@
+complexity:
+  ComplexMethod:
+    active: false
+  LongMethod:
+    active: true
+    threshold: 80
+  LongParameterList:
+    active: true
+    functionThreshold: 9
+    constructorThreshold: 11
+    ignoreDefaultParameters: true
+  TooManyFunctions:
+    active: false
+
+formatting:
+  ChainWrapping:
+    active: false
+  Indentation:
+    active: false
+
+naming:
+  FunctionNaming:
+    active: true
+    ignoreAnnotated: ['Composable']
+  MatchingDeclarationName:
+    active: false
+
+style:
+  ForbiddenComment:
+    active: false
+  MagicNumber:
+    active: true
+    ignoreAnnotated: ['Preview']
+  UnusedPrivateMember:
+    active: true
+    ignoreAnnotated: ['Preview']
