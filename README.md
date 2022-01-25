@@ -1,5 +1,8 @@
 # ORT Workbench
 
+[![Build](https://github.com/mnonnenmacher/ort-workbench/actions/workflows/build.yml/badge.svg)](https://github.com/mnonnenmacher/ort-workbench/actions/workflows/build.yml)
+[![Static Analysis](https://github.com/mnonnenmacher/ort-workbench/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/mnonnenmacher/ort-workbench/actions/workflows/static-analysis.yml)
+
 A basic workbench for [ORT](http://ossreviewtoolkit.org) result files, implemented with
 [Compose Desktop](https://www.jetbrains.com/lp/compose-mpp/).
 
