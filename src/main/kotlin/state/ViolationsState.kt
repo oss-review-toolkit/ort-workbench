@@ -16,6 +16,7 @@ import org.ossreviewtoolkit.model.utils.ResolutionProvider
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.util.OrtResultApi
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
+import org.ossreviewtoolkit.workbench.util.SpdxExpressionStringComparator
 
 class ViolationsState {
     var initialized by mutableStateOf(false)
@@ -70,7 +71,8 @@ class ViolationsState {
         _identifiers += _violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()
 
         _licenses.clear()
-        _licenses += _violations.mapNotNullTo(sortedSetOf()) { it.license }.toList()
+        _licenses += _violations.mapNotNullTo(sortedSetOf(comparator = SpdxExpressionStringComparator())) { it.license }
+            .toList()
 
         _rules.clear()
         _rules += _violations.mapTo(sortedSetOf()) { it.rule }.toList()
