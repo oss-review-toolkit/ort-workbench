@@ -88,15 +88,15 @@ compose.desktop {
             val iconsRoot = project.file("src/main/resources/app-icon")
 
             macOS {
-                iconFile.set(iconsRoot.resolve("icon-mac.icns"))
+                iconFile.set(iconsRoot.resolve("icon.icns"))
             }
 
             windows {
-                iconFile.set(iconsRoot.resolve("icon-windows.ico"))
+                iconFile.set(iconsRoot.resolve("icon.ico"))
             }
 
             linux {
-                iconFile.set(iconsRoot.resolve("icon-linux.png"))
+                iconFile.set(iconsRoot.resolve("icon.png"))
             }
         }
     }
