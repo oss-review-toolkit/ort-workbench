@@ -3,15 +3,18 @@ import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val composePluginVersion: String by project
+val detektPluginVersion: String by project
+
 val log4jVersion: String by project
 val ortVersion: String by project
 val richtextVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    id("org.jetbrains.compose") version "1.0.1"
-    id("com.github.ben-manes.versions") version "0.41.0"
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    kotlin("jvm")
+    id("org.jetbrains.compose")
+    id("com.github.ben-manes.versions")
+    id("io.gitlab.arturbosch.detekt")
 }
 
 group = "org.ossreviewtoolkit.workbench"
@@ -47,7 +50,7 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
 
-    implementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.0.1")
+    implementation("org.jetbrains.compose.material:material-icons-extended-desktop:$composePluginVersion")
 
     implementation("com.github.oss-review-toolkit.ort:analyzer:$ortVersion")
     implementation("com.github.oss-review-toolkit.ort:downloader:$ortVersion")
@@ -58,7 +61,7 @@ dependencies {
     implementation("com.halilibo.compose-richtext:richtext-commonmark:$richtextVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
 
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektPluginVersion")
 }
 
 tasks.test {
@@ -103,7 +106,7 @@ compose.desktop {
 }
 
 detekt {
-    toolVersion = "1.19.0"
+    toolVersion = detektPluginVersion
     config = files("detekt.yml")
     buildUponDefaultConfig = true
     basePath = rootProject.projectDir.path
