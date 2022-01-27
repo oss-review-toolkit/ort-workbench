@@ -55,7 +55,7 @@ fun App(state: AppState) {
 
         if (state.openResultDialog.isAwaiting) {
             FileDialog(
-                title = "Notepad",
+                title = "Load ORT result",
                 isLoad = true,
                 onResult = { state.openResultDialog.onResult(it) }
             )
