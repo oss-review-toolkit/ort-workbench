@@ -52,8 +52,7 @@ fun Menu(state: MenuState, resultStatus: ResultStatus) {
                 Image(
                     painter = painterResource("ort-white.png"),
                     contentDescription = "OSS Review Toolkit",
-                    contentScale = ContentScale.FillWidth,
-
+                    contentScale = ContentScale.FillWidth
                 )
             }
         }
