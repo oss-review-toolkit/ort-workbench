@@ -72,9 +72,7 @@ fun LoadResult(state: AppState) {
         verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource("ort-black.png"), contentDescription = "OSS Review Toolkit"
-        )
+        Image(painter = painterResource("ort-black.png"), contentDescription = "OSS Review Toolkit")
 
         Button(onClick = { scope.launch { state.openOrtResult() } }) {
             Text("Load ORT Result")
