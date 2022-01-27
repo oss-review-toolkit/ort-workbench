@@ -106,6 +106,7 @@ detekt {
     toolVersion = "1.19.0"
     config = files("detekt.yml")
     buildUponDefaultConfig = true
+    basePath = rootProject.projectDir.path
 }
 
 tasks.withType<Detekt>().configureEach {
