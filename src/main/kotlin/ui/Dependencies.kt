@@ -261,7 +261,12 @@ fun DependencyTree(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    val resource = if (item.expanded) MaterialIcon.REMOVE.resource else MaterialIcon.ADD.resource
+                    val resource = when {
+                        !item.hasChildren -> MaterialIcon.BOOKMARK_BORDER.resource
+                        item.expanded -> MaterialIcon.REMOVE.resource
+                        else -> MaterialIcon.ADD.resource
+                    }
+
                     val icon = painterResource(resource)
 
                     Icon(
@@ -414,6 +419,7 @@ private fun PackageDetailsPreview() {
             DependencyTreePackage(
                 index = 0,
                 level = 0,
+                hasChildren = true,
                 id = pkg.pkg.id,
                 pkg = pkg,
                 linkage = PackageLinkage.STATIC,

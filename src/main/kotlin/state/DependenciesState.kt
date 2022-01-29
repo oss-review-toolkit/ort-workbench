@@ -102,6 +102,7 @@ class DependenciesState {
                                     DependencyTreePackage(
                                         index = index,
                                         level = level,
+                                        hasChildren = pkgRef.dependencies.isNotEmpty(),
                                         id = pkgRef.id,
                                         pkg = pkg,
                                         linkage = pkgRef.linkage,
@@ -229,7 +230,7 @@ class DependenciesState {
     }
 }
 
-sealed class DependencyTreeItem(val index: Int, val level: Int) {
+sealed class DependencyTreeItem(val index: Int, val level: Int, val hasChildren: Boolean) {
     abstract val name: String
 
     var expanded by mutableStateOf(false)
@@ -242,23 +243,24 @@ class DependencyTreeProject(
     val linkage: PackageLinkage,
     val issues: List<OrtIssue>,
     val resolvedLicense: ResolvedLicenseInfo
-) : DependencyTreeItem(index, level) {
+) : DependencyTreeItem(index, level, hasChildren = project.scopes.isNotEmpty()) {
     override val name = project.id.toCoordinates()
 }
 
 class DependencyTreeScope(index: Int, level: Int, val project: Project, val scope: Scope) :
-    DependencyTreeItem(index, level) {
+    DependencyTreeItem(index, level, hasChildren = scope.dependencies.isNotEmpty()) {
     override val name = scope.name
 }
 
 class DependencyTreePackage(
     index: Int,
     level: Int,
+    hasChildren: Boolean,
     val id: Identifier,
     val pkg: CuratedPackage?,
     val linkage: PackageLinkage,
     val issues: List<OrtIssue>,
     val resolvedLicense: ResolvedLicenseInfo?
-) : DependencyTreeItem(index, level) {
+) : DependencyTreeItem(index, level, hasChildren) {
     override val name = id.toCoordinates()
 }
