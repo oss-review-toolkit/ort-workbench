@@ -3,6 +3,7 @@ package org.ossreviewtoolkit.workbench.util
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.window.AwtWindow
+
 import java.awt.FileDialog
 import java.io.File
 import java.io.FilenameFilter

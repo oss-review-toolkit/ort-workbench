@@ -2,11 +2,14 @@ package org.ossreviewtoolkit.workbench.state
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+
+import java.nio.file.Path
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.readValue
-import java.nio.file.Path
 
 @Composable
 fun rememberAppState() = remember { AppState() }

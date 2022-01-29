@@ -25,6 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+
+import java.net.URI
+
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.VulnerabilityReference
 import org.ossreviewtoolkit.model.config.VulnerabilityResolution
@@ -39,7 +42,6 @@ import org.ossreviewtoolkit.workbench.util.FilterTextField
 import org.ossreviewtoolkit.workbench.util.Preview
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.WebLink
-import java.net.URI
 
 @Composable
 @Preview

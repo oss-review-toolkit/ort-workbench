@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+
 import org.ossreviewtoolkit.workbench.state.AppState
 import org.ossreviewtoolkit.workbench.state.DependencyStats
 import org.ossreviewtoolkit.workbench.state.IssueStats

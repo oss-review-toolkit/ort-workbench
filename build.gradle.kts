@@ -61,6 +61,7 @@ dependencies {
     implementation("com.halilibo.compose-richtext:richtext-commonmark:$richtextVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
 
+    detektPlugins("com.github.oss-review-toolkit.ort:detekt-rules:$ortVersion")
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektPluginVersion")
 }
 
