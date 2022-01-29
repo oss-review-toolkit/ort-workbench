@@ -74,7 +74,7 @@ fun LoadResult(state: AppState) {
     ) {
         Image(painter = painterResource("ort-black.png"), contentDescription = "OSS Review Toolkit")
 
-        Button(onClick = { scope.launch { state.openOrtResult() } }) {
+        Button(onClick = { if (!state.openResultDialog.isAwaiting) scope.launch { state.openOrtResult() } }) {
             Text("Load ORT Result")
         }
 
