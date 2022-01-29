@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.RichText
 

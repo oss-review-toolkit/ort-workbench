@@ -3,13 +3,16 @@ package org.ossreviewtoolkit.workbench.state
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+
+import java.nio.file.Path
+
+import kotlin.io.path.absolutePathString
+
 import org.ossreviewtoolkit.model.OrtIssue
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.reporter.reporters.evaluatedmodel.IssueStatistics
 import org.ossreviewtoolkit.workbench.util.OrtResultApi
-import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 
 class ResultState {
     var resultApi: OrtResultApi by mutableStateOf(OrtResultApi(OrtResult.EMPTY))

@@ -1,6 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui
 
 import androidx.compose.runtime.Composable
+
 import org.ossreviewtoolkit.workbench.state.AppState
 
 @Composable

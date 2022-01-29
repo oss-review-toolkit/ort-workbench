@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
+
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.workbench.theme.Error
 import org.ossreviewtoolkit.workbench.theme.Hint
