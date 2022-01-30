@@ -3,6 +3,7 @@ package org.ossreviewtoolkit.workbench.util
 enum class MaterialIcon(val resource: String) {
     ACCOUNT_TREE("material/account_tree.svg"),
     ADD("material/add.svg"),
+    ASSESSMENT("material/assessment.svg"),
     BOOKMARK_BORDER("material/bookmark_border.svg"),
     BUG_REPORT("material/bug_report.svg"),
     ERROR("material/error.svg"),
