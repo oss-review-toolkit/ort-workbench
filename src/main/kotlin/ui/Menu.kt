@@ -25,9 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 import org.ossreviewtoolkit.utils.common.titlecase
+import org.ossreviewtoolkit.utils.core.Environment
 import org.ossreviewtoolkit.workbench.state.MenuState
 import org.ossreviewtoolkit.workbench.state.ResultStatus
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
@@ -61,6 +63,15 @@ fun Menu(state: MenuState, resultStatus: ResultStatus) {
         MenuItem.values().forEach { item ->
             MenuRow(state, resultStatus, item)
         }
+
+        Box(modifier = Modifier.weight(1f))
+
+        Text(
+            "ORT version ${Environment.ORT_VERSION}",
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.caption
+        )
     }
 }
 
