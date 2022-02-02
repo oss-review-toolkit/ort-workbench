@@ -12,7 +12,8 @@ val DarkTeal = Color(color = 0xFF4F9A94)
 
 val DarkGray = Color(color = 0xFF121212)
 val LightGray = Color(color = 0xFF828282)
-val Red = Color(color = 0xFFAB000D)
+
+val Red = Color(color = 0xFFED4337)
 val Yellow = Color(color = 0xFFFAD400)
 
 val Hint = Blue

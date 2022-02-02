@@ -21,6 +21,7 @@ class AppState {
     val violations = ViolationsState()
     val vulnerabilities = VulnerabilitiesState()
     val result = ResultState()
+    val settings = SettingsState()
 
     val openResultDialog = DialogState<Path?>()
 

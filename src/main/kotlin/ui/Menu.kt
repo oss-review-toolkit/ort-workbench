@@ -40,7 +40,8 @@ enum class MenuItem(val icon: MaterialIcon) {
     DEPENDENCIES(MaterialIcon.ACCOUNT_TREE),
     ISSUES(MaterialIcon.BUG_REPORT),
     RULE_VIOLATIONS(MaterialIcon.GAVEL),
-    VULNERABILITIES(MaterialIcon.LOCK_OPEN);
+    VULNERABILITIES(MaterialIcon.LOCK_OPEN),
+    SETTINGS(MaterialIcon.SETTINGS);
 
     val readableName: String by lazy { name.split("_").joinToString(" ") { it.titlecase() } }
 }
@@ -60,15 +61,17 @@ fun Menu(state: MenuState, resultStatus: ResultStatus) {
             }
         }
 
-        MenuItem.values().forEach { item ->
+        MenuItem.values().filter { it != MenuItem.SETTINGS }.forEach { item ->
             MenuRow(state, resultStatus, item)
         }
 
         Box(modifier = Modifier.weight(1f))
 
+        MenuRow(state, resultStatus, MenuItem.SETTINGS)
+
         Text(
             "ORT version ${Environment.ORT_VERSION}",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.caption
         )
