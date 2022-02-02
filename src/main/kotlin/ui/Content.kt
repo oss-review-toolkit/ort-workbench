@@ -15,6 +15,7 @@ fun Content(state: AppState) {
             MenuItem.ISSUES -> Issues(state)
             MenuItem.RULE_VIOLATIONS -> Violations(state)
             MenuItem.VULNERABILITIES -> Vulnerabilities(state)
+            MenuItem.SETTINGS -> Settings(state)
         }
     }
 }

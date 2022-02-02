@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
+import java.io.File
+
 import org.ossreviewtoolkit.workbench.theme.LightGray
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -54,6 +56,20 @@ private fun LinkPreview() {
             Link("Enabled link") {}
             Link("Disabled link", enabled = false) {}
         }
+    }
+}
+
+@Composable
+fun BrowseDirectoryLink(text: String, file: File) {
+    Link(text, tooltip = file.path, icon = painterResource(MaterialIcon.OPEN_IN_NEW.resource)) {
+        browseDirectory(file)
+    }
+}
+
+@Composable
+fun EditFileLink(text: String, file: File) {
+    Link(text, tooltip = file.path, icon = painterResource(MaterialIcon.OPEN_IN_NEW.resource)) {
+        editFile(file)
     }
 }
 
