@@ -170,9 +170,9 @@ private fun FilterResolutionStatus(
 @Composable
 fun VulnerabilitiesList(vulnerabilities: List<DecoratedVulnerability>) {
     if (vulnerabilities.isEmpty()) {
-        Text("No vulnerabilities found.", modifier = Modifier.padding(top = 10.dp))
+        Text("No vulnerabilities found.", modifier = Modifier.padding(top = 15.dp))
     } else {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(top = 15.dp)) {
             val listState = rememberLazyListState()
 
             LazyColumn(

@@ -174,9 +174,9 @@ private fun FilterResolutionStatus(
 @Composable
 fun IssuesList(issues: List<Issue>) {
     if (issues.isEmpty()) {
-        Text("No issues found.", modifier = Modifier.padding(top = 10.dp))
+        Text("No issues found.", modifier = Modifier.padding(top = 15.dp))
     } else {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(top = 15.dp)) {
             val listState = rememberLazyListState()
 
             LazyColumn(
