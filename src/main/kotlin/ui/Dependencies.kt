@@ -57,6 +57,7 @@ import org.ossreviewtoolkit.model.OrtIssue
 import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.PackageCurationResult
 import org.ossreviewtoolkit.model.PackageLinkage
+import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.model.VcsType
@@ -294,7 +295,50 @@ fun DependencyTree(
 @Composable
 fun ProjectDetails(item: DependencyTreeProject) {
     StyledCard(title = "${item.project.id.name} ${item.project.id.version}") {
-        // TODO
+        val scrollState = rememberScrollState()
+        val pkg = remember { item.project.toPackage() }
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(modifier = Modifier.verticalScroll(scrollState)) {
+                CaptionedText("DEFINITION FILE", item.project.definitionFilePath)
+
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
+
+                IdentifierSection(pkg)
+
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
+
+                CopyrightSection(pkg, item.resolvedLicense)
+
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
+
+                LicenseSection(pkg, item.resolvedLicense)
+
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
+
+                ProjectProvenanceSection(item.project)
+
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
+
+                IssuesSection(item.issues)
+
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
+
+                // TODO: Add vulnerability section.
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val homepageUrl = pkg.homepageUrl
+                    if (homepageUrl.isNotBlank()) {
+                        WebLink("Homepage", homepageUrl)
+                    }
+                }
+            }
+
+            VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(scrollState = scrollState)
+            )
+        }
     }
 }
 
@@ -337,7 +381,7 @@ fun PackageDetails(item: DependencyTreePackage) {
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    ProvenanceSection(item.pkg.pkg)
+                    PackageProvenanceSection(item.pkg.pkg)
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
 
@@ -496,7 +540,7 @@ fun DescriptionSection(description: String, lineLengthCollapsed: Int = 50) {
 }
 
 @Composable
-fun ProvenanceSection(pkg: Package) {
+fun PackageProvenanceSection(pkg: Package) {
     Expandable(header = { expanded ->
         CaptionedColumn("BINARY_ARTIFACT") {
             if (pkg.binaryArtifact != RemoteArtifact.EMPTY) {
@@ -532,34 +576,48 @@ fun ProvenanceSection(pkg: Package) {
                 }
             }
 
-            CaptionedColumn("REPOSITORY") {
-                if (pkg.vcsProcessed != VcsInfo.EMPTY) {
-                    Text(pkg.vcsProcessed.url)
+            RepositoryColumn(pkg.vcsProcessed, expanded = true)
+
+            // TODO: Show scanned provenances.
+        }
+    }
+}
+
+@Composable
+fun ProjectProvenanceSection(project: Project) {
+    Expandable(header = { expanded ->
+        RepositoryColumn(project.vcs, expanded)
+    }) {}
+}
+
+@Composable
+fun RepositoryColumn(vcs: VcsInfo, expanded: Boolean) {
+    CaptionedColumn("REPOSITORY") {
+        if (vcs != VcsInfo.EMPTY) {
+            Text(vcs.url)
+            if (expanded) {
+                Text(
+                    text = "Type: ${vcs.type}",
+                    style = MaterialTheme.typography.overline,
+                    modifier = Modifier.padding(start = 5.dp)
+                )
+                if (vcs.path.isNotBlank()) {
                     Text(
-                        text = "Type: ${pkg.vcsProcessed.type}",
+                        text = "Path: ${vcs.path}",
                         style = MaterialTheme.typography.overline,
                         modifier = Modifier.padding(start = 5.dp)
                     )
-                    if (pkg.vcsProcessed.path.isNotBlank()) {
-                        Text(
-                            text = "Path: ${pkg.vcsProcessed.path}",
-                            style = MaterialTheme.typography.overline,
-                            modifier = Modifier.padding(start = 5.dp)
-                        )
-                    }
-                    if (pkg.vcsProcessed.revision.isNotBlank()) {
-                        Text(
-                            text = "Revision: ${pkg.vcsProcessed.revision}",
-                            style = MaterialTheme.typography.overline,
-                            modifier = Modifier.padding(start = 5.dp)
-                        )
-                    }
-                } else {
-                    Text("-")
+                }
+                if (vcs.revision.isNotBlank()) {
+                    Text(
+                        text = "Revision: ${vcs.revision}",
+                        style = MaterialTheme.typography.overline,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
                 }
             }
-
-            // TODO: Show scanned provenances.
+        } else {
+            Text("-")
         }
     }
 }
