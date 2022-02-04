@@ -201,9 +201,9 @@ private fun FilterResolutionStatus(
 @Composable
 fun ViolationsList(violations: List<Violation>) {
     if (violations.isEmpty()) {
-        Text("No violations found.", modifier = Modifier.padding(top = 10.dp))
+        Text("No violations found.", modifier = Modifier.padding(top = 15.dp))
     } else {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(top = 15.dp)) {
             val listState = rememberLazyListState()
 
             LazyColumn(
