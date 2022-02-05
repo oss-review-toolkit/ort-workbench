@@ -127,6 +127,7 @@ compose.desktop {
 
             macOS {
                 iconFile.set(iconsRoot.resolve("icon.icns"))
+                jvmArgs("-Dapple.awt.application.appearance=system")
             }
 
             windows {
