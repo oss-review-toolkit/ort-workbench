@@ -35,32 +35,34 @@ import org.ossreviewtoolkit.workbench.util.FileDialog
 @Composable
 fun App(state: AppState) {
     OrtWorkbenchTheme {
-        if (state.result.status == ResultStatus.FINISHED) {
-            Row(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
-                Surface(
-                    modifier = Modifier.fillMaxHeight().width(200.dp),
-                    elevation = 8.dp,
-                    color = MaterialTheme.colors.primaryVariant
-                ) {
-                    Menu(state.menu, state.result.status)
-                }
+        Surface {
+            if (state.result.status == ResultStatus.FINISHED) {
+                Row(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
+                    Surface(
+                        modifier = Modifier.fillMaxHeight().width(200.dp),
+                        elevation = 8.dp,
+                        color = MaterialTheme.colors.primaryVariant
+                    ) {
+                        Menu(state.menu, state.result.status)
+                    }
 
-                Column(
-                    modifier = Modifier.padding(5.dp).fillMaxWidth()
-                ) {
-                    Content(state)
+                    Column(
+                        modifier = Modifier.padding(5.dp).fillMaxWidth()
+                    ) {
+                        Content(state)
+                    }
                 }
+            } else {
+                LoadResult(state)
             }
-        } else {
-            LoadResult(state)
-        }
 
-        if (state.openResultDialog.isAwaiting) {
-            FileDialog(
-                title = "Load ORT result",
-                isLoad = true,
-                onResult = { state.openResultDialog.onResult(it) }
-            )
+            if (state.openResultDialog.isAwaiting) {
+                FileDialog(
+                    title = "Load ORT result",
+                    isLoad = true,
+                    onResult = { state.openResultDialog.onResult(it) }
+                )
+            }
         }
     }
 }
