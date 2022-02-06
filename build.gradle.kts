@@ -13,9 +13,10 @@ val richtextVersion: String by project
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.compose")
+
     id("com.github.ben-manes.versions")
     id("io.gitlab.arturbosch.detekt")
+    id("org.jetbrains.compose")
 }
 
 group = "org.ossreviewtoolkit.workbench"
@@ -66,10 +67,6 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektPluginVersion")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
@@ -82,9 +79,31 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+detekt {
+    toolVersion = detektPluginVersion
+    config = files("detekt.yml")
+    buildUponDefaultConfig = true
+    basePath = rootProject.projectDir.path
+    source.from(fileTree(".") { include("*.gradle.kts") })
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        xml.required.set(false)
+        html.required.set(false)
+        txt.required.set(false)
+        sarif.required.set(true)
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
 compose.desktop {
     application {
         mainClass = "org.ossreviewtoolkit.workbench.MainKt"
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ort-workbench"
@@ -104,22 +123,5 @@ compose.desktop {
                 iconFile.set(iconsRoot.resolve("icon.png"))
             }
         }
-    }
-}
-
-detekt {
-    toolVersion = detektPluginVersion
-    config = files("detekt.yml")
-    buildUponDefaultConfig = true
-    basePath = rootProject.projectDir.path
-    source.from(fileTree(".") { include("*.gradle.kts") })
-}
-
-tasks.withType<Detekt>().configureEach {
-    reports {
-        xml.required.set(false)
-        html.required.set(false)
-        txt.required.set(false)
-        sarif.required.set(true)
     }
 }
