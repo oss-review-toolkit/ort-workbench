@@ -13,6 +13,7 @@ import java.nio.file.Path
 fun FileDialog(
     title: String,
     isLoad: Boolean,
+    fileExtensionFilter: List<String> = emptyList(),
     onResult: (result: Path?) -> Unit
 ) = AwtWindow(
     create = {
@@ -29,8 +30,11 @@ fun FileDialog(
             }
         }.apply {
             this.title = title
-            file = "*.json;*.yml"
-            filenameFilter = FilenameFilter { _, name -> name.substringAfterLast(".") in listOf("json", "yml") }
+
+            if (fileExtensionFilter.isNotEmpty()) {
+                file = fileExtensionFilter.joinToString(";") { "*.$it" }
+                filenameFilter = FilenameFilter { _, name -> name.substringAfterLast(".") in fileExtensionFilter }
+            }
         }
     },
     dispose = FileDialog::dispose
