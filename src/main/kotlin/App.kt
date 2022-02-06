@@ -60,6 +60,7 @@ fun App(state: AppState) {
                 FileDialog(
                     title = "Load ORT result",
                     isLoad = true,
+                    fileExtensionFilter = listOf("json", "yml"),
                     onResult = { state.openResultDialog.onResult(it) }
                 )
             }
