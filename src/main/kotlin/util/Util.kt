@@ -6,9 +6,10 @@ import java.net.URI
 fun openUrlInBrowser(url: String) {
     runCatching {
         val uri = URI(url)
-        val desktop = Desktop.getDesktop()
-        if (desktop.isSupported(Desktop.Action.BROWSE)) {
-            desktop.browse(uri)
+        Desktop.getDesktop().apply {
+            if (isSupported(Desktop.Action.BROWSE)) {
+                browse(uri)
+            }
         }
     }
 }
