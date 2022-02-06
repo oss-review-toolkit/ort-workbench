@@ -67,6 +67,20 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektPluginVersion")
 }
 
+tasks.named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates").configure {
+    val nonFinalQualifiers = listOf(
+        "alpha", "b", "beta", "cr", "ea", "eap", "m", "milestone", "pr", "preview", "rc", "\\d{14}"
+    ).joinToString("|", "(", ")")
+
+    val nonFinalQualifiersRegex = Regex(".*[.-]$nonFinalQualifiers[.\\d-+]*", RegexOption.IGNORE_CASE)
+
+    gradleReleaseChannel = "current"
+
+    rejectVersionIf {
+        candidate.version.matches(nonFinalQualifiersRegex)
+    }
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
