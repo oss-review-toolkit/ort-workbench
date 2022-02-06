@@ -28,7 +28,7 @@ The are currently no binary builds published, to run the workbench clone the rep
 * Package list
 * Defect list
 * Scan result view
-* ort.yml editor
+* `.ort.yml` editor
 * Curation editor
 * Package configuration editor
 * Resolution editor
