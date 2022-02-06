@@ -19,6 +19,8 @@ formatting:
     active: false
   Indentation:
     active: false
+  MaximumLineLength:
+    active: false
 
 naming:
   FunctionNaming:
