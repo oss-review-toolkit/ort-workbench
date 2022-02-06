@@ -17,7 +17,7 @@ fun FileDialog(
     onResult: (result: Path?) -> Unit
 ) = AwtWindow(
     create = {
-        object : FileDialog(ComposeWindow(), "Choose a file", if (isLoad) LOAD else SAVE) {
+        object : FileDialog(ComposeWindow(), title, if (isLoad) LOAD else SAVE) {
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
                 if (value) {
