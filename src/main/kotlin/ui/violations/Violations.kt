@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.ui
+package org.ossreviewtoolkit.workbench.ui.violations
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
@@ -15,11 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -34,9 +34,6 @@ import org.ossreviewtoolkit.model.config.RuleViolationResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxLicenseIdExpression
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
-import org.ossreviewtoolkit.workbench.state.AppState
-import org.ossreviewtoolkit.workbench.state.Violation
-import org.ossreviewtoolkit.workbench.state.ViolationsState
 import org.ossreviewtoolkit.workbench.util.ExpandableMarkdown
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
@@ -47,46 +44,36 @@ import org.ossreviewtoolkit.workbench.util.SeverityIcon
 
 @Composable
 @Preview
-fun Violations(appState: AppState) {
-    val state = appState.violations
+fun Violations(viewModel: ViolationsViewModel) {
+    val filteredViolations by viewModel.filteredViolations.collectAsState()
 
-    if (!state.initialized) {
-        LaunchedEffect(Unit) {
-            state.initialize(appState.result.resultApi)
-        }
+    Column(
+        modifier = Modifier.padding(15.dp).fillMaxSize()
+    ) {
+        TitleRow(viewModel)
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator()
-            Text("Processing...")
-        }
-    } else {
-        Column(
-            modifier = Modifier.padding(15.dp).fillMaxSize()
-        ) {
-            TitleRow(state)
-
-            ViolationsList(state.filteredViolations)
-        }
+        ViolationsList(filteredViolations)
     }
 }
 
 @Composable
-private fun TitleRow(state: ViolationsState) {
+private fun TitleRow(viewModel: ViolationsViewModel) {
+    val filter by viewModel.filter.collectAsState()
+    val identifiers by viewModel.identifiers.collectAsState()
+    val licenses by viewModel.licenses.collectAsState()
+    val rules by viewModel.rules.collectAsState()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        FilterTextField(state.filterText, state::updateFilterText)
-        FilterSeverity(state.filterSeverity, state::updateFilterSeverity)
-        FilterLicense(state.filterLicense, state.licenses, state::updateFilterLicense)
-        FilterLicenseSource(state.filterLicenseSource, state::updateFilterLicenseSource)
-        FilterRule(state.filterRule, state.rules, state::updateFilterRule)
-        FilterIdentifier(state.filterIdentifier, state.identifiers, state::updateFilterIdentifier)
-        FilterResolutionStatus(state.filterResolutionStatus, state::updateFilterResolutionStatus)
+        FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
+        FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
+        FilterLicense(filter.license, licenses) { viewModel.updateFilter(filter.copy(license = it)) }
+        FilterLicenseSource(filter.licenseSource) { viewModel.updateFilter(filter.copy(licenseSource = it)) }
+        FilterRule(filter.rule, rules) { viewModel.updateFilter(filter.copy(rule = it)) }
+        FilterIdentifier(filter.identifier, identifiers) { viewModel.updateFilter(filter.copy(identifier = it)) }
+        FilterResolutionStatus(filter.resolutionStatus) { viewModel.updateFilter(filter.copy(resolutionStatus = it)) }
     }
 }
 

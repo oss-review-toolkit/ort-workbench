@@ -8,7 +8,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 
-import org.ossreviewtoolkit.workbench.state.rememberAppState
+import org.ossreviewtoolkit.workbench.ui.App
+import org.ossreviewtoolkit.workbench.ui.rememberAppState
 
 fun main() = singleWindowApplication(
     title = "ORT Workbench",

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 
-package org.ossreviewtoolkit.workbench.ui
+package org.ossreviewtoolkit.workbench.ui.dependencies
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,6 +33,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,11 +72,6 @@ import org.ossreviewtoolkit.utils.core.ProcessedDeclaredLicense
 import org.ossreviewtoolkit.utils.spdx.SpdxExpression
 import org.ossreviewtoolkit.utils.spdx.SpdxLicense
 import org.ossreviewtoolkit.utils.spdx.toExpression
-import org.ossreviewtoolkit.workbench.state.AppState
-import org.ossreviewtoolkit.workbench.state.DependenciesState
-import org.ossreviewtoolkit.workbench.state.DependencyTreePackage
-import org.ossreviewtoolkit.workbench.state.DependencyTreeProject
-import org.ossreviewtoolkit.workbench.state.DependencyTreeScope
 import org.ossreviewtoolkit.workbench.util.CaptionedColumn
 import org.ossreviewtoolkit.workbench.util.CaptionedText
 import org.ossreviewtoolkit.workbench.util.ErrorCard
@@ -88,13 +84,13 @@ import org.ossreviewtoolkit.workbench.util.StyledCard
 import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
-fun Dependencies(appState: AppState) {
-    val state = appState.dependencies
+fun Dependencies(viewModel: DependenciesViewModel) {
+    val state by viewModel.state.collectAsState()
 
     when {
         !state.initialized -> {
             LaunchedEffect(Unit) {
-                state.initialize(appState.result.resultApi)
+                state.initialize()
             }
 
             Column(

@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val composePluginVersion: String by project
 val detektPluginVersion: String by project
 
+val jacksonVersion: String by project
 val log4jVersion: String by project
 val ortVersion: String by project
 val richtextVersion: String by project
@@ -60,6 +61,7 @@ dependencies {
     implementation("com.github.oss-review-toolkit.ort:reporter:$ortVersion")
     implementation("com.github.oss-review-toolkit.ort:scanner:$ortVersion")
 
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.halilibo.compose-richtext:richtext-commonmark:$richtextVersion")
     implementation("com.halilibo.compose-richtext:richtext-ui-material:$richtextVersion")
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")

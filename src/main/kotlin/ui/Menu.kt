@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.core.Environment
-import org.ossreviewtoolkit.workbench.state.ResultStatus
+import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
 
@@ -46,11 +46,11 @@ enum class MenuItem(val icon: MaterialIcon) {
 }
 
 @Composable
-fun Menu(currentScreen: MenuItem, resultStatus: ResultStatus, onSwitchScreen: (MenuItem) -> Unit) {
+fun Menu(currentScreen: MenuItem, apiState: OrtApiState, onSwitchScreen: (MenuItem) -> Unit) {
     Column(
         modifier = Modifier.padding(vertical = 20.dp)
     ) {
-        if (resultStatus == ResultStatus.FINISHED) {
+        if (apiState == OrtApiState.READY) {
             Box(modifier = Modifier.width(180.dp).padding(start = 20.dp, bottom = 25.dp)) {
                 Image(
                     painter = painterResource("ort-white.png"),
@@ -61,12 +61,12 @@ fun Menu(currentScreen: MenuItem, resultStatus: ResultStatus, onSwitchScreen: (M
         }
 
         MenuItem.values().filter { it != MenuItem.SETTINGS }.forEach { item ->
-            MenuRow(item, isCurrent = item == currentScreen, resultStatus, onSwitchScreen)
+            MenuRow(item, isCurrent = item == currentScreen, apiState, onSwitchScreen)
         }
 
         Box(modifier = Modifier.weight(1f))
 
-        MenuRow(MenuItem.SETTINGS, isCurrent = MenuItem.SETTINGS == currentScreen, resultStatus, onSwitchScreen)
+        MenuRow(MenuItem.SETTINGS, isCurrent = MenuItem.SETTINGS == currentScreen, apiState, onSwitchScreen)
 
         Text(
             "ORT version ${Environment.ORT_VERSION}",
@@ -78,8 +78,8 @@ fun Menu(currentScreen: MenuItem, resultStatus: ResultStatus, onSwitchScreen: (M
 }
 
 @Composable
-fun MenuRow(item: MenuItem, isCurrent: Boolean, resultStatus: ResultStatus, onSwitchScreen: (MenuItem) -> Unit) {
-    val isEnabled = item == MenuItem.SUMMARY || resultStatus == ResultStatus.FINISHED
+fun MenuRow(item: MenuItem, isCurrent: Boolean, apiState: OrtApiState, onSwitchScreen: (MenuItem) -> Unit) {
+    val isEnabled = item == MenuItem.SUMMARY || apiState == OrtApiState.READY
 
     if (isEnabled) {
         Row(
@@ -106,7 +106,7 @@ fun MenuRow(item: MenuItem, isCurrent: Boolean, resultStatus: ResultStatus, onSw
 private fun MenuPreview() {
     Preview {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.primaryVariant) {
-            Menu(currentScreen = MenuItem.SUMMARY, ResultStatus.FINISHED) {}
+            Menu(currentScreen = MenuItem.SUMMARY, OrtApiState.READY) {}
         }
     }
 }

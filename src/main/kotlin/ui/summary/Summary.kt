@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package org.ossreviewtoolkit.workbench.ui
+package org.ossreviewtoolkit.workbench.ui.summary
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -21,10 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-import org.ossreviewtoolkit.workbench.state.AppState
-import org.ossreviewtoolkit.workbench.state.DependencyStats
-import org.ossreviewtoolkit.workbench.state.IssueStats
-import org.ossreviewtoolkit.workbench.state.ResultFileInfo
+import org.ossreviewtoolkit.workbench.ui.MenuItem
 import org.ossreviewtoolkit.workbench.util.Link
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
@@ -33,7 +32,9 @@ import org.ossreviewtoolkit.workbench.util.StyledCard
 private const val KIBI = 1024
 
 @Composable
-fun Summary(state: AppState) {
+fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MenuItem) -> Unit) {
+    val state by viewModel.state.collectAsState()
+
     Column(
         modifier = Modifier.padding(15.dp)
     ) {
@@ -41,19 +42,13 @@ fun Summary(state: AppState) {
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(25.dp)
         ) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                state.result.resultFileInfo?.let {
-                    ResultFileInfoCard(it)
-                }
+                ResultFileInfoCard(state.resultFileInfo)
 
-                state.result.dependencyStats?.let {
-                    DependencyStatsCard(it) { state.switchScreen(MenuItem.DEPENDENCIES) }
-                }
+                DependencyStatsCard(state.dependencyStats) { onSwitchScreen(MenuItem.DEPENDENCIES) }
             }
 
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                state.result.issueStats?.let {
-                    IssueStatsCard(it) { state.switchScreen(MenuItem.ISSUES) }
-                }
+                IssueStatsCard(state.issueStats) { onSwitchScreen(MenuItem.ISSUES) }
             }
         }
     }

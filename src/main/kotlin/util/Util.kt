@@ -1,3 +1,4 @@
+
 package org.ossreviewtoolkit.workbench.util
 
 import java.awt.Desktop
