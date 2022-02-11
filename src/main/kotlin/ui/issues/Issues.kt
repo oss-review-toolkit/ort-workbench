@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.ui
+package org.ossreviewtoolkit.workbench.ui.issues
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
@@ -15,11 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -34,10 +34,6 @@ import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.config.IssueResolution
 import org.ossreviewtoolkit.model.config.IssueResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
-import org.ossreviewtoolkit.workbench.state.AppState
-import org.ossreviewtoolkit.workbench.state.Issue
-import org.ossreviewtoolkit.workbench.state.IssuesState
-import org.ossreviewtoolkit.workbench.state.Tool
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
@@ -46,45 +42,34 @@ import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.SeverityIcon
 
 @Composable
-fun Issues(appState: AppState) {
-    val state = appState.issues
+fun Issues(viewModel: IssuesViewModel) {
+    val filteredIssues by viewModel.filteredIssues.collectAsState()
 
-    if (!state.initialized) {
-        LaunchedEffect(Unit) {
-            state.initialize(appState.result.resultApi)
-        }
+    Column(
+        modifier = Modifier.padding(15.dp).fillMaxSize()
+    ) {
+        TitleRow(viewModel)
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator()
-            Text("Processing...")
-        }
-    } else {
-        Column(
-            modifier = Modifier.padding(15.dp).fillMaxSize()
-        ) {
-            TitleRow(state)
-
-            IssuesList(state.filteredIssues)
-        }
+        IssuesList(filteredIssues)
     }
 }
 
 @Composable
-private fun TitleRow(state: IssuesState) {
+private fun TitleRow(viewModel: IssuesViewModel) {
+    val filter by viewModel.filter.collectAsState()
+    val identifiers by viewModel.identifiers.collectAsState()
+    val sources by viewModel.sources.collectAsState()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        FilterTextField(state.filterText, state::updateFilterText)
-        FilterSeverity(state.filterSeverity, state::updateFilterSeverity)
-        FilterSource(state.filterSource, state.sources, state::updateFilterSource)
-        FilterTool(state.filterTool, state::updateFilterTool)
-        FilterIdentifier(state.filterIdentifier, state.identifiers, state::updateFilterIdentifier)
-        FilterResolutionStatus(state.filterResolutionStatus, state::updateFilterResolutionStatus)
+        FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
+        FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
+        FilterSource(filter.source, sources) { viewModel.updateFilter(filter.copy(source = it)) }
+        FilterTool(filter.tool) { viewModel.updateFilter(filter.copy(tool = it)) }
+        FilterIdentifier(filter.identifier, identifiers) { viewModel.updateFilter(filter.copy(identifier = it)) }
+        FilterResolutionStatus(filter.resolutionStatus) { viewModel.updateFilter(filter.copy(resolutionStatus = it)) }
     }
 }
 

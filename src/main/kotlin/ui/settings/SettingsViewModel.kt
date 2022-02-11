@@ -1,20 +1,17 @@
-package org.ossreviewtoolkit.workbench.state
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+package org.ossreviewtoolkit.workbench.ui.settings
 
 import java.io.File
 import java.nio.file.Path
 
 import kotlin.io.path.invariantSeparatorsPathString
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-import org.ossreviewtoolkit.model.readValue
-import org.ossreviewtoolkit.model.writeValue
 import org.ossreviewtoolkit.utils.core.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_COPYRIGHT_GARBAGE_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_CUSTOM_LICENSE_TEXTS_DIRNAME
@@ -24,57 +21,34 @@ import org.ossreviewtoolkit.utils.core.ORT_LICENSE_CLASSIFICATIONS_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.core.ORT_PACKAGE_CURATIONS_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_RESOLUTIONS_FILENAME
-import org.ossreviewtoolkit.utils.core.ortConfigDirectory
-import org.ossreviewtoolkit.utils.core.ortDataDirectory
+import org.ossreviewtoolkit.workbench.model.OrtModel
+import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
 
-private const val ORT_WORKBENCH_CONFIG_DIRNAME = "workbench"
-private const val ORT_WORKBENCH_CONFIG_FILENAME = "settings.yml"
+class SettingsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
+    private val scope = CoroutineScope(Dispatchers.IO)
 
-class SettingsState {
-    private val settingsFile =
-        ortDataDirectory.resolve(ORT_WORKBENCH_CONFIG_DIRNAME).resolve(ORT_WORKBENCH_CONFIG_FILENAME)
-
-    var settings: Settings? by mutableStateOf(null)
-        private set
-
-    var ortConfigDir: OrtConfigFileInfo by mutableStateOf(
+    private val _ortConfigDir = MutableStateFlow(
         OrtConfigFileInfo(
             ORT_CONFIG_DIR,
-            File(Settings.default().ortConfigDir).toFileInfo(FileType.DIRECTORY)
+            File(WorkbenchSettings.default().ortConfigDir).toFileInfo(FileType.DIRECTORY)
         )
     )
+    val ortConfigDir: StateFlow<OrtConfigFileInfo> get() = _ortConfigDir
 
-    private val _ortConfigFiles = mutableStateListOf<OrtConfigFileInfo>()
-    val ortConfigFiles: List<OrtConfigFileInfo> get() = _ortConfigFiles
+    private val _ortConfigFiles = MutableStateFlow(emptyList<OrtConfigFileInfo>())
+    val ortConfigFiles: StateFlow<List<OrtConfigFileInfo>> get() = _ortConfigFiles
 
-    suspend fun loadSettings() {
-        settings = withContext(Dispatchers.IO) {
-            settingsFile.takeIf { it.isFile }?.readValue() ?: Settings.default().also { saveSettings(it) }
-        }
+    init {
+        scope.launch {
+            ortModel.settings.collect { settings ->
+                val configDir = File(settings.ortConfigDir)
 
-        updateConfigurationFiles()
-    }
-
-    suspend fun setConfigDir(path: Path) {
-        settings = settings?.copy(ortConfigDir = path.invariantSeparatorsPathString)?.also {
-            saveSettings(it)
-        }
-
-        updateConfigurationFiles()
-    }
-
-    private suspend fun updateConfigurationFiles() {
-        settings?.let {
-            withContext(Dispatchers.IO) {
-                val configDir = File(it.ortConfigDir)
-
-                ortConfigDir = OrtConfigFileInfo(
-                    ORT_CONFIG_DIR.copy(fileName = it.ortConfigDir.substringAfterLast("/")),
+                _ortConfigDir.value = OrtConfigFileInfo(
+                    ORT_CONFIG_DIR,
                     configDir.toFileInfo(FileType.DIRECTORY)
                 )
 
-                _ortConfigFiles.clear()
-                _ortConfigFiles += ORT_CONFIG_FILES.map { configFile ->
+                _ortConfigFiles.value = ORT_CONFIG_FILES.map { configFile ->
                     OrtConfigFileInfo(
                         configFile,
                         configDir.resolve(configFile.fileName).toFileInfo(configFile.fileType)
@@ -84,20 +58,8 @@ class SettingsState {
         }
     }
 
-    private suspend fun saveSettings(settings: Settings) {
-        withContext(Dispatchers.IO) {
-            settingsFile.writeValue(settings)
-        }
-    }
-}
-
-data class Settings(
-    val ortConfigDir: String
-) {
-    companion object {
-        fun default() = Settings(
-            ortConfigDir = ortConfigDirectory.invariantSeparatorsPath
-        )
+    suspend fun setConfigDir(path: Path) {
+        ortModel.updateSettings(WorkbenchSettings(ortConfigDir = path.invariantSeparatorsPathString))
     }
 }
 

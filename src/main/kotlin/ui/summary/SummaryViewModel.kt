@@ -1,71 +1,64 @@
-package org.ossreviewtoolkit.workbench.state
+package org.ossreviewtoolkit.workbench.ui.summary
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import java.io.File
 
-import java.nio.file.Path
-
-import kotlin.io.path.absolutePathString
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.OrtIssue
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.reporter.reporters.evaluatedmodel.IssueStatistics
-import org.ossreviewtoolkit.workbench.util.OrtResultApi
+import org.ossreviewtoolkit.workbench.model.OrtModel
 
-class ResultState {
-    var resultApi: OrtResultApi by mutableStateOf(OrtResultApi(OrtResult.EMPTY))
-        private set
+class SummaryViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
+    private val scope = CoroutineScope(Dispatchers.Default)
 
-    var hasAnalyzerResult by mutableStateOf(false)
-        private set
-    var hasScannerResult by mutableStateOf(false)
-        private set
-    var hasEvaluatorResult by mutableStateOf(false)
-        private set
-    var hasAdvisorResult by mutableStateOf(false)
-        private set
+    private val _state = MutableStateFlow(SummaryState())
+    val state: StateFlow<SummaryState> get() = _state
 
-    // TODO: Show error somehow.
-    var error: String? by mutableStateOf(null)
-    var path: Path? by mutableStateOf(null)
-    var status: ResultStatus by mutableStateOf(ResultStatus.IDLE)
-
-    var resultFileInfo: ResultFileInfo? by mutableStateOf(null)
-    var dependencyStats: DependencyStats? by mutableStateOf(null)
-    var issueStats: IssueStats? by mutableStateOf(null)
-//    var vulnerabilityStats: VulnerabilityStats? by mutableStateOf(null)
-//    var ruleViolationStats: RuleViolationStats? by mutableStateOf(null)
-
-    fun setOrtResult(result: OrtResult) {
-        resultApi = OrtResultApi(result.withResolvedScopes())
-
-        hasAnalyzerResult = result.analyzer != null
-        hasScannerResult = result.scanner != null
-        hasEvaluatorResult = result.evaluator != null
-        hasAdvisorResult = result.advisor != null
-
-        path?.let {
-            resultFileInfo = ResultFileInfo(
-                absolutePath = it.absolutePathString(),
-                size = it.toFile().length()
-            )
+    init {
+        scope.launch {
+            combine(
+                ortModel.ortResultFile.map { it.toResultFileInfo() },
+                ortModel.api.map { IssueStats(it.result) /* TODO: Take resolutions into account. */ },
+                ortModel.api.map { DependencyStats(it.result) /* TODO: Take resolutions into account. */ }
+            ) { resultFileInfo, issueStats, dependencyStats ->
+                SummaryState(
+                    resultFileInfo,
+                    issueStats,
+                    dependencyStats
+                )
+            }.collect {
+                _state.value = it
+            }
         }
-
-        dependencyStats = DependencyStats(result)
-        issueStats = IssueStats(result)
     }
 }
 
-enum class ResultStatus {
-    IDLE, LOADING, PROCESSING, ERROR, FINISHED
-}
+class SummaryState(
+    val resultFileInfo: ResultFileInfo = ResultFileInfo.EMPTY,
+    val issueStats: IssueStats = IssueStats.EMPTY,
+    val dependencyStats: DependencyStats = DependencyStats.EMPTY
+)
+
+private fun File?.toResultFileInfo() =
+    this?.let { ResultFileInfo(it.absolutePath, it.length()) } ?: ResultFileInfo.EMPTY
 
 data class ResultFileInfo(
     val absolutePath: String,
     val size: Long
-)
+) {
+    companion object {
+        val EMPTY = ResultFileInfo("", 0L)
+    }
+}
 
 data class IssueStats(
     val totalIssues: IssueStatistics,
@@ -103,6 +96,15 @@ data class DependencyStats(
     val dependenciesTotal: Int,
     val dependenciesByPackageManager: Map<String, Int>
 ) {
+    companion object {
+        val EMPTY = DependencyStats(
+            projectsTotal = 0,
+            projectsByPackageManager = emptyMap(),
+            dependenciesTotal = 0,
+            dependenciesByPackageManager = emptyMap()
+        )
+    }
+
     constructor(result: OrtResult) : this(
         projectsTotal = result.getProjects().size,
         projectsByPackageManager = result.getProjects().groupBy { it.id.type }.mapValues { it.value.size },

@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.ui
+package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
@@ -15,11 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -33,9 +33,6 @@ import org.ossreviewtoolkit.model.VulnerabilityReference
 import org.ossreviewtoolkit.model.config.VulnerabilityResolution
 import org.ossreviewtoolkit.model.config.VulnerabilityResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
-import org.ossreviewtoolkit.workbench.state.AppState
-import org.ossreviewtoolkit.workbench.state.DecoratedVulnerability
-import org.ossreviewtoolkit.workbench.state.VulnerabilitiesState
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
@@ -45,45 +42,38 @@ import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
 @Preview
-fun Vulnerabilities(appState: AppState) {
-    val state = appState.vulnerabilities
+fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
+    val filteredVulnerabilities by viewModel.filteredVulnerabilities.collectAsState()
 
-    if (!state.initialized) {
-        LaunchedEffect(Unit) {
-            state.initialize(appState.result.resultApi)
-        }
+    Column(
+        modifier = Modifier.padding(15.dp).fillMaxSize()
+    ) {
+        TitleRow(viewModel)
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator()
-            Text("Processing...")
-        }
-    } else {
-        Column(
-            modifier = Modifier.padding(15.dp).fillMaxSize()
-        ) {
-            TitleRow(state)
-
-            VulnerabilitiesList(state.filteredVulnerabilities)
-        }
+        VulnerabilitiesList(filteredVulnerabilities)
     }
 }
 
 @Composable
-private fun TitleRow(state: VulnerabilitiesState) {
+private fun TitleRow(viewModel: VulnerabilitiesViewModel) {
+    val filter by viewModel.filter.collectAsState()
+    val advisors by viewModel.advisors.collectAsState()
+    val identifiers by viewModel.identifiers.collectAsState()
+    val scoringSystems by viewModel.scoringSystems.collectAsState()
+    val severities by viewModel.severities.collectAsState()
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        FilterTextField(state.filterText, state::updateFilterText)
-        FilterAdvisor(state.filterAdvisor, state.advisors, state::updateFilterAdvisor)
-        FilterScoringSystem(state.filterScoringSystem, state.scoringSystems, state::updateFilterScoringSystem)
-        FilterSeverity(state.filterSeverity, state.severities, state::updateFilterSeverity)
-        FilterIdentifier(state.filterIdentifier, state.identifiers, state::updateFilterIdentifier)
-        FilterResolutionStatus(state.filterResolutionStatus, state::updateFilterResolutionStatus)
+        FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
+        FilterAdvisor(filter.advisor, advisors) { viewModel.updateFilter(filter.copy(advisor = it)) }
+        FilterScoringSystem(filter.scoringSystem, scoringSystems) {
+            viewModel.updateFilter(filter.copy(scoringSystem = it))
+        }
+        FilterSeverity(filter.severity, severities) { viewModel.updateFilter(filter.copy(severity = it)) }
+        FilterIdentifier(filter.identifier, identifiers) { viewModel.updateFilter(filter.copy(identifier = it)) }
+        FilterResolutionStatus(filter.resolutionStatus) { viewModel.updateFilter(filter.copy(resolutionStatus = it)) }
     }
 }
 

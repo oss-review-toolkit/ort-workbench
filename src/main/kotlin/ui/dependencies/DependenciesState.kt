@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.state
+package org.ossreviewtoolkit.workbench.ui.dependencies
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -11,24 +11,17 @@ import kotlinx.coroutines.withContext
 import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.OrtIssue
-import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.PackageLinkage
-import org.ossreviewtoolkit.model.PackageReference
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.Scope
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
-import org.ossreviewtoolkit.workbench.util.OrtResultApi
 
-class DependenciesState {
+class DependenciesState(private val dependencyTreeItems: List<DependencyTreeItem>) {
     var initialized by mutableStateOf(false)
         private set
 
     var error: String? by mutableStateOf(null)
         private set
-
-    private var resultApi = OrtResultApi(OrtResult.EMPTY)
-
-    private val dependencyTreeItems = mutableStateListOf<DependencyTreeItem>()
 
     private val _filteredDependencyTreeItems = mutableStateListOf<DependencyTreeItem>()
     val filteredDependencyTreeItems: List<DependencyTreeItem> get() = _filteredDependencyTreeItems
@@ -48,90 +41,11 @@ class DependenciesState {
     var selectedItem: DependencyTreeItem? by mutableStateOf(null)
         private set
 
-    suspend fun initialize(resultApi: OrtResultApi) {
-        this.resultApi = resultApi
-        dependencyTreeItems.clear()
-        dependencyTreeItems += createDependencyTreeItemsAsnyc()
-        updateFilteredDependencyTreeItems()
-        initialized = true
-    }
-
-    private suspend fun createDependencyTreeItemsAsnyc(): List<DependencyTreeItem> =
+    suspend fun initialize() {
         withContext(Dispatchers.Default) {
-            val resolvedLicenses = resultApi.result.collectProjectsAndPackages().associateWith {
-                resultApi.licenseInfoResolver.resolveLicenseInfo(it).filterExcluded()
-            }
-
-            buildList {
-                var index = 0
-                resultApi.result.getProjects().forEach { project ->
-                    add(
-                        DependencyTreeProject(
-                            index,
-                            level = 0,
-                            project = project,
-                            linkage = PackageLinkage.PROJECT_STATIC,
-                            issues = emptyList(),
-                            resolvedLicense = resolvedLicenses.getValue(project.id)
-                        )
-                    )
-                    index++
-
-                    project.scopes.forEach { scope ->
-                        add(DependencyTreeScope(index, level = 1, project, scope))
-                        index++
-
-                        fun addDependency(level: Int, pkgRef: PackageReference) {
-                            resultApi.result.getProject(pkgRef.id)?.let { project ->
-                                add(
-                                    DependencyTreeProject(
-                                        index = index,
-                                        level = level,
-                                        project = project,
-                                        linkage = pkgRef.linkage,
-                                        issues = pkgRef.issues,
-                                        resolvedLicense = resolvedLicenses.getValue(pkgRef.id)
-                                    )
-                                )
-                                index++
-                            }
-
-                            // TODO: Handle cases where the package is missing in the package list.
-                            resultApi.result.getPackage(pkgRef.id).let { pkg ->
-                                add(
-                                    DependencyTreePackage(
-                                        index = index,
-                                        level = level,
-                                        hasChildren = pkgRef.dependencies.isNotEmpty(),
-                                        id = pkgRef.id,
-                                        pkg = pkg,
-                                        linkage = pkgRef.linkage,
-                                        issues = pkgRef.issues,
-                                        resolvedLicense = resolvedLicenses[pkgRef.id]
-                                    )
-                                )
-                                index++
-                            }
-
-                            pkgRef.dependencies.forEach { addDependency(level + 1, it) }
-                        }
-
-                        scope.dependencies.forEach { pkgRef ->
-                            addDependency(level = 2, pkgRef)
-                        }
-                    }
-                }
-            }
+            updateFilteredDependencyTreeItems()
+            initialized = true
         }
-
-    fun collapseAll() {
-        dependencyTreeItems.forEach { it.expanded = false }
-        updateFilteredDependencyTreeItems()
-    }
-
-    fun expandAll() {
-        dependencyTreeItems.forEach { it.expanded = true }
-        updateFilteredDependencyTreeItems()
     }
 
     fun selectItem(item: DependencyTreeItem, isAutoSelected: Boolean) {

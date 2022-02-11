@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.ui
+package org.ossreviewtoolkit.workbench.ui.settings
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
@@ -20,7 +20,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -32,11 +33,7 @@ import java.nio.file.Path
 
 import kotlinx.coroutines.launch
 
-import org.ossreviewtoolkit.workbench.state.AppState
 import org.ossreviewtoolkit.workbench.state.DialogState
-import org.ossreviewtoolkit.workbench.state.FileType
-import org.ossreviewtoolkit.workbench.state.OrtConfigFileInfo
-import org.ossreviewtoolkit.workbench.state.SettingsState
 import org.ossreviewtoolkit.workbench.theme.Error
 import org.ossreviewtoolkit.workbench.util.BrowseDirectoryLink
 import org.ossreviewtoolkit.workbench.util.DirectoryChooser
@@ -45,18 +42,12 @@ import org.ossreviewtoolkit.workbench.util.Preview
 import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
-fun Settings(appState: AppState) {
-    val state = appState.settings
-
-    if (state.settings == null) {
-        LaunchedEffect(state.ortConfigDir) { state.loadSettings() }
-    }
-
+fun Settings(viewModel: SettingsViewModel) {
     val scrollState = rememberScrollState()
 
     Box {
         Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp).verticalScroll(scrollState)) {
-            ConfigSettings(state)
+            ConfigSettings(viewModel)
         }
 
         VerticalScrollbar(
@@ -67,11 +58,14 @@ fun Settings(appState: AppState) {
 }
 
 @Composable
-fun ConfigSettings(state: SettingsState) {
+fun ConfigSettings(viewModel: SettingsViewModel) {
+    val ortConfigDir by viewModel.ortConfigDir.collectAsState()
+    val ortConfigFiles by viewModel.ortConfigFiles.collectAsState()
+
     Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
         Text("Configuration files", style = MaterialTheme.typography.h6)
 
-        val configDirState = when (state.ortConfigDir.fileInfo.exists) {
+        val configDirState = when (ortConfigDir.fileInfo.exists) {
             true -> OptionState.SUCCESS
             else -> OptionState.ERROR
         }
@@ -79,13 +73,13 @@ fun ConfigSettings(state: SettingsState) {
         val scope = rememberCoroutineScope()
         val selectDirectoryDialogState = remember { DialogState<Path?>() }
 
-        OptionCard(state.ortConfigDir, state = configDirState) {
+        OptionCard(ortConfigDir, state = configDirState) {
             Button(onClick = {
                 if (!selectDirectoryDialogState.isAwaiting) {
                     scope.launch {
                         val path = selectDirectoryDialogState.awaitResult()
                         if (path != null) {
-                            state.setConfigDir(path)
+                            viewModel.setConfigDir(path)
                         }
                     }
                 }
@@ -95,12 +89,12 @@ fun ConfigSettings(state: SettingsState) {
         }
 
         if (selectDirectoryDialogState.isAwaiting) {
-            DirectoryChooser(currentDirectory = state.ortConfigDir.fileInfo.file) {
+            DirectoryChooser(currentDirectory = ortConfigDir.fileInfo.file) {
                 selectDirectoryDialogState.onResult(it?.toPath())
             }
         }
 
-        state.ortConfigFiles.forEach { config ->
+        ortConfigFiles.forEach { config ->
             OptionCard(
                 config,
                 state = when {
@@ -197,6 +191,6 @@ fun OptionCard(
 @Preview
 private fun ConfigSettingsPreview() {
     Preview {
-        ConfigSettings(state = SettingsState())
+        ConfigSettings(SettingsViewModel())
     }
 }
