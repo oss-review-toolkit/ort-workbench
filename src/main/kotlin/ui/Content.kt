@@ -9,7 +9,7 @@ import org.ossreviewtoolkit.workbench.state.AppState
 @Composable
 fun Content(state: AppState) {
     SetupMaterialRichText {
-        when (state.menu.screen) {
+        when (state.currentScreen) {
             MenuItem.SUMMARY -> Summary(state)
             MenuItem.DEPENDENCIES -> Dependencies(state)
             MenuItem.ISSUES -> Issues(state)

@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.core.Environment
-import org.ossreviewtoolkit.workbench.state.MenuState
 import org.ossreviewtoolkit.workbench.state.ResultStatus
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
@@ -47,7 +46,7 @@ enum class MenuItem(val icon: MaterialIcon) {
 }
 
 @Composable
-fun Menu(state: MenuState, resultStatus: ResultStatus) {
+fun Menu(currentScreen: MenuItem, resultStatus: ResultStatus, onSwitchScreen: (MenuItem) -> Unit) {
     Column(
         modifier = Modifier.padding(vertical = 20.dp)
     ) {
@@ -62,12 +61,12 @@ fun Menu(state: MenuState, resultStatus: ResultStatus) {
         }
 
         MenuItem.values().filter { it != MenuItem.SETTINGS }.forEach { item ->
-            MenuRow(state, resultStatus, item)
+            MenuRow(item, isCurrent = item == currentScreen, resultStatus, onSwitchScreen)
         }
 
         Box(modifier = Modifier.weight(1f))
 
-        MenuRow(state, resultStatus, MenuItem.SETTINGS)
+        MenuRow(MenuItem.SETTINGS, isCurrent = MenuItem.SETTINGS == currentScreen, resultStatus, onSwitchScreen)
 
         Text(
             "ORT version ${Environment.ORT_VERSION}",
@@ -79,14 +78,13 @@ fun Menu(state: MenuState, resultStatus: ResultStatus) {
 }
 
 @Composable
-fun MenuRow(state: MenuState, resultStatus: ResultStatus, item: MenuItem) {
-    val isSelected = item == state.screen
+fun MenuRow(item: MenuItem, isCurrent: Boolean, resultStatus: ResultStatus, onSwitchScreen: (MenuItem) -> Unit) {
     val isEnabled = item == MenuItem.SUMMARY || resultStatus == ResultStatus.FINISHED
 
     if (isEnabled) {
         Row(
-            modifier = Modifier.clickable { state.switchScreen(item) }
-                .background(if (isSelected) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant)
+            modifier = Modifier.clickable { onSwitchScreen(item) }
+                .background(if (isCurrent) MaterialTheme.colors.primary else MaterialTheme.colors.primaryVariant)
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -97,7 +95,7 @@ fun MenuRow(state: MenuState, resultStatus: ResultStatus, item: MenuItem) {
             Text(
                 text = item.readableName,
                 style = MaterialTheme.typography.subtitle2,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal
             )
         }
     }
@@ -108,7 +106,7 @@ fun MenuRow(state: MenuState, resultStatus: ResultStatus, item: MenuItem) {
 private fun MenuPreview() {
     Preview {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.primaryVariant) {
-            Menu(MenuState(), ResultStatus.FINISHED)
+            Menu(currentScreen = MenuItem.SUMMARY, ResultStatus.FINISHED) {}
         }
     }
 }
