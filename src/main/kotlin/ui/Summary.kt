@@ -46,13 +46,13 @@ fun Summary(state: AppState) {
                 }
 
                 state.result.dependencyStats?.let {
-                    DependencyStatsCard(it) { state.menu.switchScreen(MenuItem.DEPENDENCIES) }
+                    DependencyStatsCard(it) { state.switchScreen(MenuItem.DEPENDENCIES) }
                 }
             }
 
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
                 state.result.issueStats?.let {
-                    IssueStatsCard(it) { state.menu.switchScreen(MenuItem.ISSUES) }
+                    IssueStatsCard(it) { state.switchScreen(MenuItem.ISSUES) }
                 }
             }
         }

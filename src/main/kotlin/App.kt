@@ -43,7 +43,7 @@ fun App(state: AppState) {
                         elevation = 8.dp,
                         color = MaterialTheme.colors.primaryVariant
                     ) {
-                        Menu(state.menu, state.result.status)
+                        Menu(state.currentScreen, state.result.status, state::switchScreen)
                     }
 
                     Column(
