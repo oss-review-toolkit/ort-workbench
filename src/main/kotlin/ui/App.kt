@@ -79,9 +79,13 @@ fun App(state: AppState) {
 
 @Composable
 private fun Content(state: AppState) {
+    val scope = rememberCoroutineScope()
+
     SetupMaterialRichText {
         when (state.currentScreen) {
-            MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen)
+            MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen) {
+                scope.launch { state.openOrtResult() }
+            }
             MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
             MenuItem.ISSUES -> Issues(state.issuesViewModel)
             MenuItem.RULE_VIOLATIONS -> Violations(state.violationsViewModel)

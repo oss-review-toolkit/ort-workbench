@@ -32,7 +32,7 @@ import org.ossreviewtoolkit.workbench.util.StyledCard
 private const val KIBI = 1024
 
 @Composable
-fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MenuItem) -> Unit) {
+fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MenuItem) -> Unit, onOpenResult: () -> Unit) {
     val state by viewModel.state.collectAsState()
 
     Column(
@@ -42,7 +42,7 @@ fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MenuItem) -> Unit) {
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(25.dp)
         ) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                ResultFileInfoCard(state.resultFileInfo)
+                ResultFileInfoCard(state.resultFileInfo, onOpenResult)
 
                 DependencyStatsCard(state.dependencyStats) { onSwitchScreen(MenuItem.DEPENDENCIES) }
             }
@@ -55,7 +55,7 @@ fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MenuItem) -> Unit) {
 }
 
 @Composable
-fun ResultFileInfoCard(info: ResultFileInfo) {
+fun ResultFileInfoCard(info: ResultFileInfo, onOpenResult: () -> Unit) {
     StyledCard(
         titleIcon = painterResource(MaterialIcon.FILE_PRESENT.resource),
         title = "ORT Result File"
@@ -72,7 +72,7 @@ fun ResultFileInfoCard(info: ResultFileInfo) {
             }
         }
 
-        Link("Load new file") { /* TODO: Open file dialog */ }
+        Link("Load new file", onClick = onOpenResult)
     }
 }
 
@@ -80,7 +80,7 @@ fun ResultFileInfoCard(info: ResultFileInfo) {
 @Preview
 private fun ResultFileInfoCardPreview() {
     Preview {
-        ResultFileInfoCard(ResultFileInfo("/some/path", 1024 * 1024))
+        ResultFileInfoCard(ResultFileInfo("/some/path", 1024 * 1024)) {}
     }
 }
 
