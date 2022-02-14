@@ -34,6 +34,7 @@ import org.ossreviewtoolkit.model.config.RuleViolationResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxLicenseIdExpression
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
+import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.util.ExpandableMarkdown
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton

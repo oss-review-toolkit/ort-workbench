@@ -34,6 +34,8 @@ import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.config.IssueResolution
 import org.ossreviewtoolkit.model.config.IssueResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
+import org.ossreviewtoolkit.workbench.model.Issue
+import org.ossreviewtoolkit.workbench.model.Tool
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField

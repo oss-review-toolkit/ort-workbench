@@ -1,7 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui.issues
 
-import java.time.Instant
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,11 +9,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.model.OrtIssue
 import org.ossreviewtoolkit.model.Severity
-import org.ossreviewtoolkit.model.config.IssueResolution
-import org.ossreviewtoolkit.model.utils.ResolutionProvider
+import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
+import org.ossreviewtoolkit.workbench.model.Tool
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 
 class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
@@ -39,12 +36,7 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     init {
         scope.launch {
             ortModel.api.collect { api ->
-                val issues = api.result.analyzer?.result?.collectIssues().orEmpty()
-                    .toIssues(Tool.ANALYZER, api.resolutionProvider) +
-                        api.result.advisor?.results?.collectIssues().orEmpty()
-                            .toIssues(Tool.ADVISOR, api.resolutionProvider) +
-                        api.result.scanner?.results?.collectIssues().orEmpty()
-                            .toIssues(Tool.SCANNER, api.resolutionProvider)
+                val issues = api.getIssues()
 
                 _issues.value = issues
                 // TODO: Check how to do this when declaring `_identifiers` and `_sources`.
@@ -63,42 +55,6 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     fun updateFilter(filter: IssuesFilter) {
         _filter.value = filter
     }
-}
-
-data class Issue(
-    val id: Identifier,
-    val tool: Tool,
-    val resolutions: List<IssueResolution>,
-    val timestamp: Instant,
-    val source: String,
-    val message: String,
-    val severity: Severity = Severity.ERROR
-) {
-    constructor(id: Identifier, tool: Tool, resolutions: List<IssueResolution>, issue: OrtIssue) : this(
-        id,
-        tool,
-        resolutions,
-        issue.timestamp,
-        issue.source,
-        issue.message,
-        issue.severity
-    )
-}
-
-private fun Map<Identifier, Set<OrtIssue>>.toIssues(tool: Tool, resolutionProvider: ResolutionProvider) =
-    flatMap { (id, issues) ->
-        issues.map { issue ->
-            Issue(id, tool, resolutionProvider.getIssueResolutionsFor(issue), issue)
-        }
-    }
-
-/**
- * Tools which can add issues to an ORT result.
- */
-enum class Tool {
-    ANALYZER,
-    ADVISOR,
-    SCANNER
 }
 
 data class IssuesFilter(
