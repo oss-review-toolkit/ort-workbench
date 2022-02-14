@@ -27,13 +27,8 @@ import org.ossreviewtoolkit.model.config.LicenseFilenamePatterns
 import org.ossreviewtoolkit.model.config.OrtConfiguration
 import org.ossreviewtoolkit.model.config.createFileArchiver
 import org.ossreviewtoolkit.model.licenses.DefaultLicenseInfoProvider
-import org.ossreviewtoolkit.model.licenses.LicenseInfoProvider
-import org.ossreviewtoolkit.model.licenses.LicenseInfoResolver
 import org.ossreviewtoolkit.model.readValue
 import org.ossreviewtoolkit.model.utils.DefaultResolutionProvider
-import org.ossreviewtoolkit.model.utils.FileArchiver
-import org.ossreviewtoolkit.model.utils.PackageConfigurationProvider
-import org.ossreviewtoolkit.model.utils.ResolutionProvider
 import org.ossreviewtoolkit.model.utils.SimplePackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.createLicenseInfoResolver
 import org.ossreviewtoolkit.utils.common.safeMkdirs
@@ -223,42 +218,4 @@ enum class OrtApiState {
     LOADING_RESULT,
     PROCESSING_RESULT,
     READY
-}
-
-class OrtApi(
-    val result: OrtResult,
-    val config: OrtConfiguration,
-    val copyrightGarbage: CopyrightGarbage,
-    val fileArchiver: FileArchiver,
-    val licenseInfoProvider: LicenseInfoProvider,
-    val licenseInfoResolver: LicenseInfoResolver,
-    val packageConfigurationProvider: PackageConfigurationProvider,
-    val resolutionProvider: ResolutionProvider
-) {
-    companion object {
-        val EMPTY by lazy {
-            val result = OrtResult.EMPTY
-            val copyrightGarbage = CopyrightGarbage()
-            val config = OrtConfiguration()
-            val fileArchiver = config.scanner.archive.createFileArchiver()
-            val packageConfigurationProvider = SimplePackageConfigurationProvider.EMPTY
-            val licenseInfoProvider = DefaultLicenseInfoProvider(result, packageConfigurationProvider)
-
-            OrtApi(
-                result,
-                config,
-                copyrightGarbage,
-                fileArchiver,
-                licenseInfoProvider,
-                result.createLicenseInfoResolver(
-                    packageConfigurationProvider,
-                    copyrightGarbage,
-                    config.addAuthorsToCopyrights,
-                    fileArchiver
-                ),
-                packageConfigurationProvider,
-                DefaultResolutionProvider()
-            )
-        }
-    }
 }

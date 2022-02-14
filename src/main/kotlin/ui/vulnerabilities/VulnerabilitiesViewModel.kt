@@ -8,12 +8,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-import org.ossreviewtoolkit.model.AdvisorResult
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.model.Vulnerability
-import org.ossreviewtoolkit.model.VulnerabilityReference
-import org.ossreviewtoolkit.model.config.VulnerabilityResolution
-import org.ossreviewtoolkit.model.utils.ResolutionProvider
+import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 
@@ -44,7 +40,7 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANC
     init {
         scope.launch {
             ortModel.api.collect { api ->
-                val vulnerabilities = api.result.getAdvisorResults().toDecoratedVulnerabilities(api.resolutionProvider)
+                val vulnerabilities = api.getVulnerabilities()
                 _vulnerabilities.value = vulnerabilities
                 // TODO: Check how to do this when declaring `_advisors`,`_identifiers`, `_scoringSystems` and
                 //       `_severities`.
@@ -70,35 +66,6 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANC
         _filter.value = filter
     }
 }
-
-data class DecoratedVulnerability(
-    val pkg: Identifier,
-    val resolutions: List<VulnerabilityResolution>,
-    val advisor: String,
-    val id: String,
-    val references: List<VulnerabilityReference>
-) {
-    constructor(
-        pkg: Identifier,
-        resolutions: List<VulnerabilityResolution>,
-        advisor: String,
-        vulnerability: Vulnerability
-    ) : this(pkg, resolutions, advisor, vulnerability.id, vulnerability.references)
-}
-
-private fun Map<Identifier, List<AdvisorResult>>.toDecoratedVulnerabilities(resolutionProvider: ResolutionProvider) =
-    flatMap { (pkg, results) ->
-        results.flatMap { result ->
-            result.vulnerabilities.map { vulnerability ->
-                DecoratedVulnerability(
-                    pkg,
-                    resolutionProvider.getVulnerabilityResolutionsFor(vulnerability),
-                    result.advisor.name,
-                    vulnerability
-                )
-            }
-        }
-    }
 
 data class VulnerabilitiesFilter(
     val advisor: String = "",

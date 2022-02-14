@@ -10,12 +10,10 @@ import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.LicenseSource
-import org.ossreviewtoolkit.model.RuleViolation
 import org.ossreviewtoolkit.model.Severity
-import org.ossreviewtoolkit.model.config.RuleViolationResolution
-import org.ossreviewtoolkit.model.utils.ResolutionProvider
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.model.OrtModel
+import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.SpdxExpressionStringComparator
 
@@ -43,7 +41,7 @@ class ViolationsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     init {
         scope.launch {
             ortModel.api.collect { api ->
-                val violations = api.result.getRuleViolations().toViolations(api.resolutionProvider)
+                val violations = api.getViolations()
                 _violations.value = violations
                 // TODO: Check how to do this when declaring `_identifiers` and `_licenses` and `_rules`.
                 _identifiers.value = violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()
@@ -64,31 +62,6 @@ class ViolationsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     fun updateFilter(filter: ViolationsFilter) {
         _filter.value = filter
     }
-}
-
-data class Violation(
-    val pkg: Identifier?,
-    val rule: String,
-    val license: SpdxSingleLicenseExpression?,
-    val licenseSource: LicenseSource?,
-    val severity: Severity,
-    val message: String,
-    val howToFix: String,
-    val resolutions: List<RuleViolationResolution>,
-) {
-    constructor(
-        resolutions: List<RuleViolationResolution>,
-        violation: RuleViolation
-    ) : this(
-        violation.pkg,
-        violation.rule,
-        violation.license,
-        violation.licenseSource,
-        violation.severity,
-        violation.message,
-        violation.howToFix,
-        resolutions
-    )
 }
 
 data class ViolationsFilter(
@@ -117,6 +90,3 @@ data class ViolationsFilter(
                 || violation.message.contains(text)
                 || violation.howToFix.contains(text))
 }
-
-private fun List<RuleViolation>.toViolations(resolutionProvider: ResolutionProvider) =
-    map { violation -> Violation(resolutionProvider.getRuleViolationResolutionsFor(violation), violation) }
