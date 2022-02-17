@@ -5,6 +5,7 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.OrtIssue
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.RuleViolation
+import org.ossreviewtoolkit.model.ScanResult
 import org.ossreviewtoolkit.model.config.CopyrightGarbage
 import org.ossreviewtoolkit.model.config.OrtConfiguration
 import org.ossreviewtoolkit.model.config.createFileArchiver
@@ -60,10 +61,26 @@ class OrtApi(
                 result.advisor?.results?.collectIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
                 result.scanner?.results?.collectIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
 
+    fun getReferences(id: Identifier): List<DependencyReference> =
+        result.getProjects().filter { it.contains(id) }.map { project ->
+            DependencyReference(
+                project = project.id,
+                result.isProjectExcluded(project.id),
+                scopes = project.scopes.filter { it.contains(id) }.map { scope ->
+                    ScopeReference(
+                        scope = scope.name,
+                        isExcluded = result.getExcludes().isScopeExcluded(scope.name)
+                    )
+                }
+            )
+        }
+
     fun getViolations(): List<Violation> = result.getRuleViolations().toViolations(resolutionProvider)
 
     fun getVulnerabilities(): List<DecoratedVulnerability> =
         result.getAdvisorResults().toDecoratedVulnerabilities(resolutionProvider)
+
+    fun getScanResults(id: Identifier): List<ScanResult> = result.getScanResultsForId(id)
 }
 
 private fun Map<Identifier, List<AdvisorResult>>.toDecoratedVulnerabilities(resolutionProvider: ResolutionProvider) =

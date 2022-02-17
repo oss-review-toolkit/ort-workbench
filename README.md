@@ -20,12 +20,12 @@ The are currently no binary builds published, to run the workbench clone the rep
 
 * Dependency tree
 * Issue list
+* Package list
 * Rule violation list
 * Vulnerability list
 
 ### Planned Features
 
-* Package list
 * Defect list
 * Scan result view
 * `.ort.yml` editor
