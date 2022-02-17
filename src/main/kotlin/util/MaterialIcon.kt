@@ -13,6 +13,7 @@ enum class MaterialIcon(val resource: String) {
     FILTER("material/filter.svg"),
     GAVEL("material/gavel.svg"),
     INFO("material/info.svg"),
+    INVENTORY("material/inventory.svg"),
     LOCK_OPEN("material/lock_open.svg"),
     OPEN_IN_NEW("material/open_in_new.svg"),
     REMOVE("material/remove.svg"),

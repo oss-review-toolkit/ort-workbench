@@ -12,6 +12,7 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.state.DialogState
 import org.ossreviewtoolkit.workbench.ui.dependencies.DependenciesViewModel
 import org.ossreviewtoolkit.workbench.ui.issues.IssuesViewModel
+import org.ossreviewtoolkit.workbench.ui.packages.PackagesViewModel
 import org.ossreviewtoolkit.workbench.ui.settings.SettingsViewModel
 import org.ossreviewtoolkit.workbench.ui.summary.SummaryViewModel
 import org.ossreviewtoolkit.workbench.ui.violations.ViolationsViewModel
@@ -26,6 +27,7 @@ class AppState(val ortModel: OrtModel = OrtModel.INSTANCE) {
 
     val dependenciesViewModel = DependenciesViewModel(ortModel)
     val issuesViewModel = IssuesViewModel(ortModel)
+    val packagesViewModel = PackagesViewModel(ortModel)
     val settingsViewModel = SettingsViewModel(ortModel)
     val summaryViewModel = SummaryViewModel(ortModel)
     val violationsViewModel = ViolationsViewModel(ortModel)

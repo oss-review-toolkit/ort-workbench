@@ -33,6 +33,7 @@ import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
 import org.ossreviewtoolkit.workbench.ui.issues.Issues
+import org.ossreviewtoolkit.workbench.ui.packages.Packages
 import org.ossreviewtoolkit.workbench.ui.settings.Settings
 import org.ossreviewtoolkit.workbench.ui.summary.Summary
 import org.ossreviewtoolkit.workbench.ui.violations.Violations
@@ -86,6 +87,7 @@ private fun Content(state: AppState) {
             MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen) {
                 scope.launch { state.openOrtResult() }
             }
+            MenuItem.PACKAGES -> Packages(state.packagesViewModel)
             MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
             MenuItem.ISSUES -> Issues(state.issuesViewModel)
             MenuItem.RULE_VIOLATIONS -> Violations(state.violationsViewModel)
