@@ -36,6 +36,7 @@ import org.ossreviewtoolkit.model.utils.PackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.ResolutionProvider
 import org.ossreviewtoolkit.model.utils.SimplePackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.createLicenseInfoResolver
+import org.ossreviewtoolkit.utils.common.safeMkdirs
 import org.ossreviewtoolkit.utils.core.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_COPYRIGHT_GARBAGE_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
@@ -149,6 +150,7 @@ class OrtModel {
 
     private fun saveSettings(settings: WorkbenchSettings) {
         runCatching {
+            settingsFile.parentFile.safeMkdirs()
             settingsMapper.writeValue(settingsFile, settings)
         }.onFailure {
             _error.value = "Could not save settings at ${settingsFile.absolutePath}: ${it.message}"
