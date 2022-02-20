@@ -259,14 +259,14 @@ fun PackagesList(packages: List<PackageInfo>) {
 fun PackageCard(pkg: PackageInfo) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Column(modifier = Modifier.padding(10.dp)) {
+            Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
 
                 Text(pkg.pkg.id.toCoordinates(), fontWeight = FontWeight.Bold)
 
                 Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Text("PURL: ${pkg.pkg.purl}", style = MaterialTheme.typography.subtitle2)
+                    Text("PURL: ${pkg.pkg.purl}", style = MaterialTheme.typography.caption)
                     if (pkg.pkg.cpe != null) {
-                        Text("CPE: ${pkg.pkg.cpe}", style = MaterialTheme.typography.subtitle2)
+                        Text("CPE: ${pkg.pkg.cpe}", style = MaterialTheme.typography.caption)
                     }
                 }
             }

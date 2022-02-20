@@ -95,7 +95,7 @@ fun MenuRow(item: MenuItem, isCurrent: Boolean, apiState: OrtApiState, onSwitchS
 
             Text(
                 text = item.readableName,
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h6,
                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal
             )
         }

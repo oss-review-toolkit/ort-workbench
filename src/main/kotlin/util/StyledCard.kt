@@ -32,7 +32,7 @@ fun StyledCard(
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
                     titleIcon?.run { Icon(titleIcon, contentDescription = title) }
-                    Text(title, style = MaterialTheme.typography.h6)
+                    Text(title, style = MaterialTheme.typography.h4)
                 }
             }
 

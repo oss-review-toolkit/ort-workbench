@@ -9,10 +9,7 @@ import androidx.compose.runtime.Composable
 @Composable
 fun ErrorCard(message: String) {
     Card(backgroundColor = MaterialTheme.colors.error) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.body1
-        )
+        Text(text = message)
     }
 }
 
