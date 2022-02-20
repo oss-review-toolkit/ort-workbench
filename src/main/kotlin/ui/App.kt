@@ -120,10 +120,7 @@ private fun LoadResult(state: AppState, apiState: OrtApiState) {
 
         error?.let {
             Card(backgroundColor = MaterialTheme.colors.error) {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.body1
-                )
+                Text(text = it)
             }
         }
     }

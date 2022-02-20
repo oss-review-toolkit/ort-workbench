@@ -63,7 +63,7 @@ fun ConfigSettings(viewModel: SettingsViewModel) {
     val ortConfigFiles by viewModel.ortConfigFiles.collectAsState()
 
     Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
-        Text("Configuration files", style = MaterialTheme.typography.h6)
+        Text("Configuration files", style = MaterialTheme.typography.h4)
 
         val configDirState = when (ortConfigDir.fileInfo.exists) {
             true -> OptionState.SUCCESS
