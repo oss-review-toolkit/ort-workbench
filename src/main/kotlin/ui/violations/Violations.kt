@@ -196,7 +196,8 @@ fun ViolationsList(violations: List<Violation>) {
 
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                state = listState
             ) {
                 items(violations.size, key = { it }) { index ->
                     ViolationCard(violations[index])

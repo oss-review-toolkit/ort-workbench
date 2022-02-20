@@ -240,7 +240,8 @@ fun PackagesList(packages: List<PackageInfo>) {
 
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                state = listState
             ) {
                 items(packages.size, key = { it }) { index ->
                     PackageCard(packages[index])
