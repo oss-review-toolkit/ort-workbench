@@ -168,7 +168,8 @@ fun IssuesList(issues: List<Issue>) {
 
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                state = listState
             ) {
                 items(issues.size, key = { it }) { index ->
                     IssueCard(issues[index])

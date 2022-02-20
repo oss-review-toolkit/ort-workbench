@@ -168,7 +168,8 @@ fun VulnerabilitiesList(vulnerabilities: List<DecoratedVulnerability>) {
 
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                state = listState
             ) {
                 items(vulnerabilities.size, key = { it }) { index ->
                     VulnerabilityCard(vulnerabilities[index])
