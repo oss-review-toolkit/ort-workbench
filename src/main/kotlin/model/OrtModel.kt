@@ -23,6 +23,7 @@ import kotlinx.coroutines.withContext
 
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.config.CopyrightGarbage
+import org.ossreviewtoolkit.model.config.FileArchiverConfiguration
 import org.ossreviewtoolkit.model.config.LicenseFilenamePatterns
 import org.ossreviewtoolkit.model.config.OrtConfiguration
 import org.ossreviewtoolkit.model.config.createFileArchiver
@@ -165,7 +166,10 @@ class OrtModel {
             val copyrightGarbage =
                 configDir.resolve(ORT_COPYRIGHT_GARBAGE_FILENAME).takeIf { it.isFile }?.readValue()
                     ?: CopyrightGarbage()
-            val fileArchiver = config.scanner.archive.createFileArchiver()
+
+            val fileArchiver = runCatching {
+                config.scanner.archive.createFileArchiver()
+            }.getOrDefault(FileArchiverConfiguration().createFileArchiver())
 
             // TODO: Let ORT provide a default location for a package configuration file.
             val packageConfigurationsDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
