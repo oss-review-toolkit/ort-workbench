@@ -37,6 +37,7 @@ import org.ossreviewtoolkit.utils.core.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_COPYRIGHT_GARBAGE_FILENAME
 import org.ossreviewtoolkit.utils.core.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.core.ORT_RESOLUTIONS_FILENAME
+import org.ossreviewtoolkit.utils.core.log
 import org.ossreviewtoolkit.utils.core.ortConfigDirectory
 import org.ossreviewtoolkit.utils.core.ortDataDirectory
 
@@ -169,7 +170,11 @@ class OrtModel {
 
             val fileArchiver = runCatching {
                 config.scanner.archive.createFileArchiver()
-            }.getOrDefault(FileArchiverConfiguration().createFileArchiver())
+            }.getOrElse {
+                log.warn { "Failed to create the configured scanner file archiver, falling back to the default one." }
+
+                FileArchiverConfiguration().createFileArchiver()
+            }
 
             // TODO: Let ORT provide a default location for a package configuration file.
             val packageConfigurationsDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
