@@ -8,6 +8,7 @@ val composePluginVersion: String by project
 val detektPluginVersion: String by project
 
 val jacksonVersion: String by project
+val kotlinxCoroutinesVersion: String by project
 val log4jVersion: String by project
 val ortVersion: String by project
 val richtextVersion: String by project
@@ -54,6 +55,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
 
     implementation("org.jetbrains.compose.material:material-icons-extended-desktop:$composePluginVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$kotlinxCoroutinesVersion")
 
     implementation("com.github.oss-review-toolkit.ort:analyzer:$ortVersion")
     implementation("com.github.oss-review-toolkit.ort:downloader:$ortVersion")
