@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -14,6 +13,10 @@ import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.Tool
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
+import org.ossreviewtoolkit.workbench.util.matchResolutionStatus
+import org.ossreviewtoolkit.workbench.util.matchString
+import org.ossreviewtoolkit.workbench.util.matchStringContains
+import org.ossreviewtoolkit.workbench.util.matchValue
 
 class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -66,15 +69,10 @@ data class IssuesFilter(
     val tool: Tool? = null
 ) {
     fun check(issue: Issue) =
-        (identifier == null || issue.id == identifier)
-                && (resolutionStatus == ResolutionStatus.ALL
-                || resolutionStatus == ResolutionStatus.RESOLVED && issue.resolutions.isNotEmpty()
-                || resolutionStatus == ResolutionStatus.UNRESOLVED && issue.resolutions.isEmpty())
-                && (severity == null || issue.severity == severity)
-                && (source.isEmpty() || issue.source == source)
-                && (text.isEmpty()
-                || issue.id.toCoordinates().contains(text)
-                || issue.source.contains(text)
-                || issue.message.contains(text))
-                && (tool == null || issue.tool == tool)
+        matchValue(identifier, issue.id)
+                && matchResolutionStatus(resolutionStatus, issue.resolutions)
+                && matchValue(severity, issue.severity)
+                && matchString(source, issue.source)
+                && matchStringContains(text, issue.id.toCoordinates(), issue.source, issue.message)
+                && matchValue(tool, issue.tool)
 }
