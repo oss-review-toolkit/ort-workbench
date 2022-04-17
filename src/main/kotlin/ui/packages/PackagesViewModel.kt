@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -22,6 +21,13 @@ import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.util.SpdxExpressionStringComparator
+import org.ossreviewtoolkit.workbench.util.matchAnyValue
+import org.ossreviewtoolkit.workbench.util.matchExclusionStatus
+import org.ossreviewtoolkit.workbench.util.matchIssueStatus
+import org.ossreviewtoolkit.workbench.util.matchString
+import org.ossreviewtoolkit.workbench.util.matchStringContains
+import org.ossreviewtoolkit.workbench.util.matchViolationStatus
+import org.ossreviewtoolkit.workbench.util.matchVulnerabilityStatus
 
 class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -132,25 +138,16 @@ data class PackagesFilter(
     val exclusionStatus: ExclusionStatus = ExclusionStatus.ALL
 ) {
     fun check(pkg: PackageInfo) =
-        (text.isEmpty()
-                || pkg.pkg.id.toCoordinates().contains(text))
-                && (type.isEmpty() || pkg.pkg.id.type == type)
-                && (namespace.isEmpty() || pkg.pkg.id.namespace == namespace)
-                && (project == null || pkg.references.any { it.project == project })
-                && (scope.isEmpty() || pkg.references.any { it.scopes.any { it.scope == scope } })
-                && (license == null || license in pkg.resolvedLicenseInfo.licenses.map { it.license })
-                && (issueStatus == IssueStatus.ALL
-                || issueStatus == IssueStatus.HAS_ISSUES && pkg.issues.isNotEmpty()
-                || issueStatus == IssueStatus.NO_ISSUES && pkg.issues.isEmpty())
-                && (violationStatus == ViolationStatus.ALL
-                || violationStatus == ViolationStatus.HAS_VIOLATIONS && pkg.violations.isNotEmpty()
-                || violationStatus == ViolationStatus.NO_VIOLATIONS && pkg.violations.isEmpty())
-                && (vulnerabilityStatus == VulnerabilityStatus.ALL
-                || vulnerabilityStatus == VulnerabilityStatus.HAS_VULNERABILITY && pkg.vulnerabilities.isNotEmpty()
-                || vulnerabilityStatus == VulnerabilityStatus.NO_VULNERABILITY && pkg.vulnerabilities.isEmpty())
-                && (exclusionStatus == ExclusionStatus.ALL
-                || exclusionStatus == ExclusionStatus.EXCLUDED && pkg.isExcluded()
-                || exclusionStatus == ExclusionStatus.INCLUDED && !pkg.isExcluded())
+        matchStringContains(text, pkg.pkg.id.toCoordinates())
+                && matchString(type, pkg.pkg.id.type)
+                && matchString(namespace, pkg.pkg.id.namespace)
+                && matchAnyValue(project, pkg.references.map { it.project })
+                && matchString(scope, pkg.references.flatMap { it.scopes.map { it.scope } })
+                && matchAnyValue(license, pkg.resolvedLicenseInfo.licenses.map { it.license })
+                && matchIssueStatus(issueStatus, pkg.issues)
+                && matchViolationStatus(violationStatus, pkg.violations)
+                && matchVulnerabilityStatus(vulnerabilityStatus, pkg.vulnerabilities)
+                && matchExclusionStatus(exclusionStatus, pkg.isExcluded())
 }
 
 enum class IssueStatus {

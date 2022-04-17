@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -12,6 +11,10 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
+import org.ossreviewtoolkit.workbench.util.matchResolutionStatus
+import org.ossreviewtoolkit.workbench.util.matchString
+import org.ossreviewtoolkit.workbench.util.matchStringContains
+import org.ossreviewtoolkit.workbench.util.matchValue
 
 class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -76,16 +79,10 @@ data class VulnerabilitiesFilter(
     val text: String = ""
 ) {
     fun check(vulnerability: DecoratedVulnerability) =
-        (advisor.isEmpty() || vulnerability.advisor == advisor)
-                && (identifier == null || vulnerability.pkg == identifier)
-                && (resolutionStatus == ResolutionStatus.ALL
-                || resolutionStatus == ResolutionStatus.RESOLVED && vulnerability.resolutions.isNotEmpty()
-                || resolutionStatus == ResolutionStatus.UNRESOLVED && vulnerability.resolutions.isEmpty())
-                && (scoringSystem.isEmpty()
-                || vulnerability.references.any { it.scoringSystem == scoringSystem })
-                && (severity.isEmpty() || vulnerability.references.any { it.severity == severity })
-                && (text.isEmpty()
-                || vulnerability.pkg.toCoordinates().contains(text)
-                || vulnerability.id.contains(text)
-                || vulnerability.advisor.contains(text))
+        matchString(advisor, vulnerability.advisor)
+                && matchValue(identifier, vulnerability.pkg)
+                && matchResolutionStatus(resolutionStatus, vulnerability.resolutions)
+                && matchString(scoringSystem, vulnerability.references.mapNotNull { it.scoringSystem })
+                && matchString(severity, vulnerability.references.mapNotNull { it.severity })
+                && matchStringContains(text, vulnerability.pkg.toCoordinates(), vulnerability.id, vulnerability.advisor)
 }

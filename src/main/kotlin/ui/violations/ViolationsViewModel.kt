@@ -16,6 +16,10 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.SpdxExpressionStringComparator
+import org.ossreviewtoolkit.workbench.util.matchResolutionStatus
+import org.ossreviewtoolkit.workbench.util.matchString
+import org.ossreviewtoolkit.workbench.util.matchStringContains
+import org.ossreviewtoolkit.workbench.util.matchValue
 
 class ViolationsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -74,19 +78,21 @@ data class ViolationsFilter(
     val text: String = ""
 ) {
     fun check(violation: Violation) =
-        (identifier == null || violation.pkg == identifier)
-                && (license.isEmpty() || violation.license.toString() == license)
-                && (licenseSource == null || violation.licenseSource == licenseSource)
-                && (resolutionStatus == ResolutionStatus.ALL
-                || resolutionStatus == ResolutionStatus.RESOLVED && violation.resolutions.isNotEmpty()
-                || resolutionStatus == ResolutionStatus.UNRESOLVED && violation.resolutions.isEmpty())
-                && (rule.isEmpty() || violation.rule == rule)
-                && (severity == null || violation.severity == severity)
-                && (text.isEmpty()
-                || violation.pkg?.toCoordinates()?.contains(text) == true
-                || violation.rule.contains(text)
-                || violation.license?.toString()?.contains(text) == true
-                || violation.licenseSource?.name?.contains(text) == true
-                || violation.message.contains(text)
-                || violation.howToFix.contains(text))
+        matchValue(identifier, violation.pkg)
+                && matchString(license, violation.license.toString())
+                && matchValue(licenseSource, violation.licenseSource)
+                && matchResolutionStatus(resolutionStatus, violation.resolutions)
+                && matchString(rule, violation.rule)
+                && matchValue(severity, violation.severity)
+                && matchStringContains(
+                    text,
+                    listOfNotNull(
+                        violation.pkg?.toCoordinates(),
+                        violation.rule,
+                        violation.license?.toString(),
+                        violation.licenseSource?.name,
+                        violation.message,
+                        violation.howToFix
+                    )
+                )
 }
