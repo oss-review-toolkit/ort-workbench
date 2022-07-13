@@ -4,21 +4,11 @@ import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val composePluginVersion: String by project
-val detektPluginVersion: String by project
-
-val jacksonVersion: String by project
-val kotlinxCoroutinesVersion: String by project
-val log4jVersion: String by project
-val ortVersion: String by project
-val richtextVersion: String by project
-
 plugins {
-    kotlin("jvm")
-
-    id("com.github.ben-manes.versions")
-    id("io.gitlab.arturbosch.detekt")
-    id("org.jetbrains.compose")
+    alias(libs.plugins.compose)
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.versions)
 }
 
 group = "org.ossreviewtoolkit.workbench"
@@ -53,24 +43,15 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation(libs.bundles.log4j)
+    implementation(libs.bundles.ort)
+    implementation(libs.bundles.richtext)
+    implementation(libs.composeMaterialIconsExtendedDesktop)
+    implementation(libs.jacksonModuleKotlin)
+    implementation(libs.kotlinxCoroutinesSwing)
 
-    implementation("org.jetbrains.compose.material:material-icons-extended-desktop:$composePluginVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$kotlinxCoroutinesVersion")
-
-    implementation("com.github.oss-review-toolkit.ort:analyzer:$ortVersion")
-    implementation("com.github.oss-review-toolkit.ort:downloader:$ortVersion")
-    implementation("com.github.oss-review-toolkit.ort:evaluator:$ortVersion")
-    implementation("com.github.oss-review-toolkit.ort:reporter:$ortVersion")
-    implementation("com.github.oss-review-toolkit.ort:scanner:$ortVersion")
-
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    implementation("com.halilibo.compose-richtext:richtext-commonmark:$richtextVersion")
-    implementation("com.halilibo.compose-richtext:richtext-ui-material:$richtextVersion")
-    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
-
-    detektPlugins("com.github.oss-review-toolkit.ort:detekt-rules:$ortVersion")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektPluginVersion")
+    detektPlugins(libs.detektFormatting)
+    detektPlugins(libs.ortDetektRules)
 }
 
 tasks.named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates").configure {

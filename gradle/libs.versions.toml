@@ -1,0 +1,38 @@
+[versions]
+detektPlugin = "1.20.0"
+composePlugin = "1.1.1"
+kotlinPlugin = "1.6.10"
+versionsPlugin = "0.42.0"
+
+jackson = "2.13.2"
+kotlinxCoroutines = "1.6.0"
+log4j = "2.17.2"
+ort = "bd6e4668d4"
+richtext = "0.11.0"
+
+[plugins]
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
+compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
+
+[libraries]
+detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPlugin" }
+composeMaterialIconsExtendedDesktop = { module = "org.jetbrains.compose.material:material-icons-extended-desktop", version.ref = "composePlugin" }
+jacksonModuleKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
+log4jCore = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4jImplSlf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
+ortAnalyzer = { module = "com.github.oss-review-toolkit.ort:analyzer", version.ref = "ort" }
+ortDetektRules = { module = "com.github.oss-review-toolkit.ort:detekt-rules", version.ref = "ort" }
+ortDownloader = { module = "com.github.oss-review-toolkit.ort:downloader", version.ref = "ort" }
+ortEvaluator = { module = "com.github.oss-review-toolkit.ort:evaluator", version.ref = "ort" }
+ortReporter = { module = "com.github.oss-review-toolkit.ort:reporter", version.ref = "ort" }
+ortScanner = { module = "com.github.oss-review-toolkit.ort:scanner", version.ref = "ort" }
+richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonmark", version.ref = "richtext" }
+richtextUiMaterial = { module = "com.halilibo.compose-richtext:richtext-ui-material", version.ref = "richtext" }
+
+[bundles]
+log4j = ["log4jCore", "log4jImplSlf4j"]
+ort = ["ortAnalyzer", "ortDownloader", "ortEvaluator", "ortReporter", "ortScanner"]
+richtext = ["richtextCommonmark", "richtextUiMaterial"]
