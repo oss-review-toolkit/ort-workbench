@@ -100,7 +100,6 @@ tasks.withType<KotlinCompile> {
 }
 
 detekt {
-    toolVersion = detektPluginVersion
     config = files("detekt.yml")
     buildUponDefaultConfig = true
     basePath = rootProject.projectDir.path
