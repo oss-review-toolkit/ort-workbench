@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.versions)
 }
 
@@ -66,6 +67,11 @@ tasks.named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("
     rejectVersionIf {
         candidate.version.matches(nonFinalQualifiersRegex)
     }
+}
+
+versionCatalogUpdate {
+    // Keep the custom sorting / grouping.
+    sortByKey.set(false)
 }
 
 java {
