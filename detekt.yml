@@ -26,6 +26,8 @@ naming:
   FunctionNaming:
     active: true
     ignoreAnnotated: ['Composable']
+  InvalidPackageDeclaration:
+    active: false
   MatchingDeclarationName:
     active: false
 
