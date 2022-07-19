@@ -9,7 +9,7 @@ jackson = "2.13.3"
 kotlinxCoroutines = "1.6.4"
 log4j = "2.18.0"
 ort = "5f6e6beafd"
-richtext = "0.11.0"
+richtext = "0.13.0"
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
