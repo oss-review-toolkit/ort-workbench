@@ -16,14 +16,13 @@ import org.ossreviewtoolkit.model.utils.DefaultResolutionProvider
 import org.ossreviewtoolkit.model.utils.FileArchiver
 import org.ossreviewtoolkit.model.utils.PackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.ResolutionProvider
-import org.ossreviewtoolkit.model.utils.SimplePackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.createLicenseInfoResolver
 
 class OrtApi(
     val result: OrtResult,
     val config: OrtConfiguration,
     val copyrightGarbage: CopyrightGarbage,
-    val fileArchiver: FileArchiver,
+    val fileArchiver: FileArchiver?,
     val licenseInfoProvider: LicenseInfoProvider,
     val licenseInfoResolver: LicenseInfoResolver,
     val packageConfigurationProvider: PackageConfigurationProvider,
@@ -35,7 +34,7 @@ class OrtApi(
             val copyrightGarbage = CopyrightGarbage()
             val config = OrtConfiguration()
             val fileArchiver = config.scanner.archive.createFileArchiver()
-            val packageConfigurationProvider = SimplePackageConfigurationProvider.EMPTY
+            val packageConfigurationProvider = PackageConfigurationProvider.EMPTY
             val licenseInfoProvider = DefaultLicenseInfoProvider(result, packageConfigurationProvider)
 
             OrtApi(
