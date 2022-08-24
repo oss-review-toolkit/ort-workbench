@@ -7,7 +7,9 @@ versionsPlugin = "0.42.0"
 
 jackson = "2.13.3"
 kotlinxCoroutines = "1.6.4"
-log4j = "2.18.0"
+log4jApi = "2.18.0"
+log4jApiKotlin = "1.2.0"
+logbackImpl = "1.2.11"
 ort = "65c1565a86"
 richtext = "0.13.0"
 
@@ -23,8 +25,9 @@ detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", v
 composeMaterialIconsExtendedDesktop = { module = "org.jetbrains.compose.material:material-icons-extended-desktop", version.ref = "composePlugin" }
 jacksonModuleKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
-log4jCore = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
-log4jImplSlf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
+log4jApiKotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4jApiKotlin" }
+log4jApiToSlf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version.ref = "log4jApi" }
+logbackClassic = { module = "ch.qos.logback:logback-classic", version.ref = "logbackImpl" }
 ortAnalyzer = { module = "com.github.oss-review-toolkit.ort:analyzer", version.ref = "ort" }
 ortDetektRules = { module = "com.github.oss-review-toolkit.ort:detekt-rules", version.ref = "ort" }
 ortDownloader = { module = "com.github.oss-review-toolkit.ort:downloader", version.ref = "ort" }
@@ -35,6 +38,5 @@ richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonma
 richtextUiMaterial = { module = "com.halilibo.compose-richtext:richtext-ui-material", version.ref = "richtext" }
 
 [bundles]
-log4j = ["log4jCore", "log4jImplSlf4j"]
 ort = ["ortAnalyzer", "ortDownloader", "ortEvaluator", "ortReporter", "ortScanner"]
 richtext = ["richtextCommonmark", "richtextUiMaterial"]
