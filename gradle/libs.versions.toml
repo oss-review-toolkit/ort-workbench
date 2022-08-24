@@ -8,7 +8,7 @@ versionsPlugin = "0.42.0"
 jackson = "2.13.3"
 kotlinxCoroutines = "1.6.4"
 log4j = "2.18.0"
-ort = "5f6e6beafd"
+ort = "65c1565a86"
 richtext = "0.13.0"
 
 [plugins]

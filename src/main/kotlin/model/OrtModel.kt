@@ -21,6 +21,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
+import org.apache.logging.log4j.kotlin.Logging
+
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.config.CopyrightGarbage
 import org.ossreviewtoolkit.model.config.FileArchiverConfiguration
@@ -38,7 +40,6 @@ import org.ossreviewtoolkit.utils.ort.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_COPYRIGHT_GARBAGE_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.ort.ORT_RESOLUTIONS_FILENAME
-import org.ossreviewtoolkit.utils.ort.log
 import org.ossreviewtoolkit.utils.ort.ortConfigDirectory
 import org.ossreviewtoolkit.utils.ort.ortDataDirectory
 
@@ -46,7 +47,7 @@ private const val ORT_WORKBENCH_CONFIG_DIRNAME = "workbench"
 private const val ORT_WORKBENCH_CONFIG_FILENAME = "settings.yml"
 
 class OrtModel {
-    companion object {
+    companion object : Logging {
         /**
          * The global instance of the [OrtModel], should be replaced with dependency injection later on.
          */
@@ -172,7 +173,9 @@ class OrtModel {
             val fileArchiver = runCatching {
                 config.scanner.archive.createFileArchiver()
             }.getOrElse {
-                log.warn { "Failed to create the configured scanner file archiver, falling back to the default one." }
+                logger.warn {
+                    "Failed to create the configured scanner file archiver, falling back to the default one."
+                }
 
                 FileArchiverConfiguration().createFileArchiver()
             }
