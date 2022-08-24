@@ -44,12 +44,13 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    implementation(libs.bundles.log4j)
     implementation(libs.bundles.ort)
     implementation(libs.bundles.richtext)
     implementation(libs.composeMaterialIconsExtendedDesktop)
     implementation(libs.jacksonModuleKotlin)
     implementation(libs.kotlinxCoroutinesSwing)
+    implementation(libs.log4jApiToSlf4j)
+    implementation(libs.logbackClassic)
 
     detektPlugins(libs.detektFormatting)
     detektPlugins(libs.ortDetektRules)
