@@ -64,16 +64,16 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                 ).sorted()
 
                 val packages = projectsAndPackages.map { pkg ->
-                    val references = api.getReferences(pkg.pkg.id)
-                    val issues = api.getIssues().filter { it.id == pkg.pkg.id }
-                    val violations = api.getViolations().filter { it.pkg == pkg.pkg.id }
-                    val vulnerabilities = api.getVulnerabilities().filter { it.pkg == pkg.pkg.id }
-                    val scanResultInfos = api.getScanResults(pkg.pkg.id).map { it.toInfo() }
+                    val references = api.getReferences(pkg.metadata.id)
+                    val issues = api.getIssues().filter { it.id == pkg.metadata.id }
+                    val violations = api.getViolations().filter { it.pkg == pkg.metadata.id }
+                    val vulnerabilities = api.getVulnerabilities().filter { it.pkg == pkg.metadata.id }
+                    val scanResultInfos = api.getScanResults(pkg.metadata.id).map { it.toInfo() }
 
                     PackageInfo(
-                        metadata = pkg.pkg,
+                        metadata = pkg.metadata,
                         curations = pkg.curations,
-                        resolvedLicenseInfo = api.licenseInfoResolver.resolveLicenseInfo(pkg.pkg.id),
+                        resolvedLicenseInfo = api.licenseInfoResolver.resolveLicenseInfo(pkg.metadata.id),
                         references = references,
                         issues = issues,
                         violations = violations,
