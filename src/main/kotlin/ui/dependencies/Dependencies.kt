@@ -361,23 +361,23 @@ fun PackageDetails(item: DependencyTreePackage) {
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
                 } else {
-                    IdentifierSection(item.pkg.pkg)
+                    IdentifierSection(item.pkg.metadata)
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    CopyrightSection(item.pkg.pkg, item.resolvedLicense)
+                    CopyrightSection(item.pkg.metadata, item.resolvedLicense)
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    LicenseSection(item.pkg.pkg, item.resolvedLicense)
+                    LicenseSection(item.pkg.metadata, item.resolvedLicense)
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    DescriptionSection(item.pkg.pkg.description)
+                    DescriptionSection(item.pkg.metadata.description)
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    PackageProvenanceSection(item.pkg.pkg)
+                    PackageProvenanceSection(item.pkg.metadata)
 
                     Divider(modifier = Modifier.padding(vertical = 10.dp))
 
@@ -393,7 +393,7 @@ fun PackageDetails(item: DependencyTreePackage) {
                 // TODO: Add vulnerability section.
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val homepageUrl = item.pkg?.pkg?.homepageUrl.orEmpty()
+                    val homepageUrl = item.pkg?.metadata?.homepageUrl.orEmpty()
                     if (homepageUrl.isNotBlank()) {
                         WebLink("Homepage", homepageUrl)
                     }
@@ -412,7 +412,7 @@ fun PackageDetails(item: DependencyTreePackage) {
 @Preview
 private fun PackageDetailsPreview() {
     val pkg = CuratedPackage(
-        pkg = Package(
+        metadata = Package(
             id = Identifier("Maven:com.example:package:1.0.0"),
             authors = sortedSetOf("Jane Doe", "John Doe"),
             declaredLicenses = sortedSetOf("Apache-2.0", "LicenseRef-esoteric-license"),
@@ -425,19 +425,19 @@ private fun PackageDetailsPreview() {
             binaryArtifact = RemoteArtifact.EMPTY.copy(url = "https://example.com/package-1.0.0.jar"),
             sourceArtifact = RemoteArtifact.EMPTY.copy(url = "https://example.com/package-1.0.0-sources.jar"),
             vcs = VcsInfo(VcsType.GIT, "https://example.com/package.git", "master", "path"),
-            isMetaDataOnly = true,
+            isMetadataOnly = true,
             isModified = true
         )
     )
 
     val resolvedLicense = ResolvedLicenseInfo(
-        id = pkg.pkg.id,
+        id = pkg.metadata.id,
         licenseInfo = LicenseInfo(
-            id = pkg.pkg.id,
+            id = pkg.metadata.id,
             declaredLicenseInfo = DeclaredLicenseInfo(
-                pkg.pkg.authors,
-                pkg.pkg.declaredLicenses,
-                pkg.pkg.declaredLicensesProcessed,
+                pkg.metadata.authors,
+                pkg.metadata.declaredLicenses,
+                pkg.metadata.declaredLicensesProcessed,
                 emptyList()
             ),
             detectedLicenseInfo = DetectedLicenseInfo(emptyList()),
@@ -449,7 +449,7 @@ private fun PackageDetailsPreview() {
     )
 
     val issue = OrtIssue(
-        source = pkg.pkg.id.type,
+        source = pkg.metadata.id.type,
         message = "Some long message. ".repeat(20)
     )
 
@@ -460,7 +460,7 @@ private fun PackageDetailsPreview() {
                 index = 0,
                 level = 0,
                 hasChildren = true,
-                id = pkg.pkg.id,
+                id = pkg.metadata.id,
                 pkg = pkg,
                 linkage = PackageLinkage.STATIC,
                 issues = listOf(issue),
@@ -482,7 +482,7 @@ fun IdentifierSection(pkg: Package) {
             CaptionedText("PURL", pkg.purl)
             CaptionedText("CPE", pkg.cpe ?: "-")
             CaptionedColumn("PROPERTIES") {
-                Text("isMetadataOnly = ${pkg.isMetaDataOnly}", style = MaterialTheme.typography.overline)
+                Text("isMetadataOnly = ${pkg.isMetadataOnly}", style = MaterialTheme.typography.overline)
                 Text("isModified = ${pkg.isModified}", style = MaterialTheme.typography.overline)
             }
         }
@@ -668,8 +668,8 @@ fun CurationSection(curations: List<PackageCurationResult>) {
                         Text("VCS: ${curation.base.vcs} -> $vcs")
                     }
 
-                    curation.curation.isMetaDataOnly?.let { isMetaDataOnly ->
-                        Text("Is metadata only: ${curation.base.isMetaDataOnly} -> $isMetaDataOnly")
+                    curation.curation.isMetadataOnly?.let { isMetadataOnly ->
+                        Text("Is metadata only: ${curation.base.isMetadataOnly} -> $isMetadataOnly")
                     }
 
                     curation.curation.isModified?.let { isModified ->
