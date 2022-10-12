@@ -71,7 +71,7 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                     val scanResultInfos = api.getScanResults(pkg.pkg.id).map { it.toInfo() }
 
                     PackageInfo(
-                        pkg = pkg.pkg,
+                        metadata = pkg.pkg,
                         curations = pkg.curations,
                         resolvedLicenseInfo = api.licenseInfoResolver.resolveLicenseInfo(pkg.pkg.id),
                         references = references,
@@ -84,8 +84,8 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
 
                 _packages.value = packages
                 // TODO: Check how to do this when declaring the properties.
-                _types.value = packages.mapTo(sortedSetOf()) { it.pkg.id.type }.toList()
-                _namespaces.value = packages.mapTo(sortedSetOf()) { it.pkg.id.namespace }.toList()
+                _types.value = packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()
+                _namespaces.value = packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()
                 _projects.value = packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()
                 _scopes.value = packages.flatMapTo(sortedSetOf()) {
                     it.references.flatMap { it.scopes.map { it.scope } }
@@ -109,7 +109,7 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
 }
 
 data class PackageInfo(
-    val pkg: Package,
+    val metadata: Package,
     val curations: List<PackageCurationResult>,
     val resolvedLicenseInfo: ResolvedLicenseInfo,
     val references: List<DependencyReference>,
@@ -139,9 +139,9 @@ data class PackagesFilter(
     val exclusionStatus: ExclusionStatus = ExclusionStatus.ALL
 ) {
     fun check(pkg: PackageInfo) =
-        matchStringContains(text, pkg.pkg.id.toCoordinates())
-                && matchString(type, pkg.pkg.id.type)
-                && matchString(namespace, pkg.pkg.id.namespace)
+        matchStringContains(text, pkg.metadata.id.toCoordinates())
+                && matchString(type, pkg.metadata.id.type)
+                && matchString(namespace, pkg.metadata.id.namespace)
                 && matchAnyValue(project, pkg.references.map { it.project })
                 && matchString(scope, pkg.references.flatMap { it.scopes.map { it.scope } })
                 && matchAnyValue(license, pkg.resolvedLicenseInfo.licenses.map { it.license })
