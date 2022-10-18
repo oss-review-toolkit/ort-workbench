@@ -110,13 +110,13 @@ private fun LoadResult(state: AppState, apiState: OrtApiState) {
     ) {
         Image(painter = painterResource("ort-black.png"), contentDescription = "OSS Review Toolkit")
 
-        Button(onClick = { scope.launch { state.openOrtResult() } }) {
-            Text("Load ORT Result")
-        }
-
         if (apiState in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
             CircularProgressIndicator()
             Text("${apiState.name.replace("_", " ").titlecase()}...")
+        } else {
+            Button(onClick = { scope.launch { state.openOrtResult() } }) {
+                Text("Load ORT Result")
+            }
         }
 
         error?.let {
