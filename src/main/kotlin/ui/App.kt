@@ -43,6 +43,9 @@ import org.ossreviewtoolkit.workbench.util.FileDialog
 @Composable
 fun App(state: AppState) {
     val apiState by state.ortModel.state.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    fun loadResult() = scope.launch { state.openOrtResult() }
 
     OrtWorkbenchTheme {
         Surface {
@@ -59,11 +62,11 @@ fun App(state: AppState) {
                     Column(
                         modifier = Modifier.padding(5.dp).fillMaxWidth()
                     ) {
-                        Content(state)
+                        Content(state, ::loadResult)
                     }
                 }
             } else {
-                LoadResult(state, apiState)
+                LoadResult(state, apiState, ::loadResult)
             }
 
             if (state.openResultDialog.isAwaiting) {
@@ -79,15 +82,10 @@ fun App(state: AppState) {
 }
 
 @Composable
-private fun Content(state: AppState) {
-    val scope = rememberCoroutineScope()
-
+private fun Content(state: AppState, onLoadResult: () -> Unit) {
     SetupMaterialRichText {
         when (state.currentScreen) {
-            MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen) {
-                scope.launch { state.openOrtResult() }
-            }
-
+            MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen, onLoadResult)
             MenuItem.PACKAGES -> Packages(state.packagesViewModel)
             MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
             MenuItem.ISSUES -> Issues(state.issuesViewModel)
@@ -99,8 +97,7 @@ private fun Content(state: AppState) {
 }
 
 @Composable
-private fun LoadResult(state: AppState, apiState: OrtApiState) {
-    val scope = rememberCoroutineScope()
+private fun LoadResult(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit) {
     val error by state.ortModel.error.collectAsState()
 
     Column(
@@ -114,7 +111,7 @@ private fun LoadResult(state: AppState, apiState: OrtApiState) {
             CircularProgressIndicator()
             Text("${apiState.name.replace("_", " ").titlecase()}...")
         } else {
-            Button(onClick = { scope.launch { state.openOrtResult() } }) {
+            Button(onClick = onLoadResult) {
                 Text("Load ORT Result")
             }
         }
