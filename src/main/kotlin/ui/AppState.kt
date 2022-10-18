@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import org.ossreviewtoolkit.workbench.model.OrtApiState
 
 import java.nio.file.Path
 
@@ -40,9 +41,11 @@ class AppState(val ortModel: OrtModel = OrtModel.INSTANCE) {
     }
 
     suspend fun openOrtResult() {
-        val path = openResultDialog.awaitResult()
-        if (path != null) {
-            OrtModel.INSTANCE.loadOrtResult(path.toFile())
+        if (ortModel.state.value !in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
+            val path = openResultDialog.awaitResult()
+            if (path != null) {
+                OrtModel.INSTANCE.loadOrtResult(path.toFile())
+            }
         }
     }
 }
