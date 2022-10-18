@@ -87,6 +87,7 @@ private fun Content(state: AppState) {
             MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen) {
                 scope.launch { state.openOrtResult() }
             }
+
             MenuItem.PACKAGES -> Packages(state.packagesViewModel)
             MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
             MenuItem.ISSUES -> Issues(state.issuesViewModel)
@@ -109,7 +110,7 @@ private fun LoadResult(state: AppState, apiState: OrtApiState) {
     ) {
         Image(painter = painterResource("ort-black.png"), contentDescription = "OSS Review Toolkit")
 
-        Button(onClick = { if (!state.openResultDialog.isAwaiting) scope.launch { state.openOrtResult() } }) {
+        Button(onClick = { scope.launch { state.openOrtResult() } }) {
             Text("Load ORT Result")
         }
 
