@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import org.ossreviewtoolkit.workbench.model.OrtApiState
 
 import java.nio.file.Path
 
+import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.state.DialogState
 import org.ossreviewtoolkit.workbench.ui.dependencies.DependenciesViewModel
