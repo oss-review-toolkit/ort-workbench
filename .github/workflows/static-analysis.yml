@@ -15,19 +15,18 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          distribution: adopt
+          distribution: temurin
           java-version: 11
-          cache: gradle
       - name: Run Detekt
-        uses: burrunan/gradle-cache-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: --stacktrace detekt
       - name: Upload SARIF File
-        uses: github/codeql-action/upload-sarif@v1
-        if: ${{ always() }}
+        uses: github/codeql-action/upload-sarif@v2
+        if: ${{ always() }} # Upload even if the previous step failed.
         with:
           sarif_file: build/reports/detekt/detekt.sarif
