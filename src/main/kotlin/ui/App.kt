@@ -38,6 +38,7 @@ import org.ossreviewtoolkit.workbench.ui.settings.Settings
 import org.ossreviewtoolkit.workbench.ui.summary.Summary
 import org.ossreviewtoolkit.workbench.ui.violations.Violations
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
+
 import org.ossreviewtoolkit.workbench.util.FileDialog
 
 @Composable
