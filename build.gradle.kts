@@ -55,6 +55,18 @@ dependencies {
     detektPlugins(libs.ortDetektRules)
 }
 
+configurations.all {
+    // Do not tamper with configurations related to the detekt plugin, for some background information
+    // https://github.com/detekt/detekt/issues/2501.
+    if (!name.startsWith("detekt")) {
+        resolutionStrategy {
+            // Starting with version 1.32 the YAML file size is limited to 3 MiB, which is not configurable yet via
+            // Hoplite or Jackson.
+            force("org.yaml:snakeyaml:1.31")
+        }
+    }
+}
+
 tasks.named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates").configure {
     gradleReleaseChannel = "current"
     outputFormatter = "json"
