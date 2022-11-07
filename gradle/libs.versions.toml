@@ -11,7 +11,7 @@ log4jApi = "2.19.0"
 log4jApiKotlin = "1.2.0"
 logbackImpl = "1.4.4"
 ort = "0f28f92094"
-richtext = "0.14.1"
+richtext = "0.15.0"
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
