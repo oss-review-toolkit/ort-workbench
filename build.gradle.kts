@@ -1,3 +1,5 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+
 import io.gitlab.arturbosch.detekt.Detekt
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -67,7 +69,7 @@ configurations.all {
     }
 }
 
-tasks.named<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask>("dependencyUpdates").configure {
+tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
     gradleReleaseChannel = "current"
     outputFormatter = "json"
 
