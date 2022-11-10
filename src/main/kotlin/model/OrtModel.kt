@@ -115,6 +115,10 @@ class OrtModel {
 
                 _state.value = OrtApiState.LOADING_RESULT
 
+                // Reset the _ortResult to null before assigning a new value, otherwise no new value is emitted if the
+                // same file is loaded again.
+                _ortResult.value = null
+
                 runCatching {
                     _ortResult.value = file.readValue<OrtResult>().withResolvedScopes()
                 }.onFailure {
