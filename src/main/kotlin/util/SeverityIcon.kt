@@ -20,10 +20,14 @@ fun SeverityIcon(severity: Severity, resolved: Boolean = false) {
         Severity.ERROR -> MaterialIcon.ERROR
     }
 
-    val tint = if (resolved) LightGray else when (severity) {
-        Severity.HINT -> Hint
-        Severity.WARNING -> Warning
-        Severity.ERROR -> Error
+    val tint = if (resolved) {
+        LightGray
+    } else {
+        when (severity) {
+            Severity.HINT -> Hint
+            Severity.WARNING -> Warning
+            Severity.ERROR -> Error
+        }
     }
 
     Icon(painterResource(icon.resource), contentDescription = severity.name, tint = tint)

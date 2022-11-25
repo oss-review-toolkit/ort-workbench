@@ -261,7 +261,6 @@ fun PackageCard(pkg: PackageInfo) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-
                 Text(pkg.metadata.id.toCoordinates(), fontWeight = FontWeight.Bold)
 
                 Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -283,7 +282,6 @@ fun PackageCard(pkg: PackageInfo) {
             }
 
             Column(modifier = Modifier.padding(10.dp)) {
-
                 CompositionLocalProvider(LocalContentColor provides DarkGray) {
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         val license =

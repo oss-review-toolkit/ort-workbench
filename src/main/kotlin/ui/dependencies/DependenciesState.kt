@@ -58,8 +58,7 @@ class DependenciesState(private val dependencyTreeItems: List<DependencyTreeItem
     }
 
     fun selectNextSearchHit() {
-        if (searchHits.isEmpty()) searchCurrentHit = -1
-        else searchCurrentHit++
+        if (searchHits.isEmpty()) searchCurrentHit = -1 else searchCurrentHit++
 
         if (searchCurrentHit >= searchHits.size) searchCurrentHit = 0
 
@@ -70,8 +69,7 @@ class DependenciesState(private val dependencyTreeItems: List<DependencyTreeItem
     }
 
     fun selectPreviousSearchHit() {
-        if (searchHits.isEmpty()) searchCurrentHit = -1
-        else searchCurrentHit--
+        if (searchHits.isEmpty()) searchCurrentHit = -1 else searchCurrentHit--
 
         if (searchCurrentHit < 0) searchCurrentHit = searchHits.size - 1
 

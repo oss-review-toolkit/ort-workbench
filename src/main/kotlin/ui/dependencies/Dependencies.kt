@@ -243,8 +243,10 @@ fun DependencyTree(
 
         if (state.isItemAutoSelected) {
             val selectedItemIndex = state.filteredDependencyTreeItems.indexOf(state.selectedItem)
-            if (selectedItemIndex >= 0) LaunchedEffect(selectedItemIndex) {
-                listState.animateScrollToItem(selectedItemIndex)
+            if (selectedItemIndex >= 0) {
+                LaunchedEffect(selectedItemIndex) {
+                    listState.animateScrollToItem(selectedItemIndex)
+                }
             }
         }
 

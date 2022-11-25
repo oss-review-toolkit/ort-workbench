@@ -35,12 +35,8 @@ private const val KIBI = 1024
 fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MenuItem) -> Unit, onOpenResult: () -> Unit) {
     val state by viewModel.state.collectAsState()
 
-    Column(
-        modifier = Modifier.padding(15.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(25.dp)
-        ) {
+    Column(modifier = Modifier.padding(15.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(25.dp)) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
                 ResultFileInfoCard(state.resultFileInfo, onOpenResult)
 
