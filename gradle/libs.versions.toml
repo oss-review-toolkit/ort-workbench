@@ -5,7 +5,7 @@ kotlinPlugin = "1.7.20"
 versionCatalogUpdatePlugin = "0.7.0"
 versionsPlugin = "0.44.0"
 
-jackson = "2.14.0"
+jackson = "2.14.1"
 kotlinxCoroutines = "1.6.4"
 log4jApi = "2.19.0"
 log4jApiKotlin = "1.2.0"
