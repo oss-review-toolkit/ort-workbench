@@ -1,6 +1,6 @@
 complexity:
-  ComplexMethod:
-    active: false
+  CyclomaticComplexMethod:
+    threshold: 20
   LongMethod:
     active: true
     threshold: 80
