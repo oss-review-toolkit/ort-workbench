@@ -6,7 +6,8 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "org.jetbrains.kotlin.jvm"
+        "org.jetbrains.kotlin.jvm",
+        "org.yaml:snakeyaml"
       ],
       "rangeStrategy": "pin"
     }
