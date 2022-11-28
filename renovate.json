@@ -3,13 +3,8 @@
   "extends": [
     "config:base"
   ],
-  "packageRules": [
-    {
-      "matchPackageNames": [
-        "org.jetbrains.kotlin.jvm",
-        "org.yaml:snakeyaml"
-      ],
-      "rangeStrategy": "pin"
-    }
+  "ignoreDeps": [
+    "org.jetbrains.kotlin.jvm",
+    "org.yaml:snakeyaml"
   ]
 }
