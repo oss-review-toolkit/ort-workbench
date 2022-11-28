@@ -64,7 +64,7 @@ configurations.all {
         resolutionStrategy {
             // Starting with version 1.32 the YAML file size is limited to 3 MiB, which is not configurable yet via
             // Hoplite or Jackson.
-            force("org.yaml:snakeyaml:1.31")
+            force("org.yaml:snakeyaml:1.33")
         }
     }
 }
