@@ -25,7 +25,7 @@ import org.apache.logging.log4j.kotlin.Logging
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.config.CopyrightGarbage
 import org.ossreviewtoolkit.model.config.FileArchiverConfiguration
-import org.ossreviewtoolkit.model.config.LicenseFilenamePatterns
+import org.ossreviewtoolkit.model.config.LicenseFilePatterns
 import org.ossreviewtoolkit.model.config.OrtConfiguration
 import org.ossreviewtoolkit.model.config.createFileArchiver
 import org.ossreviewtoolkit.model.licenses.DefaultLicenseInfoProvider
@@ -167,7 +167,7 @@ class OrtModel {
             val config = ortConfigFile.takeIf { it.isFile }?.let { OrtConfiguration.load(file = it) }
                 ?: OrtConfiguration()
 
-            LicenseFilenamePatterns.configure(config.licenseFilePatterns)
+            LicenseFilePatterns.configure(config.licenseFilePatterns)
 
             val copyrightGarbage =
                 configDir.resolve(ORT_COPYRIGHT_GARBAGE_FILENAME).takeIf { it.isFile }?.readValue()
@@ -215,7 +215,7 @@ class OrtModel {
         }.onFailure {
             // TODO: Provide more context where exactly the error occurred, e.g. which config file failed to parse.
             _error.value = "Could not process ORT result: ${it.message}"
-            LicenseFilenamePatterns.configure(LicenseFilenamePatterns.DEFAULT)
+            LicenseFilePatterns.configure(LicenseFilePatterns.DEFAULT)
         }.getOrNull()
 }
 

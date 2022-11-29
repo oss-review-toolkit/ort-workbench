@@ -58,7 +58,7 @@ class OrtApi(
     fun getIssues(): List<Issue> =
         result.analyzer?.result?.collectIssues().orEmpty().toIssues(Tool.ANALYZER, resolutionProvider) +
                 result.advisor?.results?.collectIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
-                result.scanner?.results?.collectIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
+                result.scanner?.collectIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
 
     fun getReferences(id: Identifier): List<DependencyReference> =
         result.getProjects().filter { it.contains(id) }.map { project ->
