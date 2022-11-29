@@ -74,7 +74,7 @@ data class IssueStats(
         totalIssues = result.collectIssues().values.flatten().toStats(),
         analyzerIssues = result.analyzer?.result?.collectIssues()?.values?.flatten()?.toStats() ?: EMPTY_STATS,
         advisorIssues = result.advisor?.results?.collectIssues()?.values?.flatten()?.toStats() ?: EMPTY_STATS,
-        scannerIssues = result.scanner?.results?.collectIssues()?.values?.flatten()?.toStats() ?: EMPTY_STATS
+        scannerIssues = result.scanner?.collectIssues()?.values?.flatten()?.toStats() ?: EMPTY_STATS
     )
 }
 
