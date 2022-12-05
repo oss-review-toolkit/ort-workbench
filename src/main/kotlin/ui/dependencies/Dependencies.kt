@@ -540,7 +540,7 @@ fun DescriptionSection(description: String, lineLengthCollapsed: Int = 50) {
 @Composable
 fun PackageProvenanceSection(pkg: Package) {
     Expandable(header = { expanded ->
-        CaptionedColumn("BINARY_ARTIFACT") {
+        CaptionedColumn("BINARY ARTIFACT") {
             if (pkg.binaryArtifact != RemoteArtifact.EMPTY) {
                 Text(pkg.binaryArtifact.url)
                 if (expanded && pkg.binaryArtifact.hash != Hash.NONE) {
@@ -559,7 +559,7 @@ fun PackageProvenanceSection(pkg: Package) {
             modifier = Modifier.padding(top = 10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            CaptionedColumn("SOURCE_ARTIFACT") {
+            CaptionedColumn("SOURCE ARTIFACT") {
                 if (pkg.sourceArtifact != RemoteArtifact.EMPTY) {
                     Text(pkg.sourceArtifact.url)
                     if (pkg.sourceArtifact.hash != Hash.NONE) {
