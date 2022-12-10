@@ -100,8 +100,8 @@ private fun FilterType(type: String, types: List<String>, onSourceChange: (Strin
         items = listOf("") + types,
         onFilterChange = onSourceChange,
         buttonContent = { if (it.isBlank()) Text("Type") else Text(it) }
-    ) { selectedItem ->
-        if (selectedItem.isBlank()) Text("All") else Text(selectedItem)
+    ) { item ->
+        if (item.isBlank()) Text("All") else Text(item)
     }
 }
 
@@ -113,8 +113,8 @@ private fun FilterNamespace(namespace: String, namespaces: List<String>, onSourc
         onFilterChange = onSourceChange,
         buttonContent = { if (it.isBlank()) Text("Namespace") else Text(it) },
         dropdownWidth = 500.dp
-    ) { selectedItem ->
-        if (selectedItem.isBlank()) Text("All") else Text(selectedItem)
+    ) { item ->
+        if (item.isBlank()) Text("All") else Text(item)
     }
 }
 
@@ -132,8 +132,8 @@ private fun FilterProject(project: Identifier?, projects: List<Identifier>, onSo
         buttonContent = { if (it == null) Text("Project") else IdentifierText(it) },
         buttonWidth = 200.dp,
         dropdownWidth = 500.dp
-    ) { selectedItem ->
-        if (selectedItem == null) Text("All") else IdentifierText(selectedItem)
+    ) { item ->
+        if (item == null) Text("All") else IdentifierText(item)
     }
 }
 
@@ -144,8 +144,8 @@ private fun FilterScope(scope: String, scopes: List<String>, onSourceChange: (St
         items = listOf("") + scopes,
         onFilterChange = onSourceChange,
         buttonContent = { if (it.isBlank()) Text("Scope") else Text(it) }
-    ) { selectedItem ->
-        if (selectedItem.isBlank()) Text("All") else Text(selectedItem)
+    ) { item ->
+        if (item.isBlank()) Text("All") else Text(item)
     }
 }
 
@@ -162,8 +162,8 @@ private fun FilterLicense(
         buttonContent = { if (it == null) Text("License") else Text(it.toString()) },
         buttonWidth = 200.dp,
         dropdownWidth = 500.dp
-    ) {
-        if (it == null) Text("All") else Text(it.toString())
+    ) { item ->
+        if (item == null) Text("All") else Text(item.toString())
     }
 }
 
@@ -177,8 +177,8 @@ private fun FilterIssueStatus(
         items = IssueStatus.values().toList(),
         onFilterChange = onIssueStatusChange,
         buttonContent = { if (it == IssueStatus.ALL) Text("Issues") else Text(it.name.titlecase()) }
-    ) {
-        Text(it.name.enumcase())
+    ) { item ->
+        Text(item.name.enumcase())
     }
 }
 
@@ -193,8 +193,8 @@ private fun FilterViolationStatus(
         onFilterChange = onViolationStatusChange,
         buttonContent = { if (it == ViolationStatus.ALL) Text("Violations") else Text(it.name.titlecase()) },
         dropdownWidth = 200.dp
-    ) {
-        Text(it.name.enumcase())
+    ) { item ->
+        Text(item.name.enumcase())
     }
 }
 
@@ -210,8 +210,8 @@ private fun FilterVulnerabilityStatus(
         buttonContent = { if (it == VulnerabilityStatus.ALL) Text("Vulnerabilities") else Text(it.name.titlecase()) },
         buttonWidth = 200.dp,
         dropdownWidth = 200.dp
-    ) {
-        Text(it.name.enumcase())
+    ) { item ->
+        Text(item.name.enumcase())
     }
 }
 
@@ -225,8 +225,8 @@ private fun FilterExclusionStatus(
         items = ExclusionStatus.values().toList(),
         onFilterChange = onExclusionStatusChange,
         buttonContent = { if (it == ExclusionStatus.ALL) Text("Exclusion") else Text(it.name.titlecase()) }
-    ) {
-        Text(it.name.titlecase())
+    ) { item ->
+        Text(item.name.titlecase())
     }
 }
 

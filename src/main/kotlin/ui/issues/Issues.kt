@@ -88,10 +88,10 @@ private fun FilterSeverity(severity: Severity?, onSeverityChange: (Severity?) ->
         items = listOf(null, Severity.HINT, Severity.WARNING, Severity.ERROR),
         onFilterChange = onSeverityChange,
         buttonContent = { if (it == null) Text("Severity") else SeverityItem(it) }
-    ) { selectedItem ->
-        when (selectedItem) {
+    ) { item ->
+        when (item) {
             null -> Text("All")
-            else -> SeverityItem(selectedItem)
+            else -> SeverityItem(item)
         }
     }
 }
@@ -103,8 +103,8 @@ private fun FilterSource(source: String, sources: List<String>, onSourceChange: 
         items = listOf("") + sources,
         onFilterChange = onSourceChange,
         buttonContent = { if (it.isBlank()) Text("Source") else Text(it) }
-    ) { selectedItem ->
-        if (selectedItem.isBlank()) Text("All") else Text(selectedItem)
+    ) { item ->
+        if (item.isBlank()) Text("All") else Text(item)
     }
 }
 
@@ -115,8 +115,8 @@ private fun FilterTool(tool: Tool?, onToolChange: (Tool?) -> Unit) {
         items = listOf(null, Tool.ANALYZER, Tool.ADVISOR, Tool.SCANNER),
         onFilterChange = onToolChange,
         buttonContent = { if (it == null) Text("Tool") else Text(it.name.titlecase()) }
-    ) { selectedItem ->
-        if (selectedItem == null) Text("All") else Text(selectedItem.name.titlecase())
+    ) { item ->
+        if (item == null) Text("All") else Text(item.name.titlecase())
     }
 }
 
@@ -138,8 +138,8 @@ private fun FilterIdentifier(
         buttonContent = { if (it == null) Text("Package") else IdentifierText(it) },
         buttonWidth = 200.dp,
         dropdownWidth = 500.dp
-    ) {
-        if (it == null) Text("All") else IdentifierText(it)
+    ) { item ->
+        if (item == null) Text("All") else IdentifierText(item)
     }
 }
 
@@ -153,8 +153,8 @@ private fun FilterResolutionStatus(
         items = listOf(ResolutionStatus.ALL, ResolutionStatus.RESOLVED, ResolutionStatus.UNRESOLVED),
         onFilterChange = onResolutionStatusChange,
         buttonContent = { if (it == ResolutionStatus.ALL) Text("Resolution") else Text(it.name.titlecase()) }
-    ) {
-        Text(it.name.titlecase())
+    ) { item ->
+        Text(item.name.titlecase())
     }
 }
 

@@ -91,10 +91,10 @@ private fun FilterSeverity(severity: Severity?, onSeverityChange: (Severity?) ->
         items = listOf(null, Severity.HINT, Severity.WARNING, Severity.ERROR),
         onFilterChange = onSeverityChange,
         buttonContent = { if (it == null) Text("Severity") else SeverityItem(it) }
-    ) { selectedItem ->
-        when (selectedItem) {
+    ) { item ->
+        when (item) {
             null -> Text("All")
-            else -> SeverityItem(selectedItem)
+            else -> SeverityItem(item)
         }
     }
 }
@@ -110,8 +110,8 @@ private fun FilterLicense(
         items = listOf("") + licenses.map { it.toString() },
         onFilterChange = onLicenseChange,
         buttonContent = { if (it.isEmpty()) Text("License") else Text(it) }
-    ) {
-        if (it.isEmpty()) Text("All") else Text(it)
+    ) { item ->
+        if (item.isEmpty()) Text("All") else Text(item)
     }
 }
 
@@ -127,8 +127,8 @@ private fun FilterLicenseSource(
         buttonContent = { if (it == null) Text("License Source") else Text(it.name.titlecase()) },
         buttonWidth = 150.dp,
         dropdownWidth = 150.dp
-    ) {
-        if (it == null) Text("All") else Text(it.name.titlecase())
+    ) { item ->
+        if (item == null) Text("All") else Text(item.name.titlecase())
     }
 }
 
@@ -143,8 +143,8 @@ private fun FilterRule(
         items = listOf("") + rules,
         onFilterChange = onRuleChange,
         buttonContent = { if (it.isEmpty()) Text("Rule") else Text(it) }
-    ) {
-        if (it.isEmpty()) Text("All") else Text(it)
+    ) { item ->
+        if (item.isEmpty()) Text("All") else Text(item)
     }
 }
 
@@ -166,8 +166,8 @@ private fun FilterIdentifier(
         buttonContent = { if (it == null) Text("Package") else IdentifierText(it) },
         buttonWidth = 200.dp,
         dropdownWidth = 500.dp
-    ) {
-        if (it == null) Text("All") else IdentifierText(it)
+    ) { item ->
+        if (item == null) Text("All") else IdentifierText(item)
     }
 }
 
@@ -181,8 +181,8 @@ private fun FilterResolutionStatus(
         items = listOf(ResolutionStatus.ALL, ResolutionStatus.RESOLVED, ResolutionStatus.UNRESOLVED),
         onFilterChange = onResolutionStatusChange,
         buttonContent = { if (it == ResolutionStatus.ALL) Text("Resolution") else Text(it.name.titlecase()) }
-    ) {
-        Text(it.name.titlecase())
+    ) { item ->
+        Text(item.name.titlecase())
     }
 }
 
