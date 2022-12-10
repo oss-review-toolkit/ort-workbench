@@ -85,8 +85,8 @@ private fun FilterAdvisor(advisor: String, advisors: List<String>, onAdvisorChan
         items = listOf("") + advisors,
         onFilterChange = onAdvisorChange,
         buttonContent = { if (it.isEmpty()) Text("Advisor") else Text(it) }
-    ) { selectedItem ->
-        if (selectedItem.isEmpty()) Text("All") else Text(selectedItem)
+    ) { item ->
+        if (item.isEmpty()) Text("All") else Text(item)
     }
 }
 
@@ -103,8 +103,8 @@ private fun FilterScoringSystem(
         buttonContent = { if (it.isEmpty()) Text("Scoring System") else Text(it) },
         buttonWidth = 150.dp,
         dropdownWidth = 150.dp
-    ) { selectedItem ->
-        if (selectedItem.isEmpty()) Text("All") else Text(selectedItem)
+    ) { item ->
+        if (item.isEmpty()) Text("All") else Text(item)
     }
 }
 
@@ -115,8 +115,8 @@ private fun FilterSeverity(severity: String, severities: List<String>, onSeverit
         items = listOf("") + severities,
         onFilterChange = onSeverityChange,
         buttonContent = { if (it.isEmpty()) Text("Severity") else Text(it) }
-    ) { selectedItem ->
-        if (selectedItem.isEmpty()) Text("All") else Text(selectedItem)
+    ) { item ->
+        if (item.isEmpty()) Text("All") else Text(item)
     }
 }
 
@@ -138,8 +138,8 @@ private fun FilterIdentifier(
         buttonContent = { if (it == null) Text("Package") else IdentifierText(it) },
         buttonWidth = 200.dp,
         dropdownWidth = 500.dp
-    ) {
-        if (it == null) Text("All") else IdentifierText(it)
+    ) { item ->
+        if (item == null) Text("All") else IdentifierText(item)
     }
 }
 
@@ -153,8 +153,8 @@ private fun FilterResolutionStatus(
         items = listOf(ResolutionStatus.ALL, ResolutionStatus.RESOLVED, ResolutionStatus.UNRESOLVED),
         onFilterChange = onResolutionStatusChange,
         buttonContent = { if (it == ResolutionStatus.ALL) Text("Resolution") else Text(it.name.titlecase()) }
-    ) {
-        Text(it.name.titlecase())
+    ) { item ->
+        Text(item.name.titlecase())
     }
 }
 

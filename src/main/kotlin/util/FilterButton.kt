@@ -22,8 +22,8 @@ fun <T> FilterButton(
     buttonWidth: Dp = 130.dp,
     dropdownWidth: Dp = 130.dp,
     onFilterChange: (T) -> Unit,
-    buttonContent: @Composable RowScope.(T) -> Unit,
-    dropdownItem: @Composable RowScope.(T) -> Unit
+    buttonContent: @Composable RowScope.(selectedItem: T) -> Unit,
+    dropdownItem: @Composable RowScope.(item: T) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
