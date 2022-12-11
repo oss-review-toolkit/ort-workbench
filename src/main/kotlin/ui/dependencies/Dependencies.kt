@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +29,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -77,6 +75,7 @@ import org.ossreviewtoolkit.workbench.util.CaptionedText
 import org.ossreviewtoolkit.workbench.util.ErrorCard
 import org.ossreviewtoolkit.workbench.util.Expandable
 import org.ossreviewtoolkit.workbench.util.ExpandableText
+import org.ossreviewtoolkit.workbench.util.FilterTextField
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
 import org.ossreviewtoolkit.workbench.util.SeverityIcon
@@ -149,17 +148,14 @@ fun TitleRow(
     onSelectNextSearchHit: () -> Unit,
     onSelectPreviousSearchHit: () -> Unit
 ) {
-    val searchIcon = painterResource(MaterialIcon.SEARCH.resource)
     var sortExpanded by rememberSaveable { mutableStateOf(false) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
-        TextField(
-            value = search,
-            onValueChange = onSearchChange,
-            placeholder = { Text("Search") },
-            singleLine = true,
-            leadingIcon = { Icon(searchIcon, "Search") },
-            modifier = Modifier.widthIn(max = 300.dp).onKeyEvent { event ->
+        FilterTextField(
+            filterText = search,
+            label = "Search",
+            icon = MaterialIcon.SEARCH,
+            modifier = Modifier.onKeyEvent { event ->
                 if (event.type == KeyEventType.KeyDown && event.key == Key.Enter) {
                     onSelectNextSearchHit()
                     return@onKeyEvent true
@@ -174,7 +170,8 @@ fun TitleRow(
                     }
                 }
                 false
-            }
+            },
+            onSearchChange
         )
 
         if (search.isNotBlank()) {

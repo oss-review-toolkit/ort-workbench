@@ -14,21 +14,27 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FilterTextField(filterText: String, onFilterChange: (String) -> Unit) {
-    val filterIcon = painterResource(MaterialIcon.FILTER.resource)
+fun FilterTextField(
+    filterText: String,
+    label: String = "Filter",
+    icon: MaterialIcon = MaterialIcon.FILTER,
+    modifier: Modifier = Modifier,
+    onFilterChange: (String) -> Unit
+) {
+    val filterIcon = painterResource(icon.resource)
 
     TextField(
         value = filterText,
         onValueChange = onFilterChange,
-        placeholder = { Text("Filter") },
+        placeholder = { Text(label) },
         singleLine = true,
-        leadingIcon = { Icon(filterIcon, "Filter") },
+        leadingIcon = { Icon(filterIcon, label) },
         shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.textFieldColors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
-        modifier = Modifier.widthIn(max = 300.dp)
+        modifier = modifier.widthIn(max = 300.dp)
     )
 }
 
