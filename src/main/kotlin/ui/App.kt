@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -31,6 +28,7 @@ import kotlinx.coroutines.launch
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
+import org.ossreviewtoolkit.workbench.theme.VeryLightGray
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
 import org.ossreviewtoolkit.workbench.ui.issues.Issues
 import org.ossreviewtoolkit.workbench.ui.packages.Packages
@@ -50,21 +48,7 @@ fun App(state: AppState) {
     OrtWorkbenchTheme {
         Surface {
             if (apiState == OrtApiState.READY) {
-                Row(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
-                    Surface(
-                        modifier = Modifier.fillMaxHeight().width(200.dp),
-                        elevation = 8.dp,
-                        color = MaterialTheme.colors.primaryVariant
-                    ) {
-                        Menu(state.currentScreen, apiState, state::switchScreen)
-                    }
-
-                    Column(
-                        modifier = Modifier.padding(5.dp).fillMaxWidth()
-                    ) {
-                        Content(state, ::loadResult)
-                    }
-                }
+                MainLayout(state, apiState, ::loadResult)
             } else {
                 LoadResult(state, apiState, ::loadResult)
             }
@@ -82,16 +66,30 @@ fun App(state: AppState) {
 }
 
 @Composable
+fun MainLayout(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit) {
+    Column {
+        TopBar()
+
+        Row {
+            Menu(state.currentScreen, apiState, state::switchScreen)
+            Content(state, onLoadResult)
+        }
+    }
+}
+
+@Composable
 private fun Content(state: AppState, onLoadResult: () -> Unit) {
-    SetupMaterialRichText {
-        when (state.currentScreen) {
-            MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen, onLoadResult)
-            MenuItem.PACKAGES -> Packages(state.packagesViewModel)
-            MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
-            MenuItem.ISSUES -> Issues(state.issuesViewModel)
-            MenuItem.RULE_VIOLATIONS -> Violations(state.violationsViewModel)
-            MenuItem.VULNERABILITIES -> Vulnerabilities(state.vulnerabilitiesViewModel)
-            MenuItem.SETTINGS -> Settings(state.settingsViewModel)
+    Surface(modifier = Modifier.fillMaxHeight(), color = VeryLightGray) {
+        SetupMaterialRichText {
+            when (state.currentScreen) {
+                MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen, onLoadResult)
+                MenuItem.PACKAGES -> Packages(state.packagesViewModel)
+                MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
+                MenuItem.ISSUES -> Issues(state.issuesViewModel)
+                MenuItem.RULE_VIOLATIONS -> Violations(state.violationsViewModel)
+                MenuItem.VULNERABILITIES -> Vulnerabilities(state.vulnerabilitiesViewModel)
+                MenuItem.SETTINGS -> Settings(state.settingsViewModel)
+            }
         }
     }
 }
