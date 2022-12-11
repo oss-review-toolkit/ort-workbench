@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -150,27 +151,44 @@ fun TitleRow(
 ) {
     var sortExpanded by rememberSaveable { mutableStateOf(false) }
 
+    fun handleSearchKeyEvent(event: KeyEvent) =
+        when (event.type) {
+            KeyEventType.KeyDown -> {
+                when (event.key) {
+                    Key.Enter -> {
+                        onSelectNextSearchHit()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
+            KeyEventType.KeyUp -> {
+                when (event.key) {
+                    Key.DirectionDown -> {
+                        onSelectNextSearchHit()
+                        true
+                    }
+
+                    Key.DirectionUp -> {
+                        onSelectPreviousSearchHit()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
+            else -> false
+        }
+
     Row(verticalAlignment = Alignment.CenterVertically) {
         FilterTextField(
             filterText = search,
             label = "Search",
             icon = MaterialIcon.SEARCH,
-            modifier = Modifier.onKeyEvent { event ->
-                if (event.type == KeyEventType.KeyDown && event.key == Key.Enter) {
-                    onSelectNextSearchHit()
-                    return@onKeyEvent true
-                }
-                if (event.type == KeyEventType.KeyUp) {
-                    if (event.key == Key.DirectionDown) {
-                        onSelectNextSearchHit()
-                        return@onKeyEvent true
-                    } else if (event.key == Key.DirectionUp) {
-                        onSelectPreviousSearchHit()
-                        return@onKeyEvent true
-                    }
-                }
-                false
-            },
+            modifier = Modifier.onKeyEvent(::handleSearchKeyEvent),
             onSearchChange
         )
 
