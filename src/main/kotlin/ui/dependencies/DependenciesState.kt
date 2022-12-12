@@ -49,8 +49,13 @@ class DependenciesState(private val dependencyTreeItems: List<DependencyTreeItem
     }
 
     fun selectItem(item: DependencyTreeItem, isAutoSelected: Boolean) {
-        selectedItem = item
-        isItemAutoSelected = isAutoSelected
+        if (item == selectedItem && !isAutoSelected) {
+            selectedItem = null
+            isItemAutoSelected = false
+        } else {
+            selectedItem = item
+            isItemAutoSelected = isAutoSelected
+        }
     }
 
     private fun selectItem(itemIndex: Int, isAutoSelected: Boolean) {

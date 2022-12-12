@@ -2,6 +2,7 @@
 
 package org.ossreviewtoolkit.workbench.ui.dependencies
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.VerticalScrollbar
@@ -20,23 +21,21 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -49,6 +48,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Hash
@@ -80,7 +80,6 @@ import org.ossreviewtoolkit.workbench.util.FilterTextField
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
 import org.ossreviewtoolkit.workbench.util.SeverityIcon
-import org.ossreviewtoolkit.workbench.util.StyledCard
 import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
@@ -110,7 +109,7 @@ fun Dependencies(viewModel: DependenciesViewModel) {
         }
 
         else -> {
-            Column(modifier = Modifier.padding(15.dp)) {
+            Column {
                 TitleRow(
                     search = state.search,
                     searchCurrentHit = state.searchCurrentHit,
@@ -120,17 +119,34 @@ fun Dependencies(viewModel: DependenciesViewModel) {
                     onSelectPreviousSearchHit = { state.selectPreviousSearchHit() }
                 )
 
-                Row(modifier = Modifier.padding(top = 15.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        DependencyTree(state)
+                Row {
+                    Card(modifier = Modifier.weight(1f).padding(15.dp), elevation = 8.dp) {
+                        Row(
+                            modifier = Modifier.padding(top = 15.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                DependencyTree(state)
+                            }
+                        }
                     }
 
-                    state.selectedItem?.let { item ->
-                        Box(modifier = Modifier.width(500.dp)) {
-                            when (item) {
-                                is DependencyTreeProject -> ProjectDetails(item)
-                                is DependencyTreeScope -> ScopeDetails(item)
-                                is DependencyTreePackage -> PackageDetails(item)
+                    state.selectedItem.let { item ->
+                        AnimatedVisibility(visible = item != null) {
+                            Surface(
+                                modifier = Modifier.width(500.dp).fillMaxHeight(),
+                                color = MaterialTheme.colors.background,
+                                elevation = 8.dp
+                            ) {
+                                if (item != null) {
+                                    Column {
+                                        when (item) {
+                                            is DependencyTreeProject -> ProjectDetails(item)
+                                            is DependencyTreeScope -> ScopeDetails(item)
+                                            is DependencyTreePackage -> PackageDetails(item)
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -149,8 +165,32 @@ fun TitleRow(
     onSelectNextSearchHit: () -> Unit,
     onSelectPreviousSearchHit: () -> Unit
 ) {
-    var sortExpanded by rememberSaveable { mutableStateOf(false) }
+    TopAppBar(
+        modifier = Modifier.zIndex(1f),
+        backgroundColor = MaterialTheme.colors.primary,
+        title = {},
+        actions = {
+            Search(
+                search = search,
+                searchCurrentHit = searchCurrentHit,
+                searchTotalHits = searchTotalHits,
+                onSearchChange = onSearchChange,
+                onSelectNextSearchHit = onSelectNextSearchHit,
+                onSelectPreviousSearchHit = onSelectPreviousSearchHit
+            )
+        }
+    )
+}
 
+@Composable
+private fun Search(
+    search: String,
+    searchCurrentHit: Int,
+    searchTotalHits: Int,
+    onSearchChange: (String) -> Unit,
+    onSelectNextSearchHit: () -> Unit,
+    onSelectPreviousSearchHit: () -> Unit
+) {
     fun handleSearchKeyEvent(event: KeyEvent) =
         when (event.type) {
             KeyEventType.KeyDown -> {
@@ -183,7 +223,7 @@ fun TitleRow(
             else -> false
         }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Box(modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp)) {
         FilterTextField(
             filterText = search,
             label = "Search",
@@ -191,7 +231,13 @@ fun TitleRow(
             modifier = Modifier.onKeyEvent(::handleSearchKeyEvent),
             onSearchChange
         )
+    }
 
+    Row(
+        modifier = Modifier.width(100.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         if (search.isNotBlank()) {
             Text("${searchCurrentHit + 1} / $searchTotalHits", modifier = Modifier.padding(start = 10.dp))
 
@@ -206,33 +252,6 @@ fun TitleRow(
                 contentDescription = "next",
                 modifier = Modifier.clickable { onSelectNextSearchHit() }
             )
-        }
-
-        Box(modifier = Modifier.weight(1f))
-
-        Box {
-            OutlinedButton({ sortExpanded = true }) { Text("Sort by") }
-
-            DropdownMenu(
-                expanded = sortExpanded,
-                onDismissRequest = { sortExpanded = false }
-            ) {
-                DropdownMenuItem(onClick = { sortExpanded = false }) {
-                    Text("Name")
-                }
-
-                DropdownMenuItem(onClick = { sortExpanded = false }) {
-                    Text("Issues")
-                }
-
-                DropdownMenuItem(onClick = { sortExpanded = false }) {
-                    Text("Rule Violations")
-                }
-
-                DropdownMenuItem(onClick = { sortExpanded = false }) {
-                    Text("Vulnerabilities")
-                }
-            }
         }
     }
 }
@@ -265,7 +284,7 @@ fun DependencyTree(
             }
         }
 
-        LazyColumn(Modifier.fillMaxSize().padding(end = 12.dp), listState) {
+        LazyColumn(Modifier.fillMaxSize().padding(top = 5.dp, start = 15.dp, end = 15.dp), listState) {
             items(state.filteredDependencyTreeItems.size, key = { it }) { index ->
                 val item = state.filteredDependencyTreeItems[index]
 
@@ -307,12 +326,14 @@ fun DependencyTree(
 
 @Composable
 fun ProjectDetails(item: DependencyTreeProject) {
-    StyledCard(title = "${item.project.id.name} ${item.project.id.version}") {
-        val scrollState = rememberScrollState()
-        val pkg = remember { item.project.toPackage() }
+    val scrollState = rememberScrollState()
+    val pkg = remember { item.project.toPackage() }
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.verticalScroll(scrollState)) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.padding(15.dp)) {
+            Text(text = "${item.project.id.name} ${item.project.id.version}", style = MaterialTheme.typography.h4)
+
+            Column(modifier = Modifier.verticalScroll(scrollState).padding(top = 15.dp)) {
                 CaptionedText("DEFINITION FILE", item.project.definitionFilePath)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
@@ -346,33 +367,40 @@ fun ProjectDetails(item: DependencyTreeProject) {
                     }
                 }
             }
-
-            VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(scrollState = scrollState)
-            )
         }
+
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(scrollState = scrollState)
+        )
     }
 }
 
 @Composable
 fun ScopeDetails(item: DependencyTreeScope) {
-    StyledCard(title = "${item.project.id.name} ${item.project.id.version} - ${item.scope.name} scope") {
-        val dependencyCount = rememberSaveable("${item.project.id.toCoordinates()}:${item.scope.name}") {
-            item.scope.collectDependencies().size
-        }
+    val dependencyCount = rememberSaveable("${item.project.id.toCoordinates()}:${item.scope.name}") {
+        item.scope.collectDependencies().size
+    }
 
-        Text("This scope contains $dependencyCount dependencies.")
+    Column(modifier = Modifier.padding(15.dp)) {
+        Text(
+            text = "${item.project.id.name} ${item.project.id.version} - ${item.scope.name} scope",
+            style = MaterialTheme.typography.h4
+        )
+
+        Text("This scope contains $dependencyCount dependencies.", modifier = Modifier.padding(top = 15.dp))
     }
 }
 
 @Composable
 fun PackageDetails(item: DependencyTreePackage) {
-    StyledCard(title = "${item.id.name} ${item.id.version}") {
-        val scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(modifier = Modifier.verticalScroll(scrollState)) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.padding(15.dp)) {
+            Text(text = "${item.id.name} ${item.id.version}", style = MaterialTheme.typography.h4)
+
+            Column(modifier = Modifier.verticalScroll(scrollState).padding(top = 15.dp)) {
                 if (item.pkg == null) {
                     Text("No package information found.")
 
@@ -416,12 +444,12 @@ fun PackageDetails(item: DependencyTreePackage) {
                     }
                 }
             }
-
-            VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(scrollState = scrollState)
-            )
         }
+
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(scrollState = scrollState)
+        )
     }
 }
 
