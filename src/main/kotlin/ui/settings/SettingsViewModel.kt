@@ -75,7 +75,7 @@ data class OrtConfigFile(
 private val ORT_CONFIG_DIR = OrtConfigFile(
     name = "ORT configuration directory",
     description = "The directory that contains the ORT configuration files. The ORT workbench currently requires " +
-            "that all configuration files user their default file names.",
+            "that all configuration files use their default file names.",
     documentationUrl = "https://github.com/oss-review-toolkit/ort#configuration-files",
     fileName = "config", // TODO: ORT should provide a constant for that.
     fileType = FileType.DIRECTORY
