@@ -17,6 +17,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import java.nio.file.Path
 
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 import org.ossreviewtoolkit.workbench.state.DialogState
 import org.ossreviewtoolkit.workbench.theme.Error
@@ -43,28 +46,47 @@ import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
 fun Settings(viewModel: SettingsViewModel) {
-    val scrollState = rememberScrollState()
+    val tab by viewModel.tab.collectAsState()
 
-    Box {
-        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp).verticalScroll(scrollState)) {
-            ConfigSettings(viewModel)
+    Column {
+        val scrollState = rememberScrollState()
+
+        TabRow(selectedTabIndex = tab.ordinal, backgroundColor = MaterialTheme.colors.primary) {
+            SettingsTab.values().forEach {
+                Tab(
+                    text = { Text(it.title, style = MaterialTheme.typography.h5) },
+                    selected = it == tab,
+                    onClick = {
+                        viewModel.setTab(it)
+                        runBlocking { scrollState.scrollTo(0) }
+                    }
+                )
+            }
         }
 
-        VerticalScrollbar(
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-            adapter = rememberScrollbarAdapter(scrollState = scrollState)
-        )
+        Box {
+            Column(modifier = Modifier.padding(horizontal = 20.dp).verticalScroll(scrollState)) {
+                when (tab) {
+                    SettingsTab.CONFIG_FILES -> ConfigFilesSettings(viewModel)
+                    SettingsTab.WORKBENCH -> WorkbenchSettings(viewModel)
+                }
+
+            }
+
+            VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(scrollState = scrollState)
+            )
+        }
     }
 }
 
 @Composable
-fun ConfigSettings(viewModel: SettingsViewModel) {
+fun ConfigFilesSettings(viewModel: SettingsViewModel) {
     val ortConfigDir by viewModel.ortConfigDir.collectAsState()
     val ortConfigFiles by viewModel.ortConfigFiles.collectAsState()
 
-    Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
-        Text("Configuration files", style = MaterialTheme.typography.h4)
-
+    Column(modifier = Modifier.padding(vertical = 15.dp), verticalArrangement = Arrangement.spacedBy(15.dp)) {
         val configDirState = when (ortConfigDir.fileInfo.exists) {
             true -> OptionState.SUCCESS
             else -> OptionState.ERROR
@@ -122,7 +144,7 @@ fun OptionCard(
     CompositionLocalProvider(LocalContentAlpha provides alpha) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            elevation = 0.dp
+            elevation = 4.dp
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
@@ -189,8 +211,13 @@ fun OptionCard(
 
 @Composable
 @Preview
-private fun ConfigSettingsPreview() {
+private fun ConfigFilesSettingsPreview() {
     Preview {
-        ConfigSettings(SettingsViewModel())
+        ConfigFilesSettings(SettingsViewModel())
     }
+}
+
+@Composable
+private fun WorkbenchSettings(viewModel: SettingsViewModel) {
+
 }

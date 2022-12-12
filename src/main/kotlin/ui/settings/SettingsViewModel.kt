@@ -9,7 +9,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.utils.ort.ORT_CONFIG_FILENAME
@@ -26,6 +25,9 @@ import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
 
 class SettingsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.IO)
+
+    private val _tab = MutableStateFlow(SettingsTab.CONFIG_FILES)
+    val tab: StateFlow<SettingsTab> get() = _tab
 
     private val _ortConfigDir = MutableStateFlow(
         OrtConfigFileInfo(
@@ -60,6 +62,10 @@ class SettingsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
 
     suspend fun setConfigDir(path: Path) {
         ortModel.updateSettings(WorkbenchSettings(ortConfigDir = path.invariantSeparatorsPathString))
+    }
+
+    fun setTab(tab: SettingsTab) {
+        _tab.value = tab
     }
 }
 
