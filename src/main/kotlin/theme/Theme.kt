@@ -7,6 +7,8 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
+
 private val DarkColorPalette = darkColors(
     primary = Blue,
     primaryVariant = DarkBlue,
@@ -38,8 +40,8 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun OrtWorkbenchTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
+fun OrtWorkbenchTheme(theme: WorkbenchTheme, content: @Composable () -> Unit) {
+    val colors = if (theme == WorkbenchTheme.DARK || (theme == WorkbenchTheme.AUTO && isSystemInDarkTheme())) {
         DarkColorPalette
     } else {
         LightColorPalette

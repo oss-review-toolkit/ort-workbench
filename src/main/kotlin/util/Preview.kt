@@ -6,11 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 
 @Composable
 fun Preview(content: @Composable () -> Unit) {
-    OrtWorkbenchTheme {
+    OrtWorkbenchTheme(WorkbenchTheme.AUTO) {
         Box(modifier = Modifier.padding(10.dp)) {
             content()
         }

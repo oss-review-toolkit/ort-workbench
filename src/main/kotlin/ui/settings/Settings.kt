@@ -17,6 +17,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
@@ -36,6 +37,7 @@ import java.nio.file.Path
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 import org.ossreviewtoolkit.workbench.state.DialogState
 import org.ossreviewtoolkit.workbench.theme.Error
 import org.ossreviewtoolkit.workbench.util.BrowseDirectoryLink
@@ -70,7 +72,6 @@ fun Settings(viewModel: SettingsViewModel) {
                     SettingsTab.CONFIG_FILES -> ConfigFilesSettings(viewModel)
                     SettingsTab.WORKBENCH -> WorkbenchSettings(viewModel)
                 }
-
             }
 
             VerticalScrollbar(
@@ -219,5 +220,44 @@ private fun ConfigFilesSettingsPreview() {
 
 @Composable
 private fun WorkbenchSettings(viewModel: SettingsViewModel) {
+    val scope = rememberCoroutineScope()
+    val theme by viewModel.theme.collectAsState()
 
+    Column(modifier = Modifier.padding(vertical = 15.dp), verticalArrangement = Arrangement.spacedBy(15.dp)) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = 4.dp
+        ) {
+            Column(modifier = Modifier.padding(15.dp)) {
+                Text("Theme", style = MaterialTheme.typography.h5)
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Use system theme", modifier = Modifier.weight(1f))
+
+                    Switch(
+                        checked = theme == WorkbenchTheme.AUTO,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                viewModel.setTheme(if (enabled) WorkbenchTheme.AUTO else WorkbenchTheme.LIGHT)
+                            }
+                        }
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Use dark theme", modifier = Modifier.weight(1f))
+
+                    Switch(
+                        enabled = theme != WorkbenchTheme.AUTO,
+                        checked = theme == WorkbenchTheme.DARK,
+                        onCheckedChange = { enabled ->
+                            scope.launch {
+                                viewModel.setTheme(if (enabled) WorkbenchTheme.DARK else WorkbenchTheme.LIGHT)
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
 }

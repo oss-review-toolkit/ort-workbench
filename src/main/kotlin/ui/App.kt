@@ -41,11 +41,12 @@ import org.ossreviewtoolkit.workbench.util.FileDialog
 @Composable
 fun App(state: AppState) {
     val apiState by state.ortModel.state.collectAsState()
+    val settings by state.ortModel.settings.collectAsState()
     val scope = rememberCoroutineScope()
 
     fun loadResult() = scope.launch { state.openOrtResult() }
 
-    OrtWorkbenchTheme {
+    OrtWorkbenchTheme(settings.theme) {
         Surface {
             if (apiState == OrtApiState.READY) {
                 MainLayout(state, apiState, ::loadResult)
