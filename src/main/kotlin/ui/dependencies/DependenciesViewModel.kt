@@ -14,7 +14,7 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 class DependenciesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val _state = MutableStateFlow(DependenciesState(emptyList<DependencyTreeItem>()))
+    private val _state = MutableStateFlow(DependenciesState(emptyList()))
     val state: StateFlow<DependenciesState> get() = _state
 
     init {
