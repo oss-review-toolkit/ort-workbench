@@ -22,6 +22,7 @@ import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CURATIONS_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_RESOLUTIONS_FILENAME
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
+import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 
 class SettingsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -36,6 +37,9 @@ class SettingsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         )
     )
     val ortConfigDir: StateFlow<OrtConfigFileInfo> get() = _ortConfigDir
+
+    private val _theme = MutableStateFlow(WorkbenchTheme.AUTO)
+    val theme: StateFlow<WorkbenchTheme> get() = _theme
 
     private val _ortConfigFiles = MutableStateFlow(emptyList<OrtConfigFileInfo>())
     val ortConfigFiles: StateFlow<List<OrtConfigFileInfo>> get() = _ortConfigFiles
@@ -56,16 +60,22 @@ class SettingsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                         configDir.resolve(configFile.fileName).toFileInfo(configFile.fileType)
                     )
                 }
+
+                _theme.value = settings.theme
             }
         }
     }
 
     suspend fun setConfigDir(path: Path) {
-        ortModel.updateSettings(WorkbenchSettings(ortConfigDir = path.invariantSeparatorsPathString))
+        ortModel.updateSettings(ortModel.settings.value.copy(ortConfigDir = path.invariantSeparatorsPathString))
     }
 
     fun setTab(tab: SettingsTab) {
         _tab.value = tab
+    }
+
+    suspend fun setTheme(theme: WorkbenchTheme) {
+        ortModel.updateSettings(ortModel.settings.value.copy(theme = theme))
     }
 }
 

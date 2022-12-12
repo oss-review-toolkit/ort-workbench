@@ -220,11 +220,13 @@ class OrtModel {
 }
 
 data class WorkbenchSettings(
-    val ortConfigDir: String
+    val ortConfigDir: String,
+    val theme: WorkbenchTheme = WorkbenchTheme.AUTO
 ) {
     companion object {
         fun default() = WorkbenchSettings(
-            ortConfigDir = ortConfigDirectory.invariantSeparatorsPath
+            ortConfigDir = ortConfigDirectory.invariantSeparatorsPath,
+            theme = WorkbenchTheme.AUTO
         )
     }
 }
@@ -234,4 +236,8 @@ enum class OrtApiState {
     LOADING_RESULT,
     PROCESSING_RESULT,
     READY
+}
+
+enum class WorkbenchTheme {
+    AUTO, LIGHT, DARK
 }
