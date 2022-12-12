@@ -216,6 +216,11 @@ private fun Search(
                         true
                     }
 
+                    Key.Escape -> {
+                        onSearchChange("")
+                        true
+                    }
+
                     else -> false
                 }
             }
