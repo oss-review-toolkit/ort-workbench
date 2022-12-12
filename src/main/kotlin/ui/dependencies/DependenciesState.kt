@@ -62,6 +62,34 @@ class DependenciesState(private val dependencyTreeItems: List<DependencyTreeItem
         dependencyTreeItems.getOrNull(itemIndex)?.let { selectItem(it, isAutoSelected = isAutoSelected) }
     }
 
+    fun selectNext() {
+        if (selectedItem != null) {
+            val newIndex = filteredDependencyTreeItems.indexOf(selectedItem) + 1
+
+            selectedItem = if (newIndex < filteredDependencyTreeItems.size) {
+                filteredDependencyTreeItems[newIndex]
+            } else {
+                filteredDependencyTreeItems.first()
+            }
+        } else if (filteredDependencyTreeItems.isNotEmpty()) {
+            selectedItem = filteredDependencyTreeItems[0]
+        }
+    }
+
+    fun selectPrevious() {
+        if (selectedItem != null) {
+            val newIndex = filteredDependencyTreeItems.indexOf(selectedItem) - 1
+
+            selectedItem = if (newIndex < 0) {
+                filteredDependencyTreeItems.last()
+            } else {
+                filteredDependencyTreeItems[newIndex]
+            }
+        } else if (filteredDependencyTreeItems.isNotEmpty()) {
+            selectedItem = filteredDependencyTreeItems.last()
+        }
+    }
+
     fun selectNextSearchHit() {
         if (searchHits.isEmpty()) searchCurrentHit = -1 else searchCurrentHit++
 
@@ -81,6 +109,18 @@ class DependenciesState(private val dependencyTreeItems: List<DependencyTreeItem
         if (searchCurrentHit > -1) {
             expandTree(searchHits[searchCurrentHit])
             selectItem(searchHits[searchCurrentHit], isAutoSelected = true)
+        }
+    }
+
+    fun expandSelectedItem() {
+        selectedItem?.let {
+            if (!it.expanded) toggleExpanded(it)
+        }
+    }
+
+    fun collapseSelectedItem() {
+        selectedItem?.let {
+            if (it.expanded) toggleExpanded(it)
         }
     }
 

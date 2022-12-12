@@ -86,6 +86,37 @@ import org.ossreviewtoolkit.workbench.util.WebLink
 fun Dependencies(viewModel: DependenciesViewModel) {
     val state by viewModel.state.collectAsState()
 
+    fun handleKeyEvent(event: KeyEvent) =
+        when (event.type) {
+            KeyEventType.KeyUp -> {
+                when (event.key) {
+                    Key.DirectionDown -> {
+                        state.selectNext()
+                        true
+                    }
+
+                    Key.DirectionUp -> {
+                        state.selectPrevious()
+                        true
+                    }
+
+                    Key.DirectionLeft -> {
+                        state.collapseSelectedItem()
+                        true
+                    }
+
+                    Key.DirectionRight -> {
+                        state.expandSelectedItem()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
+            else -> false
+        }
+
     when {
         !state.initialized -> {
             LaunchedEffect(Unit) {
@@ -109,7 +140,7 @@ fun Dependencies(viewModel: DependenciesViewModel) {
         }
 
         else -> {
-            Column {
+            Column(modifier = Modifier.onKeyEvent(::handleKeyEvent)) {
                 TitleRow(
                     search = state.search,
                     searchCurrentHit = state.searchCurrentHit,
