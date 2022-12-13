@@ -166,7 +166,7 @@ fun Dependencies(viewModel: DependenciesViewModel) {
                         AnimatedVisibility(visible = item != null) {
                             Surface(
                                 modifier = Modifier.width(500.dp).fillMaxHeight(),
-                                color = MaterialTheme.colors.background,
+                                color = MaterialTheme.colors.surface,
                                 elevation = 8.dp
                             ) {
                                 if (item != null) {

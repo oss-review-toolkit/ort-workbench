@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.Card
@@ -28,7 +27,6 @@ import kotlinx.coroutines.launch
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
-import org.ossreviewtoolkit.workbench.theme.VeryLightGray
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
 import org.ossreviewtoolkit.workbench.ui.issues.Issues
 import org.ossreviewtoolkit.workbench.ui.packages.Packages
@@ -47,7 +45,7 @@ fun App(state: AppState) {
     fun loadResult() = scope.launch { state.openOrtResult() }
 
     OrtWorkbenchTheme(settings.theme) {
-        Surface {
+        Surface(color = MaterialTheme.colors.background) {
             if (apiState == OrtApiState.READY) {
                 MainLayout(state, apiState, ::loadResult)
             } else {
@@ -80,17 +78,15 @@ fun MainLayout(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit)
 
 @Composable
 private fun Content(state: AppState, onLoadResult: () -> Unit) {
-    Surface(modifier = Modifier.fillMaxHeight(), color = VeryLightGray) {
-        SetupMaterialRichText {
-            when (state.currentScreen) {
-                MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen, onLoadResult)
-                MenuItem.PACKAGES -> Packages(state.packagesViewModel)
-                MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
-                MenuItem.ISSUES -> Issues(state.issuesViewModel)
-                MenuItem.RULE_VIOLATIONS -> Violations(state.violationsViewModel)
-                MenuItem.VULNERABILITIES -> Vulnerabilities(state.vulnerabilitiesViewModel)
-                MenuItem.SETTINGS -> Settings(state.settingsViewModel)
-            }
+    SetupMaterialRichText {
+        when (state.currentScreen) {
+            MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen, onLoadResult)
+            MenuItem.PACKAGES -> Packages(state.packagesViewModel)
+            MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
+            MenuItem.ISSUES -> Issues(state.issuesViewModel)
+            MenuItem.RULE_VIOLATIONS -> Violations(state.violationsViewModel)
+            MenuItem.VULNERABILITIES -> Vulnerabilities(state.vulnerabilitiesViewModel)
+            MenuItem.SETTINGS -> Settings(state.settingsViewModel)
         }
     }
 }
@@ -104,7 +100,9 @@ private fun LoadResult(state: AppState, apiState: OrtApiState, onLoadResult: () 
         verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource("ort-black.png"), contentDescription = "OSS Review Toolkit")
+        val image = if (MaterialTheme.colors.isLight) "ort-black.png" else "ort-white.png"
+
+        Image(painter = painterResource(image), contentDescription = "OSS Review Toolkit")
 
         if (apiState in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
             CircularProgressIndicator()

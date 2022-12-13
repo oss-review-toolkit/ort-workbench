@@ -14,8 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
-import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +34,6 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
-import org.ossreviewtoolkit.workbench.theme.DarkGray
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
 import org.ossreviewtoolkit.workbench.util.IconText
@@ -282,7 +282,7 @@ fun PackageCard(pkg: PackageInfo) {
             }
 
             Column(modifier = Modifier.padding(10.dp)) {
-                CompositionLocalProvider(LocalContentColor provides DarkGray) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         val license =
                             pkg.resolvedLicenseInfo.effectiveLicense(LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED)
