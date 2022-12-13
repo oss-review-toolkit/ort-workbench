@@ -7,10 +7,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -18,8 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import java.io.File
-
-import org.ossreviewtoolkit.workbench.theme.LightGray
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -44,7 +45,9 @@ private fun LinkContent(text: String, icon: Painter?, enabled: Boolean, onClick:
             Icon(icon, contentDescription = "link", tint = MaterialTheme.colors.primary)
         }
 
-        Text(text, color = if (enabled) MaterialTheme.colors.primary else LightGray)
+        CompositionLocalProvider(LocalContentAlpha provides if (enabled) ContentAlpha.high else ContentAlpha.medium) {
+            Text(text)
+        }
     }
 }
 

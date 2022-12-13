@@ -13,9 +13,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -24,7 +25,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,10 +34,9 @@ import androidx.compose.ui.zIndex
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.ort.Environment
 import org.ossreviewtoolkit.workbench.model.OrtApiState
-import org.ossreviewtoolkit.workbench.theme.Gray
-import org.ossreviewtoolkit.workbench.theme.VeryLightGray
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
+import org.ossreviewtoolkit.workbench.util.conditional
 
 enum class MenuItem(val icon: MaterialIcon) {
     SUMMARY(MaterialIcon.ASSESSMENT),
@@ -57,7 +56,7 @@ fun Menu(currentScreen: MenuItem, apiState: OrtApiState, onSwitchScreen: (MenuIt
         Column(
             modifier = Modifier.padding(vertical = 20.dp)
         ) {
-            CompositionLocalProvider(LocalContentColor provides Gray) {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 MenuItem.values().filter { it != MenuItem.SETTINGS }.forEach { item ->
                     MenuRow(item, isCurrent = item == currentScreen, apiState, onSwitchScreen)
                 }
@@ -88,7 +87,7 @@ fun MenuRow(item: MenuItem, isCurrent: Boolean, apiState: OrtApiState, onSwitchS
     if (isEnabled) {
         Row(
             modifier = Modifier.clickable { onSwitchScreen(item) }
-                .background(if (isCurrent) VeryLightGray else Color.White)
+                .conditional(isCurrent) { background(MaterialTheme.colors.background) }
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
