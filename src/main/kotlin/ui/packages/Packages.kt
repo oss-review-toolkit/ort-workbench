@@ -97,7 +97,7 @@ private fun TitleRow(
                     data = state.projectFilter,
                     label = "Project",
                     onFilterChange = onUpdateProjectFilter,
-                    convert = { it?.toCoordinates() ?: "" }
+                    convert = { it.toCoordinates() }
                 )
 
                 FilterButton(data = state.scopeFilter, label = "Scope", onFilterChange = onUpdateScopeFilter)
@@ -108,28 +108,28 @@ private fun TitleRow(
                     data = state.issueStatusFilter,
                     label = "Issues",
                     onFilterChange = onUpdateIssueStatusFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
 
                 FilterButton(
                     data = state.violationStatusFilter,
                     label = "Violations",
                     onFilterChange = onUpdateViolationStatusFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
 
                 FilterButton(
                     data = state.vulnerabilityStatusFilter,
                     label = "Vulnerabilities",
                     onFilterChange = onUpdateVulnerabilityStatusFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
 
                 FilterButton(
                     data = state.exclusionStatusFilter,
                     label = "Excluded",
                     onFilterChange = onUpdateExclusionStatusFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
             }
         }

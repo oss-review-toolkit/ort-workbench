@@ -11,12 +11,12 @@ import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 data class ViolationsState(
     val violations: List<Violation>,
     val textFilter: String,
-    val identifierFilter: FilterData<Identifier?>,
-    val licenseFilter: FilterData<SpdxSingleLicenseExpression?>,
-    val licenseSourceFilter: FilterData<LicenseSource?>,
-    val resolutionStatusFilter: FilterData<ResolutionStatus?>,
-    val ruleFilter: FilterData<String?>,
-    val severityFilter: FilterData<Severity?>
+    val identifierFilter: FilterData<Identifier>,
+    val licenseFilter: FilterData<SpdxSingleLicenseExpression>,
+    val licenseSourceFilter: FilterData<LicenseSource>,
+    val resolutionStatusFilter: FilterData<ResolutionStatus>,
+    val ruleFilter: FilterData<String>,
+    val severityFilter: FilterData<Severity>
 ) {
     companion object {
         val INITIAL = ViolationsState(

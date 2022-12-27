@@ -86,7 +86,7 @@ private fun TitleRow(
                     data = state.severityFilter,
                     label = "Severity",
                     onFilterChange = onUpdateSeverityFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
 
                 FilterButton(data = state.sourceFilter, label = "Source", onFilterChange = onUpdateSourceFilter)
@@ -95,21 +95,21 @@ private fun TitleRow(
                     data = state.toolFilter,
                     label = "Tool",
                     onFilterChange = onUpdateToolFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
 
                 FilterButton(
                     data = state.identifierFilter,
                     label = "Package",
                     onFilterChange = onUpdateIdentifierFilter,
-                    convert = { it?.toCoordinates() ?: "" }
+                    convert = { it.toCoordinates() }
                 )
 
                 FilterButton(
                     data = state.resolutionStatusFilter,
                     label = "Resolution",
                     onFilterChange = onUpdateResolutionStatusFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
             }
         }

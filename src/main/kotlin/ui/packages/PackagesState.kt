@@ -7,15 +7,15 @@ import org.ossreviewtoolkit.workbench.model.FilterData
 data class PackagesState(
     val packages: List<PackageInfo>,
     val textFilter: String,
-    val exclusionStatusFilter: FilterData<ExclusionStatus?>,
-    val issueStatusFilter: FilterData<IssueStatus?>,
-    val licenseFilter: FilterData<SpdxSingleLicenseExpression?>,
-    val namespaceFilter: FilterData<String?>,
-    val projectFilter: FilterData<Identifier?>,
-    val scopeFilter: FilterData<String?>,
-    val typeFilter: FilterData<String?>,
-    val violationStatusFilter: FilterData<ViolationStatus?>,
-    val vulnerabilityStatusFilter: FilterData<VulnerabilityStatus?>
+    val exclusionStatusFilter: FilterData<ExclusionStatus>,
+    val issueStatusFilter: FilterData<IssueStatus>,
+    val licenseFilter: FilterData<SpdxSingleLicenseExpression>,
+    val namespaceFilter: FilterData<String>,
+    val projectFilter: FilterData<Identifier>,
+    val scopeFilter: FilterData<String>,
+    val typeFilter: FilterData<String>,
+    val violationStatusFilter: FilterData<ViolationStatus>,
+    val vulnerabilityStatusFilter: FilterData<VulnerabilityStatus>
 ) {
     companion object {
         val INITIAL = PackagesState(

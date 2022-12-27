@@ -98,14 +98,14 @@ private fun TitleRow(
                     data = state.identifierFilter,
                     label = "Package",
                     onFilterChange = onUpdateIdentifiersFilter,
-                    convert = { it?.toCoordinates() ?: "" }
+                    convert = { it.toCoordinates() }
                 )
 
                 FilterButton(
                     data = state.resolutionStatusFilter,
                     label = "Resolution",
                     onFilterChange = onUpdateResolutionStatusFilter,
-                    convert = { it?.name?.titlecase() ?: "" }
+                    convert = { it.name.titlecase() }
                 )
             }
         }

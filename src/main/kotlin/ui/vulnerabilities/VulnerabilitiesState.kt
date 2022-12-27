@@ -8,11 +8,11 @@ import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 data class VulnerabilitiesState(
     val vulnerabilities: List<DecoratedVulnerability>,
     val textFilter: String,
-    val advisorFilter: FilterData<String?>,
-    val scoringSystemFilter: FilterData<String?>,
-    val severityFilter: FilterData<String?>,
-    val identifierFilter: FilterData<Identifier?>,
-    val resolutionStatusFilter: FilterData<ResolutionStatus?>
+    val advisorFilter: FilterData<String>,
+    val scoringSystemFilter: FilterData<String>,
+    val severityFilter: FilterData<String>,
+    val identifierFilter: FilterData<Identifier>,
+    val resolutionStatusFilter: FilterData<ResolutionStatus>
 ) {
     companion object {
         val INITIAL = VulnerabilitiesState(
