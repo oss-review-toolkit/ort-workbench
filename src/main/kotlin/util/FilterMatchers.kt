@@ -8,29 +8,28 @@ import org.ossreviewtoolkit.workbench.ui.packages.IssueStatus
 import org.ossreviewtoolkit.workbench.ui.packages.ViolationStatus
 import org.ossreviewtoolkit.workbench.ui.packages.VulnerabilityStatus
 
-fun matchExclusionStatus(filter: ExclusionStatus, value: Boolean) =
-    filter == ExclusionStatus.ALL
+fun matchExclusionStatus(filter: ExclusionStatus?, value: Boolean) =
+    filter == null
             || filter == ExclusionStatus.EXCLUDED && value
             || filter == ExclusionStatus.INCLUDED && !value
 
-fun matchIssueStatus(filter: IssueStatus, value: List<Issue>) =
-    filter == IssueStatus.ALL
+fun matchIssueStatus(filter: IssueStatus?, value: List<Issue>) =
+    filter == null
             || filter == IssueStatus.HAS_ISSUES && value.isNotEmpty()
             || filter == IssueStatus.NO_ISSUES && value.isEmpty()
 
 fun <T> matchResolutionStatus(filter: ResolutionStatus?, value: List<T>) =
     filter == null
-            || filter == ResolutionStatus.ALL
             || filter == ResolutionStatus.RESOLVED && value.isNotEmpty()
             || filter == ResolutionStatus.UNRESOLVED && value.isEmpty()
 
-fun matchViolationStatus(filter: ViolationStatus, value: List<Violation>) =
-    filter == ViolationStatus.ALL
+fun matchViolationStatus(filter: ViolationStatus?, value: List<Violation>) =
+    filter == null
             || filter == ViolationStatus.HAS_VIOLATIONS && value.isNotEmpty()
             || filter == ViolationStatus.NO_VIOLATIONS && value.isEmpty()
 
-fun matchVulnerabilityStatus(filter: VulnerabilityStatus, value: List<DecoratedVulnerability>) =
-    filter == VulnerabilityStatus.ALL
+fun matchVulnerabilityStatus(filter: VulnerabilityStatus?, value: List<DecoratedVulnerability>) =
+    filter == null
             || filter == VulnerabilityStatus.HAS_VULNERABILITY && value.isNotEmpty()
             || filter == VulnerabilityStatus.NO_VULNERABILITY && value.isEmpty()
 

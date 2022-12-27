@@ -11,7 +11,7 @@ data class IssuesState(
     val issues: List<Issue>,
     val textFilter: String,
     val identifierFilter: FilterData<Identifier?>,
-    val resolutionStatusFilter: FilterData<ResolutionStatus>,
+    val resolutionStatusFilter: FilterData<ResolutionStatus?>,
     val severityFilter: FilterData<Severity?>,
     val sourceFilter: FilterData<String?>,
     val toolFilter: FilterData<Tool?>
@@ -21,7 +21,7 @@ data class IssuesState(
             issues = emptyList(),
             textFilter = "",
             identifierFilter = FilterData(null, emptyList()),
-            resolutionStatusFilter = FilterData(ResolutionStatus.ALL, emptyList()),
+            resolutionStatusFilter = FilterData(null, emptyList()),
             severityFilter = FilterData(null, emptyList()),
             sourceFilter = FilterData(null, emptyList()),
             toolFilter = FilterData(null, emptyList()),

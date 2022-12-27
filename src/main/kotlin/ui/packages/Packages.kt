@@ -67,15 +67,15 @@ fun Packages(viewModel: PackagesViewModel) {
 private fun TitleRow(
     state: PackagesState,
     onUpdateTextFilter: (text: String) -> Unit,
-    onUpdateExclusionStatusFilter: (exclusionStatus: ExclusionStatus) -> Unit,
-    onUpdateIssueStatusFilter: (issueStatus: IssueStatus) -> Unit,
+    onUpdateExclusionStatusFilter: (exclusionStatus: ExclusionStatus?) -> Unit,
+    onUpdateIssueStatusFilter: (issueStatus: IssueStatus?) -> Unit,
     onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
     onUpdateNamespaceFilter: (namespace: String?) -> Unit,
     onUpdateProjectFilter: (project: Identifier?) -> Unit,
     onUpdateScopeFilter: (scope: String?) -> Unit,
     onUpdateTypeFilter: (type: String?) -> Unit,
-    onUpdateViolationStatusFilter: (violationStatus: ViolationStatus) -> Unit,
-    onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus) -> Unit
+    onUpdateViolationStatusFilter: (violationStatus: ViolationStatus?) -> Unit,
+    onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus?) -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
@@ -108,28 +108,28 @@ private fun TitleRow(
                     data = state.issueStatusFilter,
                     label = "Issues",
                     onFilterChange = onUpdateIssueStatusFilter,
-                    convert = { it.name.titlecase() }
+                    convert = { it?.name?.titlecase() ?: "" }
                 )
 
                 FilterButton(
                     data = state.violationStatusFilter,
                     label = "Violations",
                     onFilterChange = onUpdateViolationStatusFilter,
-                    convert = { it.name.titlecase() }
+                    convert = { it?.name?.titlecase() ?: "" }
                 )
 
                 FilterButton(
                     data = state.vulnerabilityStatusFilter,
                     label = "Vulnerabilities",
                     onFilterChange = onUpdateVulnerabilityStatusFilter,
-                    convert = { it.name.titlecase() }
+                    convert = { it?.name?.titlecase() ?: "" }
                 )
 
                 FilterButton(
                     data = state.exclusionStatusFilter,
                     label = "Excluded",
                     onFilterChange = onUpdateExclusionStatusFilter,
-                    convert = { it.name.titlecase() }
+                    convert = { it?.name?.titlecase() ?: "" }
                 )
             }
         }

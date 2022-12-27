@@ -69,7 +69,7 @@ private fun TitleRow(
     state: IssuesState,
     onUpdateTextFilter: (text: String) -> Unit,
     onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
-    onUpdateResolutionStatusFilter: (status: ResolutionStatus) -> Unit,
+    onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
     onUpdateSeverityFilter: (severity: Severity?) -> Unit,
     onUpdateSourceFilter: (source: String?) -> Unit,
     onUpdateToolFilter: (tool: Tool?) -> Unit
@@ -109,7 +109,7 @@ private fun TitleRow(
                     data = state.resolutionStatusFilter,
                     label = "Resolution",
                     onFilterChange = onUpdateResolutionStatusFilter,
-                    convert = { it.name.titlecase() }
+                    convert = { it?.name?.titlecase() ?: "" }
                 )
             }
         }

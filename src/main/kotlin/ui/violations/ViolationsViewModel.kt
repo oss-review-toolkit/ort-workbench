@@ -72,8 +72,8 @@ class ViolationsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                 options = listOf(null) + LicenseSource.values().toList()
             ),
             resolutionStatusFilter = FilterData(
-                selectedItem = ResolutionStatus.ALL,
-                options = ResolutionStatus.values().toList()
+                selectedItem = null,
+                options = listOf(null) + ResolutionStatus.values().toList()
             ),
             ruleFilter = FilterData(
                 selectedItem = null,
@@ -102,7 +102,7 @@ class ViolationsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         filter.value = filter.value.copy(licenseSource = licenseSource)
     }
 
-    fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus) {
+    fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus?) {
         filter.value = filter.value.copy(resolutionStatus = resolutionStatus)
     }
 
@@ -119,7 +119,7 @@ data class ViolationsFilter(
     val identifier: Identifier? = null,
     val license: SpdxSingleLicenseExpression? = null,
     val licenseSource: LicenseSource? = null,
-    val resolutionStatus: ResolutionStatus = ResolutionStatus.ALL,
+    val resolutionStatus: ResolutionStatus? = null,
     val rule: String? = null,
     val severity: Severity? = null,
     val text: String = ""

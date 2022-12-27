@@ -65,8 +65,8 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANC
                 options = listOf(null) + vulnerabilities.mapTo(sortedSetOf()) { it.pkg }.toList()
             ),
             resolutionStatusFilter = FilterData(
-                selectedItem = ResolutionStatus.ALL,
-                options = ResolutionStatus.values().toList(),
+                selectedItem = null,
+                options = listOf(null) + ResolutionStatus.values().toList(),
             ),
             scoringSystemFilter = FilterData(
                 selectedItem = null,
@@ -95,7 +95,7 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANC
         filter.value = filter.value.copy(identifier = identifier)
     }
 
-    fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus) {
+    fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus?) {
         filter.value = filter.value.copy(resolutionStatus = resolutionStatus)
     }
 
@@ -111,7 +111,7 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANC
 data class VulnerabilitiesFilter(
     val advisor: String? = null,
     val identifier: Identifier? = null,
-    val resolutionStatus: ResolutionStatus = ResolutionStatus.ALL,
+    val resolutionStatus: ResolutionStatus? = null,
     val scoringSystem: String? = null,
     val severity: String? = null,
     val text: String = ""
