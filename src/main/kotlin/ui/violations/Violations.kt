@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.LicenseSource
@@ -48,9 +51,7 @@ import org.ossreviewtoolkit.workbench.util.SeverityIcon
 fun Violations(viewModel: ViolationsViewModel) {
     val filteredViolations by viewModel.filteredViolations.collectAsState()
 
-    Column(
-        modifier = Modifier.padding(15.dp).fillMaxSize()
-    ) {
+    Column {
         TitleRow(viewModel)
 
         ViolationsList(filteredViolations)
@@ -64,18 +65,26 @@ private fun TitleRow(viewModel: ViolationsViewModel) {
     val licenses by viewModel.licenses.collectAsState()
     val rules by viewModel.rules.collectAsState()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-        FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
-        FilterLicense(filter.license, licenses) { viewModel.updateFilter(filter.copy(license = it)) }
-        FilterLicenseSource(filter.licenseSource) { viewModel.updateFilter(filter.copy(licenseSource = it)) }
-        FilterRule(filter.rule, rules) { viewModel.updateFilter(filter.copy(rule = it)) }
-        FilterIdentifier(filter.identifier, identifiers) { viewModel.updateFilter(filter.copy(identifier = it)) }
-        FilterResolutionStatus(filter.resolutionStatus) { viewModel.updateFilter(filter.copy(resolutionStatus = it)) }
-    }
+    TopAppBar(
+        modifier = Modifier.zIndex(1f),
+        backgroundColor = MaterialTheme.colors.primary,
+        title = {},
+        actions = {
+            Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
+                FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
+                FilterLicense(filter.license, licenses) { viewModel.updateFilter(filter.copy(license = it)) }
+                FilterLicenseSource(filter.licenseSource) { viewModel.updateFilter(filter.copy(licenseSource = it)) }
+                FilterRule(filter.rule, rules) { viewModel.updateFilter(filter.copy(rule = it)) }
+                FilterIdentifier(filter.identifier, identifiers) {
+                    viewModel.updateFilter(filter.copy(identifier = it))
+                }
+                FilterResolutionStatus(filter.resolutionStatus) {
+                    viewModel.updateFilter(filter.copy(resolutionStatus = it))
+                }
+            }
+        }
+    )
 }
 
 @Composable
@@ -189,13 +198,13 @@ private fun FilterResolutionStatus(
 @Composable
 fun ViolationsList(violations: List<Violation>) {
     if (violations.isEmpty()) {
-        Text("No violations found.", modifier = Modifier.padding(top = 15.dp))
+        Text("No violations found.", modifier = Modifier.padding(15.dp))
     } else {
-        Box(modifier = Modifier.fillMaxSize().padding(top = 15.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             val listState = rememberLazyListState()
 
             LazyColumn(
-                contentPadding = PaddingValues(vertical = 15.dp),
+                contentPadding = PaddingValues(15.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 state = listState
             ) {
