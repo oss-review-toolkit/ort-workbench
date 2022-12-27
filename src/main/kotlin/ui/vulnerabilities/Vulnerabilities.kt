@@ -37,6 +37,7 @@ import org.ossreviewtoolkit.model.config.VulnerabilityResolution
 import org.ossreviewtoolkit.model.config.VulnerabilityResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
+import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
@@ -46,85 +47,85 @@ import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
 fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
-    val filteredVulnerabilities by viewModel.filteredVulnerabilities.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     Column {
-        TitleRow(viewModel)
+        TitleRow(
+            state = state,
+            onUpdateTextFilter = viewModel::updateTextFilter,
+            onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
+            onUpdateIdentifiersFilter = viewModel::updateIdentifiersFilter,
+            onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+            onUpdateScoringSystemsFilter = viewModel::updateScoringSystemsFilter,
+            onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
+        )
 
-        VulnerabilitiesList(filteredVulnerabilities)
+        VulnerabilitiesList(state.vulnerabilities)
     }
 }
 
 @Composable
-private fun TitleRow(viewModel: VulnerabilitiesViewModel) {
-    val filter by viewModel.filter.collectAsState()
-    val advisors by viewModel.advisors.collectAsState()
-    val identifiers by viewModel.identifiers.collectAsState()
-    val scoringSystems by viewModel.scoringSystems.collectAsState()
-    val severities by viewModel.severities.collectAsState()
-
+private fun TitleRow(
+    state: VulnerabilitiesState,
+    onUpdateTextFilter: (text: String) -> Unit,
+    onUpdateAdvisorsFilter: (advisor: String?) -> Unit,
+    onUpdateIdentifiersFilter: (identifier: Identifier?) -> Unit,
+    onUpdateResolutionStatusFilter: (status: ResolutionStatus) -> Unit,
+    onUpdateScoringSystemsFilter: (scoringSystem: String?) -> Unit,
+    onUpdateSeveritiesFilter: (severity: String?) -> Unit,
+) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
         backgroundColor = MaterialTheme.colors.primary,
         title = {},
         actions = {
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-                FilterAdvisor(filter.advisor, advisors) { viewModel.updateFilter(filter.copy(advisor = it)) }
-                FilterScoringSystem(filter.scoringSystem, scoringSystems) {
-                    viewModel.updateFilter(filter.copy(scoringSystem = it))
-                }
-                FilterSeverity(filter.severity, severities) { viewModel.updateFilter(filter.copy(severity = it)) }
-                FilterIdentifier(filter.identifier, identifiers) {
-                    viewModel.updateFilter(filter.copy(identifier = it))
-                }
-                FilterResolutionStatus(filter.resolutionStatus) {
-                    viewModel.updateFilter(filter.copy(resolutionStatus = it))
-                }
+                FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
+                FilterAdvisor(state.advisorFilter, onUpdateAdvisorsFilter)
+                FilterScoringSystem(state.scoringSystemFilter, onUpdateScoringSystemsFilter)
+                FilterSeverity(state.severityFilter, onUpdateSeveritiesFilter)
+                FilterIdentifier(state.identifierFilter, onUpdateIdentifiersFilter)
+                FilterResolutionStatus(state.resolutionStatusFilter, onUpdateResolutionStatusFilter)
             }
         }
     )
 }
 
 @Composable
-private fun FilterAdvisor(advisor: String, advisors: List<String>, onAdvisorChange: (String) -> Unit) {
+private fun FilterAdvisor(filter: FilterData<String?>, onAdvisorChange: (String?) -> Unit) {
     FilterButton(
-        selectedItem = advisor,
-        items = listOf("") + advisors,
+        selectedItem = filter.selectedItem,
+        items = filter.options,
         onFilterChange = onAdvisorChange,
-        buttonContent = { if (it.isEmpty()) Text("Advisor") else Text(it) }
+        buttonContent = { if (it == null) Text("Advisor") else Text(it) }
     ) { item ->
-        if (item.isEmpty()) Text("All") else Text(item)
+        if (item == null) Text("All") else Text(item)
     }
 }
 
 @Composable
-private fun FilterScoringSystem(
-    scoringSystem: String,
-    scoringSystems: List<String>,
-    onScoringSystemChange: (String) -> Unit
-) {
+private fun FilterScoringSystem(filter: FilterData<String?>, onScoringSystemChange: (String?) -> Unit) {
     FilterButton(
-        selectedItem = scoringSystem,
-        items = listOf("") + scoringSystems,
+        selectedItem = filter.selectedItem,
+        items = filter.options,
         onFilterChange = onScoringSystemChange,
-        buttonContent = { if (it.isEmpty()) Text("Scoring System") else Text(it) },
+        buttonContent = { if (it == null) Text("Scoring System") else Text(it) },
         buttonWidth = 150.dp,
         dropdownWidth = 150.dp
     ) { item ->
-        if (item.isEmpty()) Text("All") else Text(item)
+        if (item == null) Text("All") else Text(item)
     }
 }
 
 @Composable
-private fun FilterSeverity(severity: String, severities: List<String>, onSeverityChange: (String) -> Unit) {
+private fun FilterSeverity(filter: FilterData<String?>, onSeverityChange: (String?) -> Unit) {
     FilterButton(
-        selectedItem = severity,
-        items = listOf("") + severities,
+        selectedItem = filter.selectedItem,
+        items = filter.options,
         onFilterChange = onSeverityChange,
-        buttonContent = { if (it.isEmpty()) Text("Severity") else Text(it) }
+        buttonContent = { if (it == null) Text("Severity") else Text(it) }
     ) { item ->
-        if (item.isEmpty()) Text("All") else Text(item)
+        if (item == null) Text("All") else Text(item)
     }
 }
 
@@ -134,14 +135,10 @@ private fun IdentifierText(identifier: Identifier) {
 }
 
 @Composable
-private fun FilterIdentifier(
-    identifier: Identifier?,
-    identifiers: List<Identifier>,
-    onIdentifierChange: (Identifier?) -> Unit
-) {
+private fun FilterIdentifier(filter: FilterData<Identifier?>, onIdentifierChange: (Identifier?) -> Unit) {
     FilterButton(
-        selectedItem = identifier,
-        items = listOf(null) + identifiers,
+        selectedItem = filter.selectedItem,
+        items = filter.options,
         onFilterChange = onIdentifierChange,
         buttonContent = { if (it == null) Text("Package") else IdentifierText(it) },
         buttonWidth = 200.dp,
@@ -153,12 +150,12 @@ private fun FilterIdentifier(
 
 @Composable
 private fun FilterResolutionStatus(
-    resolutionStatus: ResolutionStatus,
+    filter: FilterData<ResolutionStatus>,
     onResolutionStatusChange: (ResolutionStatus) -> Unit
 ) {
     FilterButton(
-        selectedItem = resolutionStatus,
-        items = listOf(ResolutionStatus.ALL, ResolutionStatus.RESOLVED, ResolutionStatus.UNRESOLVED),
+        selectedItem = filter.selectedItem,
+        items = filter.options,
         onFilterChange = onResolutionStatusChange,
         buttonContent = { if (it == ResolutionStatus.ALL) Text("Resolution") else Text(it.name.titlecase()) }
     ) { item ->
