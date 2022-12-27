@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
@@ -49,150 +48,77 @@ import org.ossreviewtoolkit.workbench.util.SeverityIcon
 @Composable
 @Preview
 fun Violations(viewModel: ViolationsViewModel) {
-    val filteredViolations by viewModel.filteredViolations.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     Column {
-        TitleRow(viewModel)
+        TitleRow(
+            state = state,
+            onUpdateTextFilter = viewModel::updateTextFilter,
+            onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+            onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+            onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
+            onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+            onUpdateRuleFilter = viewModel::updateRuleFilter,
+            onUpdateSeverityFilter = viewModel::updateSeverityFilter
+        )
 
-        ViolationsList(filteredViolations)
+        ViolationsList(state.violations)
     }
 }
 
 @Composable
-private fun TitleRow(viewModel: ViolationsViewModel) {
-    val filter by viewModel.filter.collectAsState()
-    val identifiers by viewModel.identifiers.collectAsState()
-    val licenses by viewModel.licenses.collectAsState()
-    val rules by viewModel.rules.collectAsState()
-
+private fun TitleRow(
+    state: ViolationsState,
+    onUpdateTextFilter: (text: String) -> Unit,
+    onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
+    onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
+    onUpdateLicenseSourceFilter: (licenseSource: LicenseSource?) -> Unit,
+    onUpdateResolutionStatusFilter: (resolutionStatus: ResolutionStatus) -> Unit,
+    onUpdateRuleFilter: (rule: String?) -> Unit,
+    onUpdateSeverityFilter: (severity: Severity?) -> Unit
+) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
         backgroundColor = MaterialTheme.colors.primary,
         title = {},
         actions = {
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-                FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
-                FilterLicense(filter.license, licenses) { viewModel.updateFilter(filter.copy(license = it)) }
-                FilterLicenseSource(filter.licenseSource) { viewModel.updateFilter(filter.copy(licenseSource = it)) }
-                FilterRule(filter.rule, rules) { viewModel.updateFilter(filter.copy(rule = it)) }
-                FilterIdentifier(filter.identifier, identifiers) {
-                    viewModel.updateFilter(filter.copy(identifier = it))
-                }
-                FilterResolutionStatus(filter.resolutionStatus) {
-                    viewModel.updateFilter(filter.copy(resolutionStatus = it))
-                }
+                FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
+
+                FilterButton(
+                    data = state.severityFilter,
+                    label = "Severity",
+                    onFilterChange = onUpdateSeverityFilter,
+                    convert = { it?.name?.titlecase() ?: "" }
+                )
+
+                FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+
+                FilterButton(
+                    data = state.licenseSourceFilter,
+                    label = "License Source",
+                    onFilterChange = onUpdateLicenseSourceFilter,
+                    convert = { it?.name?.titlecase() ?: "" }
+                )
+
+                FilterButton(data = state.ruleFilter, label = "Rule", onFilterChange = onUpdateRuleFilter)
+
+                FilterButton(
+                    data = state.identifierFilter,
+                    label = "Package",
+                    onFilterChange = onUpdateIdentifierFilter,
+                    convert = { it?.toCoordinates() ?: "" }
+                )
+
+                FilterButton(
+                    data = state.resolutionStatusFilter,
+                    label = "Resolution",
+                    onFilterChange = onUpdateResolutionStatusFilter,
+                    convert = { it.name.titlecase() }
+                )
             }
         }
     )
-}
-
-@Composable
-private fun SeverityItem(severity: Severity) {
-    SeverityIcon(severity)
-    Text(severity.name.titlecase(), modifier = Modifier.padding(start = 5.dp))
-}
-
-@Composable
-private fun FilterSeverity(severity: Severity?, onSeverityChange: (Severity?) -> Unit) {
-    FilterButton(
-        selectedItem = severity,
-        items = listOf(null, Severity.HINT, Severity.WARNING, Severity.ERROR),
-        onFilterChange = onSeverityChange,
-        buttonContent = { if (it == null) Text("Severity") else SeverityItem(it) }
-    ) { item ->
-        when (item) {
-            null -> Text("All")
-            else -> SeverityItem(item)
-        }
-    }
-}
-
-@Composable
-private fun FilterLicense(
-    license: String,
-    licenses: List<SpdxSingleLicenseExpression>,
-    onLicenseChange: (String) -> Unit
-) {
-    FilterButton(
-        selectedItem = license,
-        items = listOf("") + licenses.map { it.toString() },
-        onFilterChange = onLicenseChange,
-        buttonContent = { if (it.isEmpty()) Text("License") else Text(it) }
-    ) { item ->
-        if (item.isEmpty()) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun FilterLicenseSource(
-    licenseSource: LicenseSource?,
-    onLicenseSourceChange: (LicenseSource?) -> Unit
-) {
-    FilterButton(
-        selectedItem = licenseSource,
-        items = listOf(null, LicenseSource.DECLARED, LicenseSource.DETECTED, LicenseSource.CONCLUDED),
-        onFilterChange = onLicenseSourceChange,
-        buttonContent = { if (it == null) Text("License Source") else Text(it.name.titlecase()) },
-        buttonWidth = 150.dp,
-        dropdownWidth = 150.dp
-    ) { item ->
-        if (item == null) Text("All") else Text(item.name.titlecase())
-    }
-}
-
-@Composable
-private fun FilterRule(
-    rule: String,
-    rules: List<String>,
-    onRuleChange: (String) -> Unit
-) {
-    FilterButton(
-        selectedItem = rule,
-        items = listOf("") + rules,
-        onFilterChange = onRuleChange,
-        buttonContent = { if (it.isEmpty()) Text("Rule") else Text(it) }
-    ) { item ->
-        if (item.isEmpty()) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun IdentifierText(identifier: Identifier) {
-    Text(identifier.toCoordinates(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-}
-
-@Composable
-private fun FilterIdentifier(
-    identifier: Identifier?,
-    identifiers: List<Identifier>,
-    onIdentifierChange: (Identifier?) -> Unit
-) {
-    FilterButton(
-        selectedItem = identifier,
-        items = listOf(null) + identifiers,
-        onFilterChange = onIdentifierChange,
-        buttonContent = { if (it == null) Text("Package") else IdentifierText(it) },
-        buttonWidth = 200.dp,
-        dropdownWidth = 500.dp
-    ) { item ->
-        if (item == null) Text("All") else IdentifierText(item)
-    }
-}
-
-@Composable
-private fun FilterResolutionStatus(
-    resolutionStatus: ResolutionStatus,
-    onResolutionStatusChange: (ResolutionStatus) -> Unit
-) {
-    FilterButton(
-        selectedItem = resolutionStatus,
-        items = listOf(ResolutionStatus.ALL, ResolutionStatus.RESOLVED, ResolutionStatus.UNRESOLVED),
-        onFilterChange = onResolutionStatusChange,
-        buttonContent = { if (it == ResolutionStatus.ALL) Text("Resolution") else Text(it.name.titlecase()) }
-    ) { item ->
-        Text(item.name.titlecase())
-    }
 }
 
 @Composable

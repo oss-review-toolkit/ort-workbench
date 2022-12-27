@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
@@ -17,6 +16,7 @@ import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.DependencyReference
+import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.Violation
@@ -32,38 +32,20 @@ import org.ossreviewtoolkit.workbench.util.matchVulnerabilityStatus
 class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val _packages = MutableStateFlow(emptyList<PackageInfo>())
-    val packages: StateFlow<List<PackageInfo>> get() = _packages
+    private val packages = MutableStateFlow(emptyList<PackageInfo>())
+    private val filter = MutableStateFlow(PackagesFilter())
 
-    private val _filteredPackages = MutableStateFlow(emptyList<PackageInfo>())
-    val filteredPackages: StateFlow<List<PackageInfo>> get() = _filteredPackages
-
-    private val _types = MutableStateFlow(emptyList<String>())
-    val types: StateFlow<List<String>> get() = _types
-
-    private val _namespaces = MutableStateFlow(emptyList<String>())
-    val namespaces: StateFlow<List<String>> get() = _namespaces
-
-    private val _projects = MutableStateFlow(emptyList<Identifier>())
-    val projects: StateFlow<List<Identifier>> get() = _projects
-
-    private val _scopes = MutableStateFlow(emptyList<String>())
-    val scopes: StateFlow<List<String>> get() = _scopes
-
-    private val _licenses = MutableStateFlow(emptyList<SpdxSingleLicenseExpression>())
-    val licenses: StateFlow<List<SpdxSingleLicenseExpression>> get() = _licenses
-
-    private val _filter = MutableStateFlow(PackagesFilter())
-    val filter: StateFlow<PackagesFilter> get() = _filter
+    private val _state = MutableStateFlow(PackagesState.INITIAL)
+    val state: StateFlow<PackagesState> get() = _state
 
     init {
         scope.launch {
             ortModel.api.collect { api ->
-                val projectsAndPackages = (
-                    api.result.getProjects().map { it.toPackage().toCuratedPackage() } + api.result.getPackages()
-                ).sorted()
+                val projectsAndPackages =
+                    (api.result.getProjects().map { it.toPackage().toCuratedPackage() } + api.result.getPackages())
+                        .sorted()
 
-                val packages = projectsAndPackages.map { pkg ->
+                packages.value = projectsAndPackages.map { pkg ->
                     val references = api.getReferences(pkg.metadata.id)
                     val issues = api.getIssues().filter { it.id == pkg.metadata.id }
                     val violations = api.getViolations().filter { it.pkg == pkg.metadata.id }
@@ -81,30 +63,122 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                         scanResultInfos = scanResultInfos
                     )
                 }
-
-                _packages.value = packages
-                // TODO: Check how to do this when declaring the properties.
-                _types.value = packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()
-                _namespaces.value = packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()
-                _projects.value = packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()
-                _scopes.value = packages.flatMapTo(sortedSetOf()) {
-                    it.references.flatMap { it.scopes.map { it.scope } }
-                }.toList()
-                _licenses.value = packages.flatMapTo(sortedSetOf(SpdxExpressionStringComparator())) {
-                    it.resolvedLicenseInfo.licenses.map { it.license }
-                }.toList()
             }
         }
 
+        scope.launch { packages.collect { initState(it) } }
+
         scope.launch {
-            combine(packages, filter) { packages, filter ->
-                packages.filter(filter::check)
-            }.collect { _filteredPackages.value = it }
+            filter.collect { newFilter ->
+                val oldState = state.value
+                _state.value = oldState.copy(
+                    packages = packages.value.filter(newFilter::check),
+                    textFilter = newFilter.text,
+                    exclusionStatusFilter = oldState.exclusionStatusFilter.copy(
+                        selectedItem = newFilter.exclusionStatus
+                    ),
+                    issueStatusFilter = oldState.issueStatusFilter.copy(selectedItem = newFilter.issueStatus),
+                    licenseFilter = oldState.licenseFilter.copy(selectedItem = newFilter.license),
+                    namespaceFilter = oldState.namespaceFilter.copy(selectedItem = newFilter.namespace),
+                    projectFilter = oldState.projectFilter.copy(selectedItem = newFilter.project),
+                    scopeFilter = oldState.scopeFilter.copy(selectedItem = newFilter.scope),
+                    typeFilter = oldState.typeFilter.copy(selectedItem = newFilter.type),
+                    violationStatusFilter = oldState.violationStatusFilter.copy(
+                        selectedItem = newFilter.violationStatus
+                    ),
+                    vulnerabilityStatusFilter = oldState.vulnerabilityStatusFilter.copy(
+                        selectedItem = newFilter.vulnerabilityStatus
+                    )
+                )
+            }
         }
     }
 
-    fun updateFilter(filter: PackagesFilter) {
-        _filter.value = filter
+    private fun initState(packages: List<PackageInfo>) {
+        _state.value = PackagesState(
+            packages = packages,
+            textFilter = "",
+            exclusionStatusFilter = FilterData(
+                selectedItem = ExclusionStatus.ALL,
+                options = ExclusionStatus.values().toList()
+            ),
+            issueStatusFilter = FilterData(
+                selectedItem = IssueStatus.ALL,
+                options = IssueStatus.values().toList()
+            ),
+            licenseFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + packages.flatMapTo(sortedSetOf(SpdxExpressionStringComparator())) {
+                    it.resolvedLicenseInfo.licenses.map { it.license }
+                }.toList()
+            ),
+            namespaceFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()
+            ),
+            projectFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()
+            ),
+            scopeFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + packages.flatMapTo(sortedSetOf()) {
+                    it.references.flatMap { it.scopes.map { it.scope } }
+                }.toList()
+            ),
+            typeFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()
+            ),
+            violationStatusFilter = FilterData(
+                selectedItem = ViolationStatus.ALL,
+                options = ViolationStatus.values().toList()
+            ),
+            vulnerabilityStatusFilter = FilterData(
+                selectedItem = VulnerabilityStatus.ALL,
+                options = VulnerabilityStatus.values().toList()
+            )
+        )
+    }
+
+    fun updateTextFilter(text: String) {
+        filter.value = filter.value.copy(text = text)
+    }
+
+    fun updateExclusionStatusFilter(exclusionStatus: ExclusionStatus) {
+        filter.value = filter.value.copy(exclusionStatus = exclusionStatus)
+    }
+
+    fun updateIssueStatusFilter(issueStatus: IssueStatus) {
+        filter.value = filter.value.copy(issueStatus = issueStatus)
+    }
+
+    fun updateLicenseFilter(license: SpdxSingleLicenseExpression?) {
+        filter.value = filter.value.copy(license = license)
+    }
+
+    fun updateNamespaceFilter(namespace: String?) {
+        filter.value = filter.value.copy(namespace = namespace)
+    }
+
+    fun updateProjectFilter(project: Identifier?) {
+        filter.value = filter.value.copy(project = project)
+    }
+
+    fun updateScopeFilter(scope: String?) {
+        filter.value = filter.value.copy(scope = scope)
+    }
+
+    fun updateTypeFilter(type: String?) {
+        filter.value = filter.value.copy(type = type)
+    }
+
+    fun updateViolationStatusFilter(violationStatus: ViolationStatus) {
+        filter.value = filter.value.copy(violationStatus = violationStatus)
+    }
+
+    fun updateVulnerabilityStatusFilter(vulnerabilityStatus: VulnerabilityStatus) {
+        filter.value = filter.value.copy(vulnerabilityStatus = vulnerabilityStatus)
     }
 }
 
@@ -128,10 +202,10 @@ data class ScanResultInfo(
 
 data class PackagesFilter(
     val text: String = "",
-    val type: String = "",
-    val namespace: String = "",
+    val type: String? = null,
+    val namespace: String? = null,
     val project: Identifier? = null,
-    val scope: String = "",
+    val scope: String? = null,
     val license: SpdxSingleLicenseExpression? = null,
     val issueStatus: IssueStatus = IssueStatus.ALL,
     val violationStatus: ViolationStatus = ViolationStatus.ALL,
