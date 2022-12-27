@@ -20,11 +20,11 @@ data class IssuesState(
         val INITIAL = IssuesState(
             issues = emptyList(),
             textFilter = "",
-            identifierFilter = FilterData(null, emptyList()),
-            resolutionStatusFilter = FilterData(null, emptyList()),
-            severityFilter = FilterData(null, emptyList()),
-            sourceFilter = FilterData(null, emptyList()),
-            toolFilter = FilterData(null, emptyList()),
+            identifierFilter = FilterData(),
+            resolutionStatusFilter = FilterData(),
+            severityFilter = FilterData(),
+            sourceFilter = FilterData(),
+            toolFilter = FilterData()
         )
     }
 }

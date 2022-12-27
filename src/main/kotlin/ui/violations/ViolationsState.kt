@@ -22,12 +22,12 @@ data class ViolationsState(
         val INITIAL = ViolationsState(
             violations = emptyList(),
             textFilter = "",
-            identifierFilter = FilterData(null, emptyList()),
-            licenseFilter = FilterData(null, emptyList()),
-            licenseSourceFilter = FilterData(null, emptyList()),
-            resolutionStatusFilter = FilterData(null, emptyList()),
-            ruleFilter = FilterData(null, emptyList()),
-            severityFilter = FilterData(null, emptyList()),
+            identifierFilter = FilterData(),
+            licenseFilter = FilterData(),
+            licenseSourceFilter = FilterData(),
+            resolutionStatusFilter = FilterData(),
+            ruleFilter = FilterData(),
+            severityFilter = FilterData()
         )
     }
 }

@@ -21,15 +21,15 @@ data class PackagesState(
         val INITIAL = PackagesState(
             packages = emptyList(),
             textFilter = "",
-            exclusionStatusFilter = FilterData(null, emptyList()),
-            issueStatusFilter = FilterData(null, emptyList()),
-            licenseFilter = FilterData(null, emptyList()),
-            namespaceFilter = FilterData(null, emptyList()),
-            projectFilter = FilterData(null, emptyList()),
-            scopeFilter = FilterData(null, emptyList()),
-            typeFilter = FilterData(null, emptyList()),
-            violationStatusFilter = FilterData(null, emptyList()),
-            vulnerabilityStatusFilter = FilterData(null, emptyList()),
+            exclusionStatusFilter = FilterData(),
+            issueStatusFilter = FilterData(),
+            licenseFilter = FilterData(),
+            namespaceFilter = FilterData(),
+            projectFilter = FilterData(),
+            scopeFilter = FilterData(),
+            typeFilter = FilterData(),
+            violationStatusFilter = FilterData(),
+            vulnerabilityStatusFilter = FilterData()
         )
     }
 }
