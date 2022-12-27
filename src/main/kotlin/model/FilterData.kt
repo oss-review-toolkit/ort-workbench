@@ -1,6 +1,6 @@
 package org.ossreviewtoolkit.workbench.model
 
 data class FilterData<ITEM : Any>(
-    val selectedItem: ITEM?,
-    val options: List<ITEM>
+    val options: List<ITEM> = emptyList(),
+    val selectedItem: ITEM? = null
 )

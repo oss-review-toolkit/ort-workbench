@@ -98,46 +98,23 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         _state.value = PackagesState(
             packages = packages,
             textFilter = "",
-            exclusionStatusFilter = FilterData(
-                selectedItem = null,
-                options = ExclusionStatus.values().toList()
-            ),
-            issueStatusFilter = FilterData(
-                selectedItem = null,
-                options = IssueStatus.values().toList()
-            ),
+            exclusionStatusFilter = FilterData(ExclusionStatus.values().toList()),
+            issueStatusFilter = FilterData(IssueStatus.values().toList()),
             licenseFilter = FilterData(
-                selectedItem = null,
-                options = packages.flatMapTo(sortedSetOf(SpdxExpressionStringComparator())) {
+                packages.flatMapTo(sortedSetOf(SpdxExpressionStringComparator())) {
                     it.resolvedLicenseInfo.licenses.map { it.license }
                 }.toList()
             ),
-            namespaceFilter = FilterData(
-                selectedItem = null,
-                options = packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()
-            ),
-            projectFilter = FilterData(
-                selectedItem = null,
-                options = packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()
-            ),
+            namespaceFilter = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()),
+            projectFilter = FilterData(packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()),
             scopeFilter = FilterData(
-                selectedItem = null,
-                options = packages.flatMapTo(sortedSetOf()) {
+                packages.flatMapTo(sortedSetOf()) {
                     it.references.flatMap { it.scopes.map { it.scope } }
                 }.toList()
             ),
-            typeFilter = FilterData(
-                selectedItem = null,
-                options = packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()
-            ),
-            violationStatusFilter = FilterData(
-                selectedItem = null,
-                options = ViolationStatus.values().toList()
-            ),
-            vulnerabilityStatusFilter = FilterData(
-                selectedItem = null,
-                options = VulnerabilityStatus.values().toList()
-            )
+            typeFilter = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()),
+            violationStatusFilter = FilterData(ViolationStatus.values().toList()),
+            vulnerabilityStatusFilter = FilterData(VulnerabilityStatus.values().toList())
         )
     }
 

@@ -57,32 +57,16 @@ class ViolationsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         _state.value = ViolationsState(
             violations = violations,
             textFilter = "",
-            identifierFilter = FilterData(
-                selectedItem = null,
-                options = violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()
-            ),
+            identifierFilter = FilterData(violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()),
             licenseFilter = FilterData(
-                selectedItem = null,
-                options = violations.mapNotNullTo(sortedSetOf(SpdxExpressionStringComparator())) {
+                violations.mapNotNullTo(sortedSetOf(SpdxExpressionStringComparator())) {
                     it.license
                 }.toList()
             ),
-            licenseSourceFilter = FilterData(
-                selectedItem = null,
-                options = LicenseSource.values().toList()
-            ),
-            resolutionStatusFilter = FilterData(
-                selectedItem = null,
-                options = ResolutionStatus.values().toList()
-            ),
-            ruleFilter = FilterData(
-                selectedItem = null,
-                options = violations.mapTo(sortedSetOf()) { it.rule }.toList()
-            ),
-            severityFilter = FilterData(
-                selectedItem = null,
-                options = Severity.values().toList()
-            )
+            licenseSourceFilter = FilterData(LicenseSource.values().toList()),
+            resolutionStatusFilter = FilterData(ResolutionStatus.values().toList()),
+            ruleFilter = FilterData(violations.mapTo(sortedSetOf()) { it.rule }.toList()),
+            severityFilter = FilterData(Severity.values().toList())
         )
     }
 

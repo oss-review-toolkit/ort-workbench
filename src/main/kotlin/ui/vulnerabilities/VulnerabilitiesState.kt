@@ -18,11 +18,11 @@ data class VulnerabilitiesState(
         val INITIAL = VulnerabilitiesState(
             vulnerabilities = emptyList(),
             textFilter = "",
-            advisorFilter = FilterData(null, emptyList()),
-            identifierFilter = FilterData(null, emptyList()),
-            resolutionStatusFilter = FilterData(null, emptyList()),
-            scoringSystemFilter = FilterData(null, emptyList()),
-            severityFilter = FilterData(null, emptyList())
+            advisorFilter = FilterData(),
+            identifierFilter = FilterData(),
+            resolutionStatusFilter = FilterData(),
+            scoringSystemFilter = FilterData(),
+            severityFilter = FilterData()
         )
     }
 }
