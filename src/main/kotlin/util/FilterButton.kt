@@ -22,7 +22,7 @@ import org.ossreviewtoolkit.workbench.model.FilterData
 fun <T> FilterButton(
     data: FilterData<T>,
     label: String,
-    onFilterChange: (T) -> Unit,
+    onFilterChange: (T?) -> Unit,
     convert: (T) -> String = { it.toString() }
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -37,16 +37,21 @@ fun <T> FilterButton(
         }
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(onClick = {
+                expanded = false
+                onFilterChange(null)
+            }) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text("No filter", fontStyle = FontStyle.Italic, overflow = TextOverflow.Ellipsis)
+                }
+            }
+
             data.options.forEach { item ->
                 DropdownMenuItem(onClick = {
                     expanded = false
                     onFilterChange(item)
                 }) {
-                    if (item == null) {
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                            Text("No filter", fontStyle = FontStyle.Italic, overflow = TextOverflow.Ellipsis)
-                        }
-                    } else {
+                    if (item != null) {
                         Text(convert(item), overflow = TextOverflow.Ellipsis)
                     }
                 }

@@ -58,25 +58,25 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANC
             textFilter = "",
             advisorFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + vulnerabilities.mapTo(sortedSetOf()) { it.advisor }.toList()
+                options = vulnerabilities.mapTo(sortedSetOf()) { it.advisor }.toList()
             ),
             identifierFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + vulnerabilities.mapTo(sortedSetOf()) { it.pkg }.toList()
+                options = vulnerabilities.mapTo(sortedSetOf()) { it.pkg }.toList()
             ),
             resolutionStatusFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + ResolutionStatus.values().toList(),
+                options = ResolutionStatus.values().toList(),
             ),
             scoringSystemFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
+                options = vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
                     vulnerability.references.mapNotNull { it.scoringSystem }
                 }.toList()
             ),
             severityFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
+                options = vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
                     vulnerability.references.mapNotNull { it.severity }
                 }.toList()
             )
