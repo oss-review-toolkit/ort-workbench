@@ -1,5 +1,6 @@
 package org.ossreviewtoolkit.workbench.ui.violations
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
@@ -11,19 +12,28 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -41,6 +51,7 @@ import org.ossreviewtoolkit.workbench.util.ExpandableMarkdown
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
+import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.SeverityIcon
@@ -50,19 +61,32 @@ import org.ossreviewtoolkit.workbench.util.SeverityIcon
 fun Violations(viewModel: ViolationsViewModel) {
     val state by viewModel.state.collectAsState()
 
+    var showFilterPanel by remember { mutableStateOf(false) }
+
     Column {
         TitleRow(
             state = state,
             onUpdateTextFilter = viewModel::updateTextFilter,
-            onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
-            onUpdateLicenseFilter = viewModel::updateLicenseFilter,
-            onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
-            onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-            onUpdateRuleFilter = viewModel::updateRuleFilter,
-            onUpdateSeverityFilter = viewModel::updateSeverityFilter
+            onToggleFilter = { showFilterPanel = !showFilterPanel }
         )
 
-        ViolationsList(state.violations)
+        Row {
+            Box(modifier = Modifier.weight(1f)) {
+                ViolationsList(state.violations)
+            }
+
+            AnimatedVisibility(visible = showFilterPanel) {
+                ViolationsFilterPanel(
+                    state = state,
+                    onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+                    onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+                    onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
+                    onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                    onUpdateRuleFilter = viewModel::updateRuleFilter,
+                    onUpdateSeverityFilter = viewModel::updateSeverityFilter
+                )
+            }
+        }
     }
 }
 
@@ -70,12 +94,7 @@ fun Violations(viewModel: ViolationsViewModel) {
 private fun TitleRow(
     state: ViolationsState,
     onUpdateTextFilter: (text: String) -> Unit,
-    onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
-    onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
-    onUpdateLicenseSourceFilter: (licenseSource: LicenseSource?) -> Unit,
-    onUpdateResolutionStatusFilter: (resolutionStatus: ResolutionStatus?) -> Unit,
-    onUpdateRuleFilter: (rule: String?) -> Unit,
-    onUpdateSeverityFilter: (severity: Severity?) -> Unit
+    onToggleFilter: () -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
@@ -85,37 +104,13 @@ private fun TitleRow(
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
 
-                FilterButton(
-                    data = state.severityFilter,
-                    label = "Severity",
-                    onFilterChange = onUpdateSeverityFilter,
-                    convert = { it.name.titlecase() }
-                )
-
-                FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
-
-                FilterButton(
-                    data = state.licenseSourceFilter,
-                    label = "License Source",
-                    onFilterChange = onUpdateLicenseSourceFilter,
-                    convert = { it.name.titlecase() }
-                )
-
-                FilterButton(data = state.ruleFilter, label = "Rule", onFilterChange = onUpdateRuleFilter)
-
-                FilterButton(
-                    data = state.identifierFilter,
-                    label = "Package",
-                    onFilterChange = onUpdateIdentifierFilter,
-                    convert = { it.toCoordinates() }
-                )
-
-                FilterButton(
-                    data = state.resolutionStatusFilter,
-                    label = "Resolution",
-                    onFilterChange = onUpdateResolutionStatusFilter,
-                    convert = { it.name.titlecase() }
-                )
+                IconButton(onClick = onToggleFilter) {
+                    Icon(
+                        painterResource(MaterialIcon.FILTER_LIST.resource),
+                        contentDescription = "Filter",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     )
@@ -202,5 +197,58 @@ private fun ViolationCardPreview() {
 
     Preview {
         ViolationCard(violation)
+    }
+}
+
+@Composable
+fun ViolationsFilterPanel(
+    state: ViolationsState,
+    onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
+    onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
+    onUpdateLicenseSourceFilter: (licenseSource: LicenseSource?) -> Unit,
+    onUpdateResolutionStatusFilter: (resolutionStatus: ResolutionStatus?) -> Unit,
+    onUpdateRuleFilter: (rule: String?) -> Unit,
+    onUpdateSeverityFilter: (severity: Severity?) -> Unit
+) {
+    Surface(
+        modifier = Modifier.width(500.dp).fillMaxHeight(),
+        color = MaterialTheme.colors.surface,
+        elevation = 8.dp
+    ) {
+        Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Filters", style = MaterialTheme.typography.h4)
+
+            FilterButton(
+                data = state.severityFilter,
+                label = "Severity",
+                onFilterChange = onUpdateSeverityFilter,
+                convert = { it.name.titlecase() }
+            )
+
+            FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+
+            FilterButton(
+                data = state.licenseSourceFilter,
+                label = "License Source",
+                onFilterChange = onUpdateLicenseSourceFilter,
+                convert = { it.name.titlecase() }
+            )
+
+            FilterButton(data = state.ruleFilter, label = "Rule", onFilterChange = onUpdateRuleFilter)
+
+            FilterButton(
+                data = state.identifierFilter,
+                label = "Package",
+                onFilterChange = onUpdateIdentifierFilter,
+                convert = { it.toCoordinates() }
+            )
+
+            FilterButton(
+                data = state.resolutionStatusFilter,
+                label = "Resolution",
+                onFilterChange = onUpdateResolutionStatusFilter,
+                convert = { it.name.titlecase() }
+            )
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
@@ -11,19 +12,28 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -39,6 +49,7 @@ import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
+import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.WebLink
@@ -47,18 +58,31 @@ import org.ossreviewtoolkit.workbench.util.WebLink
 fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
     val state by viewModel.state.collectAsState()
 
+    var showFilterPanel by remember { mutableStateOf(false) }
+
     Column {
         TitleRow(
             state = state,
             onUpdateTextFilter = viewModel::updateTextFilter,
-            onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
-            onUpdateIdentifiersFilter = viewModel::updateIdentifiersFilter,
-            onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-            onUpdateScoringSystemsFilter = viewModel::updateScoringSystemsFilter,
-            onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
+            onToggleFilter = { showFilterPanel = !showFilterPanel }
         )
 
-        VulnerabilitiesList(state.vulnerabilities)
+        Row {
+            Box(modifier = Modifier.weight(1f)) {
+                VulnerabilitiesList(state.vulnerabilities)
+            }
+
+            AnimatedVisibility(visible = showFilterPanel) {
+                VulnerabilitiesFilterPanel(
+                    state = state,
+                    onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
+                    onUpdateIdentifiersFilter = viewModel::updateIdentifiersFilter,
+                    onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                    onUpdateScoringSystemsFilter = viewModel::updateScoringSystemsFilter,
+                    onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
+                )
+            }
+        }
     }
 }
 
@@ -66,11 +90,7 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
 private fun TitleRow(
     state: VulnerabilitiesState,
     onUpdateTextFilter: (text: String) -> Unit,
-    onUpdateAdvisorsFilter: (advisor: String?) -> Unit,
-    onUpdateIdentifiersFilter: (identifier: Identifier?) -> Unit,
-    onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
-    onUpdateScoringSystemsFilter: (scoringSystem: String?) -> Unit,
-    onUpdateSeveritiesFilter: (severity: String?) -> Unit,
+    onToggleFilter: () -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
@@ -80,33 +100,13 @@ private fun TitleRow(
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
 
-                FilterButton(data = state.advisorFilter, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
-
-                FilterButton(
-                    data = state.scoringSystemFilter,
-                    label = "Scoring System",
-                    onFilterChange = onUpdateScoringSystemsFilter
-                )
-
-                FilterButton(
-                    data = state.severityFilter,
-                    label = "Severity",
-                    onFilterChange = onUpdateSeveritiesFilter
-                )
-
-                FilterButton(
-                    data = state.identifierFilter,
-                    label = "Package",
-                    onFilterChange = onUpdateIdentifiersFilter,
-                    convert = { it.toCoordinates() }
-                )
-
-                FilterButton(
-                    data = state.resolutionStatusFilter,
-                    label = "Resolution",
-                    onFilterChange = onUpdateResolutionStatusFilter,
-                    convert = { it.name.titlecase() }
-                )
+                IconButton(onClick = onToggleFilter) {
+                    Icon(
+                        painterResource(MaterialIcon.FILTER_LIST.resource),
+                        contentDescription = "Filter",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     )
@@ -198,5 +198,68 @@ private fun VulnerabilityCardPreview() {
 
     Preview {
         VulnerabilityCard(vulnerability)
+    }
+}
+
+@Composable
+fun VulnerabilitiesFilterPanel(
+    state: VulnerabilitiesState,
+    onUpdateAdvisorsFilter: (advisor: String?) -> Unit,
+    onUpdateIdentifiersFilter: (identifier: Identifier?) -> Unit,
+    onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
+    onUpdateScoringSystemsFilter: (scoringSystem: String?) -> Unit,
+    onUpdateSeveritiesFilter: (severity: String?) -> Unit,
+) {
+    Surface(
+        modifier = Modifier.width(500.dp).fillMaxHeight(),
+        color = MaterialTheme.colors.surface,
+        elevation = 8.dp
+    ) {
+        Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Filters", style = MaterialTheme.typography.h4)
+
+            FilterButton(data = state.advisorFilter, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
+
+            FilterButton(
+                data = state.scoringSystemFilter,
+                label = "Scoring System",
+                onFilterChange = onUpdateScoringSystemsFilter
+            )
+
+            FilterButton(
+                data = state.severityFilter,
+                label = "Severity",
+                onFilterChange = onUpdateSeveritiesFilter
+            )
+
+            FilterButton(
+                data = state.identifierFilter,
+                label = "Package",
+                onFilterChange = onUpdateIdentifiersFilter,
+                convert = { it.toCoordinates() }
+            )
+
+            FilterButton(
+                data = state.resolutionStatusFilter,
+                label = "Resolution",
+                onFilterChange = onUpdateResolutionStatusFilter,
+                convert = { it.name.titlecase() }
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun VulnerabilitiesFilterPanelPreview() {
+    Preview {
+        VulnerabilitiesFilterPanel(
+            state = VulnerabilitiesState.INITIAL,
+            onUpdateAdvisorsFilter = {},
+            onUpdateIdentifiersFilter = {},
+            onUpdateResolutionStatusFilter = {},
+            onUpdateScoringSystemsFilter = {},
+            onUpdateSeveritiesFilter = {}
+        )
     }
 }

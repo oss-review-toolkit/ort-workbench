@@ -1,6 +1,7 @@
 package org.ossreviewtoolkit.workbench.util
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -13,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 
@@ -28,11 +30,11 @@ fun <T : Any> FilterButton(
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Box {
-        OutlinedButton(onClick = { expanded = !expanded }) {
+        OutlinedButton(onClick = { expanded = !expanded }, modifier = Modifier.fillMaxWidth()) {
             if (data.selectedItem == null) {
                 Text(label, overflow = TextOverflow.Ellipsis)
             } else {
-                Text(convert(data.selectedItem), overflow = TextOverflow.Ellipsis)
+                Text("$label: ${convert(data.selectedItem)}", overflow = TextOverflow.Ellipsis)
             }
         }
 

@@ -1,5 +1,6 @@
 package org.ossreviewtoolkit.workbench.ui.issues
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
@@ -11,19 +12,28 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,6 +51,7 @@ import org.ossreviewtoolkit.workbench.model.Tool
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
+import org.ossreviewtoolkit.workbench.util.MaterialIcon
 import org.ossreviewtoolkit.workbench.util.Preview
 import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.SeverityIcon
@@ -49,18 +60,31 @@ import org.ossreviewtoolkit.workbench.util.SeverityIcon
 fun Issues(viewModel: IssuesViewModel) {
     val state by viewModel.state.collectAsState()
 
+    var showFilterPanel by remember { mutableStateOf(false) }
+
     Column {
         TitleRow(
             state = state,
             onUpdateTextFilter = viewModel::updateTextFilter,
-            onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
-            onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-            onUpdateSeverityFilter = viewModel::updateSeverityFilter,
-            onUpdateSourceFilter = viewModel::updateSourceFilter,
-            onUpdateToolFilter = viewModel::updateToolFilter
+            onToggleFilter = { showFilterPanel = !showFilterPanel }
         )
 
-        IssuesList(state.issues)
+        Row {
+            Box(modifier = Modifier.weight(1f)) {
+                IssuesList(state.issues)
+            }
+
+            AnimatedVisibility(visible = showFilterPanel) {
+                IssuesFilterPanel(
+                    state = state,
+                    onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+                    onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                    onUpdateSeverityFilter = viewModel::updateSeverityFilter,
+                    onUpdateSourceFilter = viewModel::updateSourceFilter,
+                    onUpdateToolFilter = viewModel::updateToolFilter
+                )
+            }
+        }
     }
 }
 
@@ -68,11 +92,7 @@ fun Issues(viewModel: IssuesViewModel) {
 private fun TitleRow(
     state: IssuesState,
     onUpdateTextFilter: (text: String) -> Unit,
-    onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
-    onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
-    onUpdateSeverityFilter: (severity: Severity?) -> Unit,
-    onUpdateSourceFilter: (source: String?) -> Unit,
-    onUpdateToolFilter: (tool: Tool?) -> Unit
+    onToggleFilter: () -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
@@ -82,35 +102,13 @@ private fun TitleRow(
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
 
-                FilterButton(
-                    data = state.severityFilter,
-                    label = "Severity",
-                    onFilterChange = onUpdateSeverityFilter,
-                    convert = { it.name.titlecase() }
-                )
-
-                FilterButton(data = state.sourceFilter, label = "Source", onFilterChange = onUpdateSourceFilter)
-
-                FilterButton(
-                    data = state.toolFilter,
-                    label = "Tool",
-                    onFilterChange = onUpdateToolFilter,
-                    convert = { it.name.titlecase() }
-                )
-
-                FilterButton(
-                    data = state.identifierFilter,
-                    label = "Package",
-                    onFilterChange = onUpdateIdentifierFilter,
-                    convert = { it.toCoordinates() }
-                )
-
-                FilterButton(
-                    data = state.resolutionStatusFilter,
-                    label = "Resolution",
-                    onFilterChange = onUpdateResolutionStatusFilter,
-                    convert = { it.name.titlecase() }
-                )
+                IconButton(onClick = onToggleFilter) {
+                    Icon(
+                        painterResource(MaterialIcon.FILTER_LIST.resource),
+                        contentDescription = "Filter",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     )
@@ -146,7 +144,10 @@ fun IssuesList(issues: List<Issue>) {
 fun IssueCard(issue: Issue) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
                 SeverityIcon(issue.severity, resolved = issue.resolutions.isNotEmpty())
                 Text(issue.id.toCoordinates())
                 Box(modifier = Modifier.weight(1f))
@@ -184,5 +185,55 @@ private fun IssueCardPreview() {
 
     Preview {
         IssueCard(issue)
+    }
+}
+
+@Composable
+fun IssuesFilterPanel(
+    state: IssuesState,
+    onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
+    onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
+    onUpdateSeverityFilter: (severity: Severity?) -> Unit,
+    onUpdateSourceFilter: (source: String?) -> Unit,
+    onUpdateToolFilter: (tool: Tool?) -> Unit
+) {
+    Surface(
+        modifier = Modifier.width(500.dp).fillMaxHeight(),
+        color = MaterialTheme.colors.surface,
+        elevation = 8.dp
+    ) {
+        Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Filters", style = MaterialTheme.typography.h4)
+
+            FilterButton(
+                data = state.severityFilter,
+                label = "Severity",
+                onFilterChange = onUpdateSeverityFilter,
+                convert = { it.name.titlecase() }
+            )
+
+            FilterButton(data = state.sourceFilter, label = "Source", onFilterChange = onUpdateSourceFilter)
+
+            FilterButton(
+                data = state.toolFilter,
+                label = "Tool",
+                onFilterChange = onUpdateToolFilter,
+                convert = { it.name.titlecase() }
+            )
+
+            FilterButton(
+                data = state.identifierFilter,
+                label = "Package",
+                onFilterChange = onUpdateIdentifierFilter,
+                convert = { it.toCoordinates() }
+            )
+
+            FilterButton(
+                data = state.resolutionStatusFilter,
+                label = "Resolution",
+                onFilterChange = onUpdateResolutionStatusFilter,
+                convert = { it.name.titlecase() }
+            )
+        }
     }
 }
