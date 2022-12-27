@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
@@ -40,192 +39,101 @@ import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
 import org.ossreviewtoolkit.workbench.util.IconText
 import org.ossreviewtoolkit.workbench.util.MaterialIcon
-import org.ossreviewtoolkit.workbench.util.enumcase
 
 @Composable
 fun Packages(viewModel: PackagesViewModel) {
-    val filteredPackages by viewModel.filteredPackages.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     Column {
-        TitleRow(viewModel)
+        TitleRow(
+            state = state,
+            onUpdateTextFilter = viewModel::updateTextFilter,
+            onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
+            onUpdateIssueStatusFilter = viewModel::updateIssueStatusFilter,
+            onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+            onUpdateNamespaceFilter = viewModel::updateNamespaceFilter,
+            onUpdateProjectFilter = viewModel::updateProjectFilter,
+            onUpdateScopeFilter = viewModel::updateScopeFilter,
+            onUpdateTypeFilter = viewModel::updateTypeFilter,
+            onUpdateViolationStatusFilter = viewModel::updateViolationStatusFilter,
+            onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
+        )
 
-        PackagesList(filteredPackages)
+        PackagesList(state.packages)
     }
 }
 
 @Composable
-private fun TitleRow(viewModel: PackagesViewModel) {
-    val filter by viewModel.filter.collectAsState()
-    val types by viewModel.types.collectAsState()
-    val namespaces by viewModel.namespaces.collectAsState()
-    val projects by viewModel.projects.collectAsState()
-    val scopes by viewModel.scopes.collectAsState()
-    val licenses by viewModel.licenses.collectAsState()
-
+private fun TitleRow(
+    state: PackagesState,
+    onUpdateTextFilter: (text: String) -> Unit,
+    onUpdateExclusionStatusFilter: (exclusionStatus: ExclusionStatus) -> Unit,
+    onUpdateIssueStatusFilter: (issueStatus: IssueStatus) -> Unit,
+    onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
+    onUpdateNamespaceFilter: (namespace: String?) -> Unit,
+    onUpdateProjectFilter: (project: Identifier?) -> Unit,
+    onUpdateScopeFilter: (scope: String?) -> Unit,
+    onUpdateTypeFilter: (type: String?) -> Unit,
+    onUpdateViolationStatusFilter: (violationStatus: ViolationStatus) -> Unit,
+    onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus) -> Unit
+) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
         backgroundColor = MaterialTheme.colors.primary,
         title = {},
         actions = {
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-                FilterType(filter.type, types) { viewModel.updateFilter(filter.copy(type = it)) }
-                FilterNamespace(filter.namespace, namespaces) {
-                    viewModel.updateFilter(filter.copy(namespace = it))
-                }
-                FilterProject(filter.project, projects) { viewModel.updateFilter(filter.copy(project = it)) }
-                FilterScope(filter.scope, scopes) { viewModel.updateFilter(filter.copy(scope = it)) }
-                FilterLicense(filter.license, licenses) { viewModel.updateFilter(filter.copy(license = it)) }
-                FilterIssueStatus(filter.issueStatus) { viewModel.updateFilter(filter.copy(issueStatus = it)) }
-                FilterViolationStatus(filter.violationStatus) {
-                    viewModel.updateFilter(filter.copy(violationStatus = it))
-                }
-                FilterVulnerabilityStatus(filter.vulnerabilityStatus) {
-                    viewModel.updateFilter(filter.copy(vulnerabilityStatus = it))
-                }
-                FilterExclusionStatus(filter.exclusionStatus) {
-                    viewModel.updateFilter(filter.copy(exclusionStatus = it))
-                }
+                FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
+
+                FilterButton(data = state.typeFilter, label = "Type", onFilterChange = onUpdateTypeFilter)
+
+                FilterButton(
+                    data = state.namespaceFilter,
+                    label = "Namespace",
+                    onFilterChange = onUpdateNamespaceFilter
+                )
+
+                FilterButton(
+                    data = state.projectFilter,
+                    label = "Project",
+                    onFilterChange = onUpdateProjectFilter,
+                    convert = { it?.toCoordinates() ?: "" }
+                )
+
+                FilterButton(data = state.scopeFilter, label = "Scope", onFilterChange = onUpdateScopeFilter)
+
+                FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+
+                FilterButton(
+                    data = state.issueStatusFilter,
+                    label = "Issues",
+                    onFilterChange = onUpdateIssueStatusFilter,
+                    convert = { it.name.titlecase() }
+                )
+
+                FilterButton(
+                    data = state.violationStatusFilter,
+                    label = "Violations",
+                    onFilterChange = onUpdateViolationStatusFilter,
+                    convert = { it.name.titlecase() }
+                )
+
+                FilterButton(
+                    data = state.vulnerabilityStatusFilter,
+                    label = "Vulnerabilities",
+                    onFilterChange = onUpdateVulnerabilityStatusFilter,
+                    convert = { it.name.titlecase() }
+                )
+
+                FilterButton(
+                    data = state.exclusionStatusFilter,
+                    label = "Excluded",
+                    onFilterChange = onUpdateExclusionStatusFilter,
+                    convert = { it.name.titlecase() }
+                )
             }
         }
     )
-}
-
-@Composable
-private fun FilterType(type: String, types: List<String>, onSourceChange: (String) -> Unit) {
-    FilterButton(
-        selectedItem = type,
-        items = listOf("") + types,
-        onFilterChange = onSourceChange,
-        buttonContent = { if (it.isBlank()) Text("Type") else Text(it) }
-    ) { item ->
-        if (item.isBlank()) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun FilterNamespace(namespace: String, namespaces: List<String>, onSourceChange: (String) -> Unit) {
-    FilterButton(
-        selectedItem = namespace,
-        items = listOf("") + namespaces,
-        onFilterChange = onSourceChange,
-        buttonContent = { if (it.isBlank()) Text("Namespace") else Text(it) },
-        dropdownWidth = 500.dp
-    ) { item ->
-        if (item.isBlank()) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun IdentifierText(identifier: Identifier) {
-    Text(identifier.toCoordinates(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-}
-
-@Composable
-private fun FilterProject(project: Identifier?, projects: List<Identifier>, onSourceChange: (Identifier?) -> Unit) {
-    FilterButton(
-        selectedItem = project,
-        items = listOf(null) + projects,
-        onFilterChange = onSourceChange,
-        buttonContent = { if (it == null) Text("Project") else IdentifierText(it) },
-        buttonWidth = 200.dp,
-        dropdownWidth = 500.dp
-    ) { item ->
-        if (item == null) Text("All") else IdentifierText(item)
-    }
-}
-
-@Composable
-private fun FilterScope(scope: String, scopes: List<String>, onSourceChange: (String) -> Unit) {
-    FilterButton(
-        selectedItem = scope,
-        items = listOf("") + scopes,
-        onFilterChange = onSourceChange,
-        buttonContent = { if (it.isBlank()) Text("Scope") else Text(it) }
-    ) { item ->
-        if (item.isBlank()) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun FilterLicense(
-    license: SpdxSingleLicenseExpression?,
-    licenses: List<SpdxSingleLicenseExpression>,
-    onLicenseChange: (SpdxSingleLicenseExpression?) -> Unit
-) {
-    FilterButton(
-        selectedItem = license,
-        items = listOf(null) + licenses,
-        onFilterChange = onLicenseChange,
-        buttonContent = { if (it == null) Text("License") else Text(it.toString()) },
-        buttonWidth = 200.dp,
-        dropdownWidth = 500.dp
-    ) { item ->
-        if (item == null) Text("All") else Text(item.toString())
-    }
-}
-
-@Composable
-private fun FilterIssueStatus(
-    issueStatus: IssueStatus,
-    onIssueStatusChange: (IssueStatus) -> Unit
-) {
-    FilterButton(
-        selectedItem = issueStatus,
-        items = IssueStatus.values().toList(),
-        onFilterChange = onIssueStatusChange,
-        buttonContent = { if (it == IssueStatus.ALL) Text("Issues") else Text(it.name.titlecase()) }
-    ) { item ->
-        Text(item.name.enumcase())
-    }
-}
-
-@Composable
-private fun FilterViolationStatus(
-    violationStatus: ViolationStatus,
-    onViolationStatusChange: (ViolationStatus) -> Unit
-) {
-    FilterButton(
-        selectedItem = violationStatus,
-        items = ViolationStatus.values().toList(),
-        onFilterChange = onViolationStatusChange,
-        buttonContent = { if (it == ViolationStatus.ALL) Text("Violations") else Text(it.name.titlecase()) },
-        dropdownWidth = 200.dp
-    ) { item ->
-        Text(item.name.enumcase())
-    }
-}
-
-@Composable
-private fun FilterVulnerabilityStatus(
-    vulnerabilityStatus: VulnerabilityStatus,
-    onVulnerabilityStatusChange: (VulnerabilityStatus) -> Unit
-) {
-    FilterButton(
-        selectedItem = vulnerabilityStatus,
-        items = VulnerabilityStatus.values().toList(),
-        onFilterChange = onVulnerabilityStatusChange,
-        buttonContent = { if (it == VulnerabilityStatus.ALL) Text("Vulnerabilities") else Text(it.name.titlecase()) },
-        buttonWidth = 200.dp,
-        dropdownWidth = 200.dp
-    ) { item ->
-        Text(item.name.enumcase())
-    }
-}
-
-@Composable
-private fun FilterExclusionStatus(
-    exclusionStatus: ExclusionStatus,
-    onExclusionStatusChange: (ExclusionStatus) -> Unit
-) {
-    FilterButton(
-        selectedItem = exclusionStatus,
-        items = ExclusionStatus.values().toList(),
-        onFilterChange = onExclusionStatusChange,
-        buttonContent = { if (it == ExclusionStatus.ALL) Text("Exclusion") else Text(it.name.titlecase()) }
-    ) { item ->
-        Text(item.name.titlecase())
-    }
 }
 
 @Composable

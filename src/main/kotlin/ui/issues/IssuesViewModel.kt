@@ -4,11 +4,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Severity
+import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.Tool
@@ -21,42 +21,84 @@ import org.ossreviewtoolkit.workbench.util.matchValue
 class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val _issues = MutableStateFlow(emptyList<Issue>())
-    val issues: StateFlow<List<Issue>> get() = _issues
+    private val issues = MutableStateFlow(emptyList<Issue>())
+    private val filter = MutableStateFlow(IssuesFilter())
 
-    private val _filteredIssues = MutableStateFlow(emptyList<Issue>())
-    val filteredIssues: StateFlow<List<Issue>> get() = _filteredIssues
-
-    private val _identifiers = MutableStateFlow(emptyList<Identifier>())
-    val identifiers: StateFlow<List<Identifier>> get() = _identifiers
-
-    private val _sources = MutableStateFlow(emptyList<String>())
-    val sources: StateFlow<List<String>> get() = _sources
-
-    private val _filter = MutableStateFlow(IssuesFilter())
-    val filter: StateFlow<IssuesFilter> get() = _filter
+    private val _state = MutableStateFlow(IssuesState.INITIAL)
+    val state: StateFlow<IssuesState> get() = _state
 
     init {
-        scope.launch {
-            ortModel.api.collect { api ->
-                val issues = api.getIssues()
+        scope.launch { ortModel.api.collect { issues.value = it.getIssues() } }
 
-                _issues.value = issues
-                // TODO: Check how to do this when declaring `_identifiers` and `_sources`.
-                _identifiers.value = issues.mapTo(sortedSetOf()) { it.id }.toList()
-                _sources.value = issues.mapTo(sortedSetOf()) { it.source }.toList()
+        scope.launch { issues.collect { initState(it) } }
+
+        scope.launch {
+            filter.collect { newFilter ->
+                val oldState = state.value
+                _state.value = oldState.copy(
+                    issues = issues.value.filter(newFilter::check),
+                    textFilter = newFilter.text,
+                    identifierFilter = oldState.identifierFilter.copy(selectedItem = newFilter.identifier),
+                    resolutionStatusFilter = oldState.resolutionStatusFilter.copy(
+                        selectedItem = newFilter.resolutionStatus
+                    ),
+                    severityFilter = oldState.severityFilter.copy(selectedItem = newFilter.severity),
+                    sourceFilter = oldState.sourceFilter.copy(selectedItem = newFilter.source),
+                    toolFilter = oldState.toolFilter.copy(selectedItem = newFilter.tool)
+                )
             }
-        }
-
-        scope.launch {
-            combine(issues, filter) { issues, filter ->
-                issues.filter(filter::check)
-            }.collect { _filteredIssues.value = it }
         }
     }
 
-    fun updateFilter(filter: IssuesFilter) {
-        _filter.value = filter
+    private fun initState(issues: List<Issue>) {
+        _state.value = IssuesState(
+            issues = issues,
+            textFilter = "",
+            identifierFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + issues.mapTo(sortedSetOf()) { it.id }.toList()
+            ),
+            resolutionStatusFilter = FilterData(
+                selectedItem = ResolutionStatus.ALL,
+                options = ResolutionStatus.values().toList()
+            ),
+            severityFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + Severity.values().toList()
+            ),
+            sourceFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + issues.mapTo(sortedSetOf()) { it.source }.toList()
+            ),
+            toolFilter = FilterData(
+                selectedItem = null,
+                options = listOf(null) + Tool.values().toList()
+            )
+        )
+    }
+
+    fun updateTextFilter(text: String) {
+        filter.value = filter.value.copy(text = text)
+    }
+
+    fun updateIdentifierFilter(identifier: Identifier?) {
+        filter.value = filter.value.copy(identifier = identifier)
+    }
+
+    fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus) {
+        filter.value = filter.value.copy(resolutionStatus = resolutionStatus)
+    }
+
+    fun updateSeverityFilter(severity: Severity?) {
+        filter.value = filter.value.copy(severity = severity)
+    }
+
+    fun updateSourceFilter(source: String?) {
+        filter.value = filter.value.copy(source = source)
+    }
+
+    fun updateToolFilter(tool: Tool?) {
+        filter.value = filter.value.copy(tool = tool)
     }
 }
 
@@ -64,7 +106,7 @@ data class IssuesFilter(
     val identifier: Identifier? = null,
     val resolutionStatus: ResolutionStatus = ResolutionStatus.ALL,
     val severity: Severity? = null,
-    val source: String = "",
+    val source: String? = null,
     val text: String = "",
     val tool: Tool? = null
 ) {

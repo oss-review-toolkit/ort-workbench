@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
@@ -48,123 +47,73 @@ import org.ossreviewtoolkit.workbench.util.SeverityIcon
 
 @Composable
 fun Issues(viewModel: IssuesViewModel) {
-    val filteredIssues by viewModel.filteredIssues.collectAsState()
+    val state by viewModel.state.collectAsState()
 
     Column {
-        TitleRow(viewModel)
+        TitleRow(
+            state = state,
+            onUpdateTextFilter = viewModel::updateTextFilter,
+            onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+            onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+            onUpdateSeverityFilter = viewModel::updateSeverityFilter,
+            onUpdateSourceFilter = viewModel::updateSourceFilter,
+            onUpdateToolFilter = viewModel::updateToolFilter
+        )
 
-        IssuesList(filteredIssues)
+        IssuesList(state.issues)
     }
 }
 
 @Composable
-private fun TitleRow(viewModel: IssuesViewModel) {
-    val filter by viewModel.filter.collectAsState()
-    val identifiers by viewModel.identifiers.collectAsState()
-    val sources by viewModel.sources.collectAsState()
-
+private fun TitleRow(
+    state: IssuesState,
+    onUpdateTextFilter: (text: String) -> Unit,
+    onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
+    onUpdateResolutionStatusFilter: (status: ResolutionStatus) -> Unit,
+    onUpdateSeverityFilter: (severity: Severity?) -> Unit,
+    onUpdateSourceFilter: (source: String?) -> Unit,
+    onUpdateToolFilter: (tool: Tool?) -> Unit
+) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
         backgroundColor = MaterialTheme.colors.primary,
         title = {},
         actions = {
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-                FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
-                FilterSource(filter.source, sources) { viewModel.updateFilter(filter.copy(source = it)) }
-                FilterTool(filter.tool) { viewModel.updateFilter(filter.copy(tool = it)) }
-                FilterIdentifier(filter.identifier, identifiers) {
-                    viewModel.updateFilter(filter.copy(identifier = it))
-                }
-                FilterResolutionStatus(filter.resolutionStatus) {
-                    viewModel.updateFilter(filter.copy(resolutionStatus = it))
-                }
+                FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
+
+                FilterButton(
+                    data = state.severityFilter,
+                    label = "Severity",
+                    onFilterChange = onUpdateSeverityFilter,
+                    convert = { it?.name?.titlecase() ?: "" }
+                )
+
+                FilterButton(data = state.sourceFilter, label = "Source", onFilterChange = onUpdateSourceFilter)
+
+                FilterButton(
+                    data = state.toolFilter,
+                    label = "Tool",
+                    onFilterChange = onUpdateToolFilter,
+                    convert = { it?.name?.titlecase() ?: "" }
+                )
+
+                FilterButton(
+                    data = state.identifierFilter,
+                    label = "Package",
+                    onFilterChange = onUpdateIdentifierFilter,
+                    convert = { it?.toCoordinates() ?: "" }
+                )
+
+                FilterButton(
+                    data = state.resolutionStatusFilter,
+                    label = "Resolution",
+                    onFilterChange = onUpdateResolutionStatusFilter,
+                    convert = { it.name.titlecase() }
+                )
             }
         }
     )
-}
-
-@Composable
-private fun SeverityItem(severity: Severity) {
-    SeverityIcon(severity)
-    Text(severity.name.titlecase(), modifier = Modifier.padding(start = 5.dp))
-}
-
-@Composable
-private fun FilterSeverity(severity: Severity?, onSeverityChange: (Severity?) -> Unit) {
-    FilterButton(
-        selectedItem = severity,
-        items = listOf(null, Severity.HINT, Severity.WARNING, Severity.ERROR),
-        onFilterChange = onSeverityChange,
-        buttonContent = { if (it == null) Text("Severity") else SeverityItem(it) }
-    ) { item ->
-        when (item) {
-            null -> Text("All")
-            else -> SeverityItem(item)
-        }
-    }
-}
-
-@Composable
-private fun FilterSource(source: String, sources: List<String>, onSourceChange: (String) -> Unit) {
-    FilterButton(
-        selectedItem = source,
-        items = listOf("") + sources,
-        onFilterChange = onSourceChange,
-        buttonContent = { if (it.isBlank()) Text("Source") else Text(it) }
-    ) { item ->
-        if (item.isBlank()) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun FilterTool(tool: Tool?, onToolChange: (Tool?) -> Unit) {
-    FilterButton(
-        selectedItem = tool,
-        items = listOf(null, Tool.ANALYZER, Tool.ADVISOR, Tool.SCANNER),
-        onFilterChange = onToolChange,
-        buttonContent = { if (it == null) Text("Tool") else Text(it.name.titlecase()) }
-    ) { item ->
-        if (item == null) Text("All") else Text(item.name.titlecase())
-    }
-}
-
-@Composable
-private fun IdentifierText(identifier: Identifier) {
-    Text(identifier.toCoordinates(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-}
-
-@Composable
-private fun FilterIdentifier(
-    identifier: Identifier?,
-    identifiers: List<Identifier>,
-    onIdentifierChange: (Identifier?) -> Unit
-) {
-    FilterButton(
-        selectedItem = identifier,
-        items = listOf(null) + identifiers,
-        onFilterChange = onIdentifierChange,
-        buttonContent = { if (it == null) Text("Package") else IdentifierText(it) },
-        buttonWidth = 200.dp,
-        dropdownWidth = 500.dp
-    ) { item ->
-        if (item == null) Text("All") else IdentifierText(item)
-    }
-}
-
-@Composable
-private fun FilterResolutionStatus(
-    resolutionStatus: ResolutionStatus,
-    onResolutionStatusChange: (ResolutionStatus) -> Unit
-) {
-    FilterButton(
-        selectedItem = resolutionStatus,
-        items = listOf(ResolutionStatus.ALL, ResolutionStatus.RESOLVED, ResolutionStatus.UNRESOLVED),
-        onFilterChange = onResolutionStatusChange,
-        buttonContent = { if (it == ResolutionStatus.ALL) Text("Resolution") else Text(it.name.titlecase()) }
-    ) { item ->
-        Text(item.name.titlecase())
-    }
 }
 
 @Composable
