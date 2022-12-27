@@ -59,8 +59,8 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                 options = listOf(null) + issues.mapTo(sortedSetOf()) { it.id }.toList()
             ),
             resolutionStatusFilter = FilterData(
-                selectedItem = ResolutionStatus.ALL,
-                options = ResolutionStatus.values().toList()
+                selectedItem = null,
+                options = listOf(null) + ResolutionStatus.values().toList()
             ),
             severityFilter = FilterData(
                 selectedItem = null,
@@ -85,7 +85,7 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         filter.value = filter.value.copy(identifier = identifier)
     }
 
-    fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus) {
+    fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus?) {
         filter.value = filter.value.copy(resolutionStatus = resolutionStatus)
     }
 
@@ -104,7 +104,7 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
 
 data class IssuesFilter(
     val identifier: Identifier? = null,
-    val resolutionStatus: ResolutionStatus = ResolutionStatus.ALL,
+    val resolutionStatus: ResolutionStatus? = null,
     val severity: Severity? = null,
     val source: String? = null,
     val text: String = "",

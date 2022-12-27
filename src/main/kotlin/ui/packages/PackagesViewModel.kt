@@ -99,12 +99,12 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
             packages = packages,
             textFilter = "",
             exclusionStatusFilter = FilterData(
-                selectedItem = ExclusionStatus.ALL,
-                options = ExclusionStatus.values().toList()
+                selectedItem = null,
+                options = listOf(null) + ExclusionStatus.values().toList()
             ),
             issueStatusFilter = FilterData(
-                selectedItem = IssueStatus.ALL,
-                options = IssueStatus.values().toList()
+                selectedItem = null,
+                options = listOf(null) + IssueStatus.values().toList()
             ),
             licenseFilter = FilterData(
                 selectedItem = null,
@@ -131,12 +131,12 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                 options = listOf(null) + packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()
             ),
             violationStatusFilter = FilterData(
-                selectedItem = ViolationStatus.ALL,
-                options = ViolationStatus.values().toList()
+                selectedItem = null,
+                options = listOf(null) + ViolationStatus.values().toList()
             ),
             vulnerabilityStatusFilter = FilterData(
-                selectedItem = VulnerabilityStatus.ALL,
-                options = VulnerabilityStatus.values().toList()
+                selectedItem = null,
+                options = listOf(null) + VulnerabilityStatus.values().toList()
             )
         )
     }
@@ -145,11 +145,11 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         filter.value = filter.value.copy(text = text)
     }
 
-    fun updateExclusionStatusFilter(exclusionStatus: ExclusionStatus) {
+    fun updateExclusionStatusFilter(exclusionStatus: ExclusionStatus?) {
         filter.value = filter.value.copy(exclusionStatus = exclusionStatus)
     }
 
-    fun updateIssueStatusFilter(issueStatus: IssueStatus) {
+    fun updateIssueStatusFilter(issueStatus: IssueStatus?) {
         filter.value = filter.value.copy(issueStatus = issueStatus)
     }
 
@@ -173,11 +173,11 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         filter.value = filter.value.copy(type = type)
     }
 
-    fun updateViolationStatusFilter(violationStatus: ViolationStatus) {
+    fun updateViolationStatusFilter(violationStatus: ViolationStatus?) {
         filter.value = filter.value.copy(violationStatus = violationStatus)
     }
 
-    fun updateVulnerabilityStatusFilter(vulnerabilityStatus: VulnerabilityStatus) {
+    fun updateVulnerabilityStatusFilter(vulnerabilityStatus: VulnerabilityStatus?) {
         filter.value = filter.value.copy(vulnerabilityStatus = vulnerabilityStatus)
     }
 }
@@ -207,10 +207,10 @@ data class PackagesFilter(
     val project: Identifier? = null,
     val scope: String? = null,
     val license: SpdxSingleLicenseExpression? = null,
-    val issueStatus: IssueStatus = IssueStatus.ALL,
-    val violationStatus: ViolationStatus = ViolationStatus.ALL,
-    val vulnerabilityStatus: VulnerabilityStatus = VulnerabilityStatus.ALL,
-    val exclusionStatus: ExclusionStatus = ExclusionStatus.ALL
+    val issueStatus: IssueStatus? = null,
+    val violationStatus: ViolationStatus? = null,
+    val vulnerabilityStatus: VulnerabilityStatus? = null,
+    val exclusionStatus: ExclusionStatus? = null
 ) {
     fun check(pkg: PackageInfo) =
         matchStringContains(text, pkg.metadata.id.toCoordinates())
@@ -226,25 +226,21 @@ data class PackagesFilter(
 }
 
 enum class IssueStatus {
-    ALL,
     HAS_ISSUES,
     NO_ISSUES
 }
 
 enum class ViolationStatus {
-    ALL,
     HAS_VIOLATIONS,
     NO_VIOLATIONS
 }
 
 enum class VulnerabilityStatus {
-    ALL,
     HAS_VULNERABILITY,
     NO_VULNERABILITY
 }
 
 enum class ExclusionStatus {
-    ALL,
     EXCLUDED,
     INCLUDED
 }

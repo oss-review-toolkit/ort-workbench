@@ -12,7 +12,7 @@ data class VulnerabilitiesState(
     val scoringSystemFilter: FilterData<String?>,
     val severityFilter: FilterData<String?>,
     val identifierFilter: FilterData<Identifier?>,
-    val resolutionStatusFilter: FilterData<ResolutionStatus>
+    val resolutionStatusFilter: FilterData<ResolutionStatus?>
 ) {
     companion object {
         val INITIAL = VulnerabilitiesState(
@@ -20,7 +20,7 @@ data class VulnerabilitiesState(
             textFilter = "",
             advisorFilter = FilterData(null, emptyList()),
             identifierFilter = FilterData(null, emptyList()),
-            resolutionStatusFilter = FilterData(ResolutionStatus.ALL, emptyList()),
+            resolutionStatusFilter = FilterData(null, emptyList()),
             scoringSystemFilter = FilterData(null, emptyList()),
             severityFilter = FilterData(null, emptyList())
         )

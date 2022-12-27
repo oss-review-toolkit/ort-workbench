@@ -14,7 +14,7 @@ data class ViolationsState(
     val identifierFilter: FilterData<Identifier?>,
     val licenseFilter: FilterData<SpdxSingleLicenseExpression?>,
     val licenseSourceFilter: FilterData<LicenseSource?>,
-    val resolutionStatusFilter: FilterData<ResolutionStatus>,
+    val resolutionStatusFilter: FilterData<ResolutionStatus?>,
     val ruleFilter: FilterData<String?>,
     val severityFilter: FilterData<Severity?>
 ) {
@@ -25,7 +25,7 @@ data class ViolationsState(
             identifierFilter = FilterData(null, emptyList()),
             licenseFilter = FilterData(null, emptyList()),
             licenseSourceFilter = FilterData(null, emptyList()),
-            resolutionStatusFilter = FilterData(ResolutionStatus.ALL, emptyList()),
+            resolutionStatusFilter = FilterData(null, emptyList()),
             ruleFilter = FilterData(null, emptyList()),
             severityFilter = FilterData(null, emptyList()),
         )
