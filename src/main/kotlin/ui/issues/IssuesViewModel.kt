@@ -56,23 +56,23 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
             textFilter = "",
             identifierFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + issues.mapTo(sortedSetOf()) { it.id }.toList()
+                options = issues.mapTo(sortedSetOf()) { it.id }.toList()
             ),
             resolutionStatusFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + ResolutionStatus.values().toList()
+                options = ResolutionStatus.values().toList()
             ),
             severityFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + Severity.values().toList()
+                options = Severity.values().toList()
             ),
             sourceFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + issues.mapTo(sortedSetOf()) { it.source }.toList()
+                options = issues.mapTo(sortedSetOf()) { it.source }.toList()
             ),
             toolFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + Tool.values().toList()
+                options = Tool.values().toList()
             )
         )
     }

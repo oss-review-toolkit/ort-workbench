@@ -59,29 +59,29 @@ class ViolationsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
             textFilter = "",
             identifierFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()
+                options = violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()
             ),
             licenseFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + violations.mapNotNullTo(sortedSetOf(SpdxExpressionStringComparator())) {
+                options = violations.mapNotNullTo(sortedSetOf(SpdxExpressionStringComparator())) {
                     it.license
                 }.toList()
             ),
             licenseSourceFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + LicenseSource.values().toList()
+                options = LicenseSource.values().toList()
             ),
             resolutionStatusFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + ResolutionStatus.values().toList()
+                options = ResolutionStatus.values().toList()
             ),
             ruleFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + violations.mapTo(sortedSetOf()) { it.rule }.toList()
+                options = violations.mapTo(sortedSetOf()) { it.rule }.toList()
             ),
             severityFilter = FilterData(
                 selectedItem = null,
-                options = listOf(null) + Severity.values().toList()
+                options = Severity.values().toList()
             )
         )
     }
