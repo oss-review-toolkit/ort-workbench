@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
@@ -37,7 +36,6 @@ import org.ossreviewtoolkit.model.config.VulnerabilityResolution
 import org.ossreviewtoolkit.model.config.VulnerabilityResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
-import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.util.ExpandableText
 import org.ossreviewtoolkit.workbench.util.FilterButton
 import org.ossreviewtoolkit.workbench.util.FilterTextField
@@ -81,86 +79,37 @@ private fun TitleRow(
         actions = {
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
-                FilterAdvisor(state.advisorFilter, onUpdateAdvisorsFilter)
-                FilterScoringSystem(state.scoringSystemFilter, onUpdateScoringSystemsFilter)
-                FilterSeverity(state.severityFilter, onUpdateSeveritiesFilter)
-                FilterIdentifier(state.identifierFilter, onUpdateIdentifiersFilter)
-                FilterResolutionStatus(state.resolutionStatusFilter, onUpdateResolutionStatusFilter)
+
+                FilterButton(data = state.advisorFilter, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
+
+                FilterButton(
+                    data = state.scoringSystemFilter,
+                    label = "Scoring System",
+                    onFilterChange = onUpdateScoringSystemsFilter
+                )
+
+                FilterButton(
+                    data = state.severityFilter,
+                    label = "Severity",
+                    onFilterChange = onUpdateSeveritiesFilter
+                )
+
+                FilterButton(
+                    data = state.identifierFilter,
+                    label = "Package",
+                    onFilterChange = onUpdateIdentifiersFilter,
+                    convert = { it?.toCoordinates() ?: "" }
+                )
+
+                FilterButton(
+                    data = state.resolutionStatusFilter,
+                    label = "Resolution",
+                    onFilterChange = onUpdateResolutionStatusFilter,
+                    convert = { it.name.titlecase() }
+                )
             }
         }
     )
-}
-
-@Composable
-private fun FilterAdvisor(filter: FilterData<String?>, onAdvisorChange: (String?) -> Unit) {
-    FilterButton(
-        selectedItem = filter.selectedItem,
-        items = filter.options,
-        onFilterChange = onAdvisorChange,
-        buttonContent = { if (it == null) Text("Advisor") else Text(it) }
-    ) { item ->
-        if (item == null) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun FilterScoringSystem(filter: FilterData<String?>, onScoringSystemChange: (String?) -> Unit) {
-    FilterButton(
-        selectedItem = filter.selectedItem,
-        items = filter.options,
-        onFilterChange = onScoringSystemChange,
-        buttonContent = { if (it == null) Text("Scoring System") else Text(it) },
-        buttonWidth = 150.dp,
-        dropdownWidth = 150.dp
-    ) { item ->
-        if (item == null) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun FilterSeverity(filter: FilterData<String?>, onSeverityChange: (String?) -> Unit) {
-    FilterButton(
-        selectedItem = filter.selectedItem,
-        items = filter.options,
-        onFilterChange = onSeverityChange,
-        buttonContent = { if (it == null) Text("Severity") else Text(it) }
-    ) { item ->
-        if (item == null) Text("All") else Text(item)
-    }
-}
-
-@Composable
-private fun IdentifierText(identifier: Identifier) {
-    Text(identifier.toCoordinates(), maxLines = 1, overflow = TextOverflow.Ellipsis)
-}
-
-@Composable
-private fun FilterIdentifier(filter: FilterData<Identifier?>, onIdentifierChange: (Identifier?) -> Unit) {
-    FilterButton(
-        selectedItem = filter.selectedItem,
-        items = filter.options,
-        onFilterChange = onIdentifierChange,
-        buttonContent = { if (it == null) Text("Package") else IdentifierText(it) },
-        buttonWidth = 200.dp,
-        dropdownWidth = 500.dp
-    ) { item ->
-        if (item == null) Text("All") else IdentifierText(item)
-    }
-}
-
-@Composable
-private fun FilterResolutionStatus(
-    filter: FilterData<ResolutionStatus>,
-    onResolutionStatusChange: (ResolutionStatus) -> Unit
-) {
-    FilterButton(
-        selectedItem = filter.selectedItem,
-        items = filter.options,
-        onFilterChange = onResolutionStatusChange,
-        buttonContent = { if (it == ResolutionStatus.ALL) Text("Resolution") else Text(it.name.titlecase()) }
-    ) { item ->
-        Text(item.name.titlecase())
-    }
 }
 
 @Composable
