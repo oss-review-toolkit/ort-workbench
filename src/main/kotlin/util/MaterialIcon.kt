@@ -11,6 +11,7 @@ enum class MaterialIcon(val resource: String) {
     EXPAND_MORE("material/expand_more.svg"),
     FILE_PRESENT("material/file_present.svg"),
     FILTER("material/filter.svg"),
+    FILTER_LIST("material/filter_list.svg"),
     GAVEL("material/gavel.svg"),
     INFO("material/info.svg"),
     INVENTORY("material/inventory.svg"),

@@ -1,5 +1,6 @@
 package org.ossreviewtoolkit.workbench.ui.packages
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,20 +11,28 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -44,22 +53,35 @@ import org.ossreviewtoolkit.workbench.util.MaterialIcon
 fun Packages(viewModel: PackagesViewModel) {
     val state by viewModel.state.collectAsState()
 
+    var showFilterPanel by remember { mutableStateOf(false) }
+
     Column {
         TitleRow(
             state = state,
             onUpdateTextFilter = viewModel::updateTextFilter,
-            onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
-            onUpdateIssueStatusFilter = viewModel::updateIssueStatusFilter,
-            onUpdateLicenseFilter = viewModel::updateLicenseFilter,
-            onUpdateNamespaceFilter = viewModel::updateNamespaceFilter,
-            onUpdateProjectFilter = viewModel::updateProjectFilter,
-            onUpdateScopeFilter = viewModel::updateScopeFilter,
-            onUpdateTypeFilter = viewModel::updateTypeFilter,
-            onUpdateViolationStatusFilter = viewModel::updateViolationStatusFilter,
-            onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
+            onToggleFilter = { showFilterPanel = !showFilterPanel }
         )
 
-        PackagesList(state.packages)
+        Row {
+            Box(modifier = Modifier.weight(1f)) {
+                PackagesList(state.packages)
+            }
+
+            AnimatedVisibility(visible = showFilterPanel) {
+                PackagesFilterPanel(
+                    state = state,
+                    onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
+                    onUpdateIssueStatusFilter = viewModel::updateIssueStatusFilter,
+                    onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+                    onUpdateNamespaceFilter = viewModel::updateNamespaceFilter,
+                    onUpdateProjectFilter = viewModel::updateProjectFilter,
+                    onUpdateScopeFilter = viewModel::updateScopeFilter,
+                    onUpdateTypeFilter = viewModel::updateTypeFilter,
+                    onUpdateViolationStatusFilter = viewModel::updateViolationStatusFilter,
+                    onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
+                )
+            }
+        }
     }
 }
 
@@ -67,15 +89,7 @@ fun Packages(viewModel: PackagesViewModel) {
 private fun TitleRow(
     state: PackagesState,
     onUpdateTextFilter: (text: String) -> Unit,
-    onUpdateExclusionStatusFilter: (exclusionStatus: ExclusionStatus?) -> Unit,
-    onUpdateIssueStatusFilter: (issueStatus: IssueStatus?) -> Unit,
-    onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
-    onUpdateNamespaceFilter: (namespace: String?) -> Unit,
-    onUpdateProjectFilter: (project: Identifier?) -> Unit,
-    onUpdateScopeFilter: (scope: String?) -> Unit,
-    onUpdateTypeFilter: (type: String?) -> Unit,
-    onUpdateViolationStatusFilter: (violationStatus: ViolationStatus?) -> Unit,
-    onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus?) -> Unit
+    onToggleFilter: () -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.zIndex(1f),
@@ -85,52 +99,13 @@ private fun TitleRow(
             Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
 
-                FilterButton(data = state.typeFilter, label = "Type", onFilterChange = onUpdateTypeFilter)
-
-                FilterButton(
-                    data = state.namespaceFilter,
-                    label = "Namespace",
-                    onFilterChange = onUpdateNamespaceFilter
-                )
-
-                FilterButton(
-                    data = state.projectFilter,
-                    label = "Project",
-                    onFilterChange = onUpdateProjectFilter,
-                    convert = { it.toCoordinates() }
-                )
-
-                FilterButton(data = state.scopeFilter, label = "Scope", onFilterChange = onUpdateScopeFilter)
-
-                FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
-
-                FilterButton(
-                    data = state.issueStatusFilter,
-                    label = "Issues",
-                    onFilterChange = onUpdateIssueStatusFilter,
-                    convert = { it.name.titlecase() }
-                )
-
-                FilterButton(
-                    data = state.violationStatusFilter,
-                    label = "Violations",
-                    onFilterChange = onUpdateViolationStatusFilter,
-                    convert = { it.name.titlecase() }
-                )
-
-                FilterButton(
-                    data = state.vulnerabilityStatusFilter,
-                    label = "Vulnerabilities",
-                    onFilterChange = onUpdateVulnerabilityStatusFilter,
-                    convert = { it.name.titlecase() }
-                )
-
-                FilterButton(
-                    data = state.exclusionStatusFilter,
-                    label = "Excluded",
-                    onFilterChange = onUpdateExclusionStatusFilter,
-                    convert = { it.name.titlecase() }
-                )
+                IconButton(onClick = onToggleFilter) {
+                    Icon(
+                        painterResource(MaterialIcon.FILTER_LIST.resource),
+                        contentDescription = "Filter",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     )
@@ -209,6 +184,77 @@ fun PackageCard(pkg: PackageInfo) {
 
                 // TODO: Add link to package details page.
             }
+        }
+    }
+}
+
+@Composable
+fun PackagesFilterPanel(
+    state: PackagesState,
+    onUpdateExclusionStatusFilter: (exclusionStatus: ExclusionStatus?) -> Unit,
+    onUpdateIssueStatusFilter: (issueStatus: IssueStatus?) -> Unit,
+    onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
+    onUpdateNamespaceFilter: (namespace: String?) -> Unit,
+    onUpdateProjectFilter: (project: Identifier?) -> Unit,
+    onUpdateScopeFilter: (scope: String?) -> Unit,
+    onUpdateTypeFilter: (type: String?) -> Unit,
+    onUpdateViolationStatusFilter: (violationStatus: ViolationStatus?) -> Unit,
+    onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus?) -> Unit
+) {
+    Surface(
+        modifier = Modifier.width(500.dp).fillMaxHeight(),
+        color = MaterialTheme.colors.surface,
+        elevation = 8.dp
+    ) {
+        Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Filters", style = MaterialTheme.typography.h4)
+
+            FilterButton(data = state.typeFilter, label = "Type", onFilterChange = onUpdateTypeFilter)
+
+            FilterButton(
+                data = state.namespaceFilter,
+                label = "Namespace",
+                onFilterChange = onUpdateNamespaceFilter
+            )
+
+            FilterButton(
+                data = state.projectFilter,
+                label = "Project",
+                onFilterChange = onUpdateProjectFilter,
+                convert = { it.toCoordinates() }
+            )
+
+            FilterButton(data = state.scopeFilter, label = "Scope", onFilterChange = onUpdateScopeFilter)
+
+            FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+
+            FilterButton(
+                data = state.issueStatusFilter,
+                label = "Issues",
+                onFilterChange = onUpdateIssueStatusFilter,
+                convert = { it.name.titlecase() }
+            )
+
+            FilterButton(
+                data = state.violationStatusFilter,
+                label = "Violations",
+                onFilterChange = onUpdateViolationStatusFilter,
+                convert = { it.name.titlecase() }
+            )
+
+            FilterButton(
+                data = state.vulnerabilityStatusFilter,
+                label = "Vulnerabilities",
+                onFilterChange = onUpdateVulnerabilityStatusFilter,
+                convert = { it.name.titlecase() }
+            )
+
+            FilterButton(
+                data = state.exclusionStatusFilter,
+                label = "Excluded",
+                onFilterChange = onUpdateExclusionStatusFilter,
+                convert = { it.name.titlecase() }
+            )
         }
     }
 }
