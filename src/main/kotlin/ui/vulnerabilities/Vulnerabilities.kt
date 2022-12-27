@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 import java.net.URI
 
@@ -42,13 +45,10 @@ import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
-@Preview
 fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
     val filteredVulnerabilities by viewModel.filteredVulnerabilities.collectAsState()
 
-    Column(
-        modifier = Modifier.padding(15.dp).fillMaxSize()
-    ) {
+    Column {
         TitleRow(viewModel)
 
         VulnerabilitiesList(filteredVulnerabilities)
@@ -63,19 +63,27 @@ private fun TitleRow(viewModel: VulnerabilitiesViewModel) {
     val scoringSystems by viewModel.scoringSystems.collectAsState()
     val severities by viewModel.severities.collectAsState()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-        FilterAdvisor(filter.advisor, advisors) { viewModel.updateFilter(filter.copy(advisor = it)) }
-        FilterScoringSystem(filter.scoringSystem, scoringSystems) {
-            viewModel.updateFilter(filter.copy(scoringSystem = it))
+    TopAppBar(
+        modifier = Modifier.zIndex(1f),
+        backgroundColor = MaterialTheme.colors.primary,
+        title = {},
+        actions = {
+            Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
+                FilterAdvisor(filter.advisor, advisors) { viewModel.updateFilter(filter.copy(advisor = it)) }
+                FilterScoringSystem(filter.scoringSystem, scoringSystems) {
+                    viewModel.updateFilter(filter.copy(scoringSystem = it))
+                }
+                FilterSeverity(filter.severity, severities) { viewModel.updateFilter(filter.copy(severity = it)) }
+                FilterIdentifier(filter.identifier, identifiers) {
+                    viewModel.updateFilter(filter.copy(identifier = it))
+                }
+                FilterResolutionStatus(filter.resolutionStatus) {
+                    viewModel.updateFilter(filter.copy(resolutionStatus = it))
+                }
+            }
         }
-        FilterSeverity(filter.severity, severities) { viewModel.updateFilter(filter.copy(severity = it)) }
-        FilterIdentifier(filter.identifier, identifiers) { viewModel.updateFilter(filter.copy(identifier = it)) }
-        FilterResolutionStatus(filter.resolutionStatus) { viewModel.updateFilter(filter.copy(resolutionStatus = it)) }
-    }
+    )
 }
 
 @Composable
@@ -161,13 +169,13 @@ private fun FilterResolutionStatus(
 @Composable
 fun VulnerabilitiesList(vulnerabilities: List<DecoratedVulnerability>) {
     if (vulnerabilities.isEmpty()) {
-        Text("No vulnerabilities found.", modifier = Modifier.padding(top = 15.dp))
+        Text("No vulnerabilities found.", modifier = Modifier.padding(15.dp))
     } else {
-        Box(modifier = Modifier.fillMaxSize().padding(top = 15.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             val listState = rememberLazyListState()
 
             LazyColumn(
-                contentPadding = PaddingValues(vertical = 15.dp),
+                contentPadding = PaddingValues(15.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 state = listState
             ) {

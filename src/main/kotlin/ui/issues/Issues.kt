@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 import java.time.Instant
 
@@ -47,9 +50,7 @@ import org.ossreviewtoolkit.workbench.util.SeverityIcon
 fun Issues(viewModel: IssuesViewModel) {
     val filteredIssues by viewModel.filteredIssues.collectAsState()
 
-    Column(
-        modifier = Modifier.padding(15.dp).fillMaxSize()
-    ) {
+    Column {
         TitleRow(viewModel)
 
         IssuesList(filteredIssues)
@@ -62,17 +63,25 @@ private fun TitleRow(viewModel: IssuesViewModel) {
     val identifiers by viewModel.identifiers.collectAsState()
     val sources by viewModel.sources.collectAsState()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-        FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
-        FilterSource(filter.source, sources) { viewModel.updateFilter(filter.copy(source = it)) }
-        FilterTool(filter.tool) { viewModel.updateFilter(filter.copy(tool = it)) }
-        FilterIdentifier(filter.identifier, identifiers) { viewModel.updateFilter(filter.copy(identifier = it)) }
-        FilterResolutionStatus(filter.resolutionStatus) { viewModel.updateFilter(filter.copy(resolutionStatus = it)) }
-    }
+    TopAppBar(
+        modifier = Modifier.zIndex(1f),
+        backgroundColor = MaterialTheme.colors.primary,
+        title = {},
+        actions = {
+            Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
+                FilterSeverity(filter.severity) { viewModel.updateFilter(filter.copy(severity = it)) }
+                FilterSource(filter.source, sources) { viewModel.updateFilter(filter.copy(source = it)) }
+                FilterTool(filter.tool) { viewModel.updateFilter(filter.copy(tool = it)) }
+                FilterIdentifier(filter.identifier, identifiers) {
+                    viewModel.updateFilter(filter.copy(identifier = it))
+                }
+                FilterResolutionStatus(filter.resolutionStatus) {
+                    viewModel.updateFilter(filter.copy(resolutionStatus = it))
+                }
+            }
+        }
+    )
 }
 
 @Composable
@@ -161,13 +170,13 @@ private fun FilterResolutionStatus(
 @Composable
 fun IssuesList(issues: List<Issue>) {
     if (issues.isEmpty()) {
-        Text("No issues found.", modifier = Modifier.padding(top = 15.dp))
+        Text("No issues found.", modifier = Modifier.padding(15.dp))
     } else {
-        Box(modifier = Modifier.fillMaxSize().padding(top = 15.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             val listState = rememberLazyListState()
 
             LazyColumn(
-                contentPadding = PaddingValues(vertical = 15.dp),
+                contentPadding = PaddingValues(15.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 state = listState
             ) {

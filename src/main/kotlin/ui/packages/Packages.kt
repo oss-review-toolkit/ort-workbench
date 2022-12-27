@@ -19,6 +19,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.licenses.LicenseView
@@ -44,9 +46,7 @@ import org.ossreviewtoolkit.workbench.util.enumcase
 fun Packages(viewModel: PackagesViewModel) {
     val filteredPackages by viewModel.filteredPackages.collectAsState()
 
-    Column(
-        modifier = Modifier.padding(15.dp).fillMaxSize()
-    ) {
+    Column {
         TitleRow(viewModel)
 
         PackagesList(filteredPackages)
@@ -62,22 +62,20 @@ private fun TitleRow(viewModel: PackagesViewModel) {
     val scopes by viewModel.scopes.collectAsState()
     val licenses by viewModel.licenses.collectAsState()
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
-
-        Column {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    TopAppBar(
+        modifier = Modifier.zIndex(1f),
+        backgroundColor = MaterialTheme.colors.primary,
+        title = {},
+        actions = {
+            Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FilterTextField(filter.text) { viewModel.updateFilter(filter.copy(text = it)) }
                 FilterType(filter.type, types) { viewModel.updateFilter(filter.copy(type = it)) }
-                FilterNamespace(filter.namespace, namespaces) { viewModel.updateFilter(filter.copy(namespace = it)) }
+                FilterNamespace(filter.namespace, namespaces) {
+                    viewModel.updateFilter(filter.copy(namespace = it))
+                }
                 FilterProject(filter.project, projects) { viewModel.updateFilter(filter.copy(project = it)) }
                 FilterScope(filter.scope, scopes) { viewModel.updateFilter(filter.copy(scope = it)) }
                 FilterLicense(filter.license, licenses) { viewModel.updateFilter(filter.copy(license = it)) }
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 FilterIssueStatus(filter.issueStatus) { viewModel.updateFilter(filter.copy(issueStatus = it)) }
                 FilterViolationStatus(filter.violationStatus) {
                     viewModel.updateFilter(filter.copy(violationStatus = it))
@@ -90,7 +88,7 @@ private fun TitleRow(viewModel: PackagesViewModel) {
                 }
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -233,13 +231,13 @@ private fun FilterExclusionStatus(
 @Composable
 fun PackagesList(packages: List<PackageInfo>) {
     if (packages.isEmpty()) {
-        Text("No packages found.", modifier = Modifier.padding(top = 15.dp))
+        Text("No packages found.", modifier = Modifier.padding(15.dp))
     } else {
-        Box(modifier = Modifier.fillMaxSize().padding(top = 15.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
             val listState = rememberLazyListState()
 
             LazyColumn(
-                contentPadding = PaddingValues(vertical = 15.dp),
+                contentPadding = PaddingValues(15.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 state = listState
             ) {
