@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import org.ossreviewtoolkit.workbench.model.FilterData
 
 @Composable
-fun <T> FilterButton(
+fun <T : Any> FilterButton(
     data: FilterData<T>,
     label: String,
     onFilterChange: (T?) -> Unit,
@@ -51,9 +51,7 @@ fun <T> FilterButton(
                     expanded = false
                     onFilterChange(item)
                 }) {
-                    if (item != null) {
-                        Text(convert(item), overflow = TextOverflow.Ellipsis)
-                    }
+                    Text(convert(item), overflow = TextOverflow.Ellipsis)
                 }
             }
         }

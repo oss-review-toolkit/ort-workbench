@@ -10,11 +10,11 @@ import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 data class IssuesState(
     val issues: List<Issue>,
     val textFilter: String,
-    val identifierFilter: FilterData<Identifier?>,
-    val resolutionStatusFilter: FilterData<ResolutionStatus?>,
-    val severityFilter: FilterData<Severity?>,
-    val sourceFilter: FilterData<String?>,
-    val toolFilter: FilterData<Tool?>
+    val identifierFilter: FilterData<Identifier>,
+    val resolutionStatusFilter: FilterData<ResolutionStatus>,
+    val severityFilter: FilterData<Severity>,
+    val sourceFilter: FilterData<String>,
+    val toolFilter: FilterData<Tool>
 ) {
     companion object {
         val INITIAL = IssuesState(
