@@ -42,9 +42,9 @@ import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.composables.FilterButton
+import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.IconText
-import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
@@ -65,20 +65,19 @@ fun Packages(viewModel: PackagesViewModel) {
                 PackagesList(state.packages)
             }
 
-            SidePanel(visible = showFilterPanel) {
-                PackagesFilterPanel(
-                    state = state,
-                    onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
-                    onUpdateIssueStatusFilter = viewModel::updateIssueStatusFilter,
-                    onUpdateLicenseFilter = viewModel::updateLicenseFilter,
-                    onUpdateNamespaceFilter = viewModel::updateNamespaceFilter,
-                    onUpdateProjectFilter = viewModel::updateProjectFilter,
-                    onUpdateScopeFilter = viewModel::updateScopeFilter,
-                    onUpdateTypeFilter = viewModel::updateTypeFilter,
-                    onUpdateViolationStatusFilter = viewModel::updateViolationStatusFilter,
-                    onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
-                )
-            }
+            PackagesFilterPanel(
+                visible = showFilterPanel,
+                state = state,
+                onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
+                onUpdateIssueStatusFilter = viewModel::updateIssueStatusFilter,
+                onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+                onUpdateNamespaceFilter = viewModel::updateNamespaceFilter,
+                onUpdateProjectFilter = viewModel::updateProjectFilter,
+                onUpdateScopeFilter = viewModel::updateScopeFilter,
+                onUpdateTypeFilter = viewModel::updateTypeFilter,
+                onUpdateViolationStatusFilter = viewModel::updateViolationStatusFilter,
+                onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
+            )
         }
     }
 }
@@ -188,6 +187,7 @@ fun PackageCard(pkg: PackageInfo) {
 
 @Composable
 fun PackagesFilterPanel(
+    visible: Boolean,
     state: PackagesState,
     onUpdateExclusionStatusFilter: (exclusionStatus: ExclusionStatus?) -> Unit,
     onUpdateIssueStatusFilter: (issueStatus: IssueStatus?) -> Unit,
@@ -199,9 +199,7 @@ fun PackagesFilterPanel(
     onUpdateViolationStatusFilter: (violationStatus: ViolationStatus?) -> Unit,
     onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus?) -> Unit
 ) {
-    Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Filters", style = MaterialTheme.typography.h4)
-
+    FilterPanel(visible = visible) {
         FilterButton(data = state.typeFilter, label = "Type", onFilterChange = onUpdateTypeFilter)
 
         FilterButton(
