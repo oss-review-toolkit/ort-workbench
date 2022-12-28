@@ -10,11 +10,11 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.OrtModel
-import org.ossreviewtoolkit.workbench.util.ResolutionStatus
-import org.ossreviewtoolkit.workbench.util.matchResolutionStatus
-import org.ossreviewtoolkit.workbench.util.matchString
-import org.ossreviewtoolkit.workbench.util.matchStringContains
-import org.ossreviewtoolkit.workbench.util.matchValue
+import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.utils.matchResolutionStatus
+import org.ossreviewtoolkit.workbench.utils.matchString
+import org.ossreviewtoolkit.workbench.utils.matchStringContains
+import org.ossreviewtoolkit.workbench.utils.matchValue
 
 class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)

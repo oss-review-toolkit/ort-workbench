@@ -37,14 +37,14 @@ import java.nio.file.Path
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+import org.ossreviewtoolkit.workbench.composables.BrowseDirectoryLink
+import org.ossreviewtoolkit.workbench.composables.DirectoryChooser
+import org.ossreviewtoolkit.workbench.composables.EditFileLink
+import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 import org.ossreviewtoolkit.workbench.state.DialogState
 import org.ossreviewtoolkit.workbench.theme.Error
-import org.ossreviewtoolkit.workbench.util.BrowseDirectoryLink
-import org.ossreviewtoolkit.workbench.util.DirectoryChooser
-import org.ossreviewtoolkit.workbench.util.EditFileLink
-import org.ossreviewtoolkit.workbench.util.Preview
-import org.ossreviewtoolkit.workbench.util.WebLink
 
 @Composable
 fun Settings(viewModel: SettingsViewModel) {

@@ -5,8 +5,8 @@ import org.ossreviewtoolkit.model.LicenseSource
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.model.FilterData
+import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.Violation
-import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 
 data class ViolationsState(
     val violations: List<Violation>,

@@ -25,6 +25,7 @@ import com.halilibo.richtext.ui.material.SetupMaterialRichText
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.utils.common.titlecase
+import org.ossreviewtoolkit.workbench.composables.FileDialog
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
@@ -34,7 +35,6 @@ import org.ossreviewtoolkit.workbench.ui.settings.Settings
 import org.ossreviewtoolkit.workbench.ui.summary.Summary
 import org.ossreviewtoolkit.workbench.ui.violations.Violations
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
-import org.ossreviewtoolkit.workbench.util.FileDialog
 
 @Composable
 fun App(state: AppState) {

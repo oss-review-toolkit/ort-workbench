@@ -46,15 +46,15 @@ import org.ossreviewtoolkit.model.config.RuleViolationResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxLicenseIdExpression
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
+import org.ossreviewtoolkit.workbench.composables.ExpandableMarkdown
+import org.ossreviewtoolkit.workbench.composables.ExpandableText
+import org.ossreviewtoolkit.workbench.composables.FilterButton
+import org.ossreviewtoolkit.workbench.composables.FilterTextField
+import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.SeverityIcon
+import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.Violation
-import org.ossreviewtoolkit.workbench.util.ExpandableMarkdown
-import org.ossreviewtoolkit.workbench.util.ExpandableText
-import org.ossreviewtoolkit.workbench.util.FilterButton
-import org.ossreviewtoolkit.workbench.util.FilterTextField
-import org.ossreviewtoolkit.workbench.util.MaterialIcon
-import org.ossreviewtoolkit.workbench.util.Preview
-import org.ossreviewtoolkit.workbench.util.ResolutionStatus
-import org.ossreviewtoolkit.workbench.util.SeverityIcon
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 @Preview

@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -21,6 +21,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import java.io.File
+
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
+import org.ossreviewtoolkit.workbench.utils.browseDirectory
+import org.ossreviewtoolkit.workbench.utils.editFile
+import org.ossreviewtoolkit.workbench.utils.openUrlInBrowser
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

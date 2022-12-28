@@ -1,5 +1,4 @@
-
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.utils
 
 import java.awt.Desktop
 import java.io.File

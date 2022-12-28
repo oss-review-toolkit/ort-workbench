@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.RichText
+
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun ExpandableText(text: String, unexpandedHeight: Dp = 20.dp, fontFamily: FontFamily? = null) {

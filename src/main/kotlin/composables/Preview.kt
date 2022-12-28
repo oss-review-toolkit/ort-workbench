@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding

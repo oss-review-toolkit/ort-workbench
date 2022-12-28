@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -15,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Expandable(header: @Composable ColumnScope.(Boolean) -> Unit, expandedContent: @Composable () -> Unit) {

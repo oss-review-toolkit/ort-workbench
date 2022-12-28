@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi

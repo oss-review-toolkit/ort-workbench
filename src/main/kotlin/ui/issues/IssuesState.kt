@@ -4,8 +4,8 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.Issue
+import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.Tool
-import org.ossreviewtoolkit.workbench.util.ResolutionStatus
 
 data class IssuesState(
     val issues: List<Issue>,

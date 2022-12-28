@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.utils
 
 enum class MaterialIcon(val resource: String) {
     ACCOUNT_TREE("material/account_tree.svg"),

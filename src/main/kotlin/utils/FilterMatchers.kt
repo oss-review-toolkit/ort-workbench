@@ -1,7 +1,8 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.utils
 
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.Issue
+import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.ui.packages.ExclusionStatus
 import org.ossreviewtoolkit.workbench.ui.packages.IssueStatus

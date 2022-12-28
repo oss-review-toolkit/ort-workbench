@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Row
@@ -11,6 +11,7 @@ import org.ossreviewtoolkit.workbench.theme.Error
 import org.ossreviewtoolkit.workbench.theme.Hint
 import org.ossreviewtoolkit.workbench.theme.LightGray
 import org.ossreviewtoolkit.workbench.theme.Warning
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun SeverityIcon(severity: Severity, resolved: Boolean = false) {
