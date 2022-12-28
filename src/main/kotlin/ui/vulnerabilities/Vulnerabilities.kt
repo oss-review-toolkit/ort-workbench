@@ -20,9 +20,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -38,7 +35,7 @@ import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
-import org.ossreviewtoolkit.workbench.composables.ListScreenAppBar
+import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
@@ -48,20 +45,11 @@ import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
     val state by viewModel.state.collectAsState()
 
-    var showFilterPanel by remember { mutableStateOf(false) }
-
-    Column {
-        ListScreenAppBar(
-            filterText = state.textFilter,
-            onUpdateFilterText = viewModel::updateTextFilter,
-            onToggleFilter = { showFilterPanel = !showFilterPanel }
-        )
-
-        Row {
-            Box(modifier = Modifier.weight(1f)) {
-                VulnerabilitiesList(state.vulnerabilities)
-            }
-
+    ListScreenContent(
+        filterText = state.textFilter,
+        onUpdateFilterText = viewModel::updateTextFilter,
+        list = { VulnerabilitiesList(state.vulnerabilities) },
+        filterPanel = { showFilterPanel ->
             VulnerabilitiesFilterPanel(
                 visible = showFilterPanel,
                 state = state,
@@ -72,7 +60,7 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
                 onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
             )
         }
-    }
+    )
 }
 
 @Composable

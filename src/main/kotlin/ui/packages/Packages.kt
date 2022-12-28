@@ -23,9 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,27 +36,18 @@ import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.IconText
-import org.ossreviewtoolkit.workbench.composables.ListScreenAppBar
+import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Packages(viewModel: PackagesViewModel) {
     val state by viewModel.state.collectAsState()
 
-    var showFilterPanel by remember { mutableStateOf(false) }
-
-    Column {
-        ListScreenAppBar(
-            filterText = state.textFilter,
-            onUpdateFilterText = viewModel::updateTextFilter,
-            onToggleFilter = { showFilterPanel = !showFilterPanel }
-        )
-
-        Row {
-            Box(modifier = Modifier.weight(1f)) {
-                PackagesList(state.packages)
-            }
-
+    ListScreenContent(
+        filterText = state.textFilter,
+        onUpdateFilterText = viewModel::updateTextFilter,
+        list = { PackagesList(state.packages) },
+        filterPanel = { showFilterPanel ->
             PackagesFilterPanel(
                 visible = showFilterPanel,
                 state = state,
@@ -74,7 +62,7 @@ fun Packages(viewModel: PackagesViewModel) {
                 onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
             )
         }
-    }
+    )
 }
 
 @Composable
