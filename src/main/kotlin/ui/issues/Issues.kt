@@ -20,9 +20,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -39,7 +36,7 @@ import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
-import org.ossreviewtoolkit.workbench.composables.ListScreenAppBar
+import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
 import org.ossreviewtoolkit.workbench.model.Issue
@@ -50,20 +47,11 @@ import org.ossreviewtoolkit.workbench.model.Tool
 fun Issues(viewModel: IssuesViewModel) {
     val state by viewModel.state.collectAsState()
 
-    var showFilterPanel by remember { mutableStateOf(false) }
-
-    Column {
-        ListScreenAppBar(
-            filterText = state.textFilter,
-            onUpdateFilterText = viewModel::updateTextFilter,
-            onToggleFilter = { showFilterPanel = !showFilterPanel }
-        )
-
-        Row {
-            Box(modifier = Modifier.weight(1f)) {
-                IssuesList(state.issues)
-            }
-
+    ListScreenContent(
+        filterText = state.textFilter,
+        onUpdateFilterText = viewModel::updateTextFilter,
+        list = { IssuesList(state.issues) },
+        filterPanel = { showFilterPanel ->
             IssuesFilterPanel(
                 visible = showFilterPanel,
                 state = state,
@@ -74,7 +62,7 @@ fun Issues(viewModel: IssuesViewModel) {
                 onUpdateToolFilter = viewModel::updateToolFilter
             )
         }
-    }
+    )
 }
 
 @Composable
