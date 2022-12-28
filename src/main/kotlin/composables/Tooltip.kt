@@ -1,7 +1,6 @@
 package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Tooltip(text: String) {
     val visible = remember { MutableTransitionState(false).apply { targetState = true } }
