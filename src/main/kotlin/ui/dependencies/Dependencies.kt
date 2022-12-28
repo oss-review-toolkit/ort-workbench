@@ -26,7 +26,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,7 +44,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 
 import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Hash
@@ -75,6 +73,7 @@ import org.ossreviewtoolkit.workbench.composables.Expandable
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
 import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.composables.WebLink
@@ -188,9 +187,7 @@ fun TitleRow(
     onSelectNextSearchHit: () -> Unit,
     onSelectPreviousSearchHit: () -> Unit
 ) {
-    TopAppBar(
-        modifier = Modifier.zIndex(1f),
-        backgroundColor = MaterialTheme.colors.primary,
+    ScreenAppBar(
         title = {},
         actions = {
             Search(
