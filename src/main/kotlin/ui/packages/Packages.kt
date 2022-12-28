@@ -10,19 +10,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -35,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.licenses.LicenseView
@@ -43,8 +38,8 @@ import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
-import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.IconText
+import org.ossreviewtoolkit.workbench.composables.ListScreenAppBar
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
@@ -54,9 +49,9 @@ fun Packages(viewModel: PackagesViewModel) {
     var showFilterPanel by remember { mutableStateOf(false) }
 
     Column {
-        TitleRow(
-            state = state,
-            onUpdateTextFilter = viewModel::updateTextFilter,
+        ListScreenAppBar(
+            filterText = state.textFilter,
+            onUpdateFilterText = viewModel::updateTextFilter,
             onToggleFilter = { showFilterPanel = !showFilterPanel }
         )
 
@@ -80,32 +75,6 @@ fun Packages(viewModel: PackagesViewModel) {
             )
         }
     }
-}
-
-@Composable
-private fun TitleRow(
-    state: PackagesState,
-    onUpdateTextFilter: (text: String) -> Unit,
-    onToggleFilter: () -> Unit
-) {
-    TopAppBar(
-        modifier = Modifier.zIndex(1f),
-        backgroundColor = MaterialTheme.colors.primary,
-        title = {},
-        actions = {
-            Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FilterTextField(state.textFilter, onFilterChange = onUpdateTextFilter)
-
-                IconButton(onClick = onToggleFilter) {
-                    Icon(
-                        painterResource(MaterialIcon.FILTER_LIST.resource),
-                        contentDescription = "Filter",
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-            }
-        }
-    )
 }
 
 @Composable
