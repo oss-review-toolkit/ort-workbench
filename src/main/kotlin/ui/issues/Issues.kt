@@ -45,10 +45,10 @@ import org.ossreviewtoolkit.model.config.IssueResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
+import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
-import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.Tool
@@ -72,16 +72,15 @@ fun Issues(viewModel: IssuesViewModel) {
                 IssuesList(state.issues)
             }
 
-            SidePanel(visible = showFilterPanel) {
-                IssuesFilterPanel(
-                    state = state,
-                    onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
-                    onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-                    onUpdateSeverityFilter = viewModel::updateSeverityFilter,
-                    onUpdateSourceFilter = viewModel::updateSourceFilter,
-                    onUpdateToolFilter = viewModel::updateToolFilter
-                )
-            }
+            IssuesFilterPanel(
+                visible = showFilterPanel,
+                state = state,
+                onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+                onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                onUpdateSeverityFilter = viewModel::updateSeverityFilter,
+                onUpdateSourceFilter = viewModel::updateSourceFilter,
+                onUpdateToolFilter = viewModel::updateToolFilter
+            )
         }
     }
 }
@@ -188,6 +187,7 @@ private fun IssueCardPreview() {
 
 @Composable
 fun IssuesFilterPanel(
+    visible: Boolean,
     state: IssuesState,
     onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
     onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
@@ -195,9 +195,7 @@ fun IssuesFilterPanel(
     onUpdateSourceFilter: (source: String?) -> Unit,
     onUpdateToolFilter: (tool: Tool?) -> Unit
 ) {
-    Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Filters", style = MaterialTheme.typography.h4)
-
+    FilterPanel(visible = visible) {
         FilterButton(
             data = state.severityFilter,
             label = "Severity",

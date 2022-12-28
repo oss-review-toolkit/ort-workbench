@@ -46,10 +46,10 @@ import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.composables.ExpandableMarkdown
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
+import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
-import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
@@ -73,17 +73,16 @@ fun Violations(viewModel: ViolationsViewModel) {
                 ViolationsList(state.violations)
             }
 
-            SidePanel(visible = showFilterPanel) {
-                ViolationsFilterPanel(
-                    state = state,
-                    onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
-                    onUpdateLicenseFilter = viewModel::updateLicenseFilter,
-                    onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
-                    onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-                    onUpdateRuleFilter = viewModel::updateRuleFilter,
-                    onUpdateSeverityFilter = viewModel::updateSeverityFilter
-                )
-            }
+            ViolationsFilterPanel(
+                visible = showFilterPanel,
+                state = state,
+                onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+                onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+                onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
+                onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                onUpdateRuleFilter = viewModel::updateRuleFilter,
+                onUpdateSeverityFilter = viewModel::updateSeverityFilter
+            )
         }
     }
 }
@@ -200,6 +199,7 @@ private fun ViolationCardPreview() {
 
 @Composable
 fun ViolationsFilterPanel(
+    visible: Boolean,
     state: ViolationsState,
     onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
     onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
@@ -208,9 +208,7 @@ fun ViolationsFilterPanel(
     onUpdateRuleFilter: (rule: String?) -> Unit,
     onUpdateSeverityFilter: (severity: Severity?) -> Unit
 ) {
-    Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Filters", style = MaterialTheme.typography.h4)
-
+    FilterPanel(visible = visible) {
         FilterButton(
             data = state.severityFilter,
             label = "Severity",

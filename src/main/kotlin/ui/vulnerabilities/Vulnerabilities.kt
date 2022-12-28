@@ -44,9 +44,9 @@ import org.ossreviewtoolkit.model.config.VulnerabilityResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
+import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.Preview
-import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
@@ -70,16 +70,15 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
                 VulnerabilitiesList(state.vulnerabilities)
             }
 
-            SidePanel(visible = showFilterPanel) {
-                VulnerabilitiesFilterPanel(
-                    state = state,
-                    onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
-                    onUpdateIdentifiersFilter = viewModel::updateIdentifiersFilter,
-                    onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-                    onUpdateScoringSystemsFilter = viewModel::updateScoringSystemsFilter,
-                    onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
-                )
-            }
+            VulnerabilitiesFilterPanel(
+                visible = showFilterPanel,
+                state = state,
+                onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
+                onUpdateIdentifiersFilter = viewModel::updateIdentifiersFilter,
+                onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                onUpdateScoringSystemsFilter = viewModel::updateScoringSystemsFilter,
+                onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
+            )
         }
     }
 }
@@ -201,6 +200,7 @@ private fun VulnerabilityCardPreview() {
 
 @Composable
 fun VulnerabilitiesFilterPanel(
+    visible: Boolean,
     state: VulnerabilitiesState,
     onUpdateAdvisorsFilter: (advisor: String?) -> Unit,
     onUpdateIdentifiersFilter: (identifier: Identifier?) -> Unit,
@@ -208,9 +208,7 @@ fun VulnerabilitiesFilterPanel(
     onUpdateScoringSystemsFilter: (scoringSystem: String?) -> Unit,
     onUpdateSeveritiesFilter: (severity: String?) -> Unit,
 ) {
-    Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("Filters", style = MaterialTheme.typography.h4)
-
+    FilterPanel(visible = visible) {
         FilterButton(data = state.advisorFilter, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
 
         FilterButton(
@@ -246,6 +244,7 @@ fun VulnerabilitiesFilterPanel(
 fun VulnerabilitiesFilterPanelPreview() {
     Preview {
         VulnerabilitiesFilterPanel(
+            visible = true,
             state = VulnerabilitiesState.INITIAL,
             onUpdateAdvisorsFilter = {},
             onUpdateIdentifiersFilter = {},
