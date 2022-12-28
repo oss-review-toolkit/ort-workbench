@@ -1,19 +1,12 @@
 package org.ossreviewtoolkit.workbench.ui.issues
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -37,6 +30,7 @@ import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.ListScreenContent
+import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
 import org.ossreviewtoolkit.workbench.model.Issue
@@ -50,7 +44,13 @@ fun Issues(viewModel: IssuesViewModel) {
     ListScreenContent(
         filterText = state.textFilter,
         onUpdateFilterText = viewModel::updateTextFilter,
-        list = { IssuesList(state.issues) },
+        list = {
+            ListScreenList(
+                items = state.issues,
+                itemsEmptyText = "No issues found.",
+                item = { IssueCard(it) }
+            )
+        },
         filterPanel = { showFilterPanel ->
             IssuesFilterPanel(
                 visible = showFilterPanel,
@@ -63,32 +63,6 @@ fun Issues(viewModel: IssuesViewModel) {
             )
         }
     )
-}
-
-@Composable
-fun IssuesList(issues: List<Issue>) {
-    if (issues.isEmpty()) {
-        Text("No issues found.", modifier = Modifier.padding(15.dp))
-    } else {
-        Box(modifier = Modifier.fillMaxSize()) {
-            val listState = rememberLazyListState()
-
-            LazyColumn(
-                contentPadding = PaddingValues(15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                state = listState
-            ) {
-                items(issues.size, key = { it }) { index ->
-                    IssueCard(issues[index])
-                }
-            }
-
-            VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(scrollState = listState)
-            )
-        }
-    }
 }
 
 @Composable

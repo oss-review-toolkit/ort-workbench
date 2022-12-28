@@ -1,19 +1,12 @@
 package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -36,6 +29,7 @@ import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.ListScreenContent
+import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
@@ -48,7 +42,13 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
     ListScreenContent(
         filterText = state.textFilter,
         onUpdateFilterText = viewModel::updateTextFilter,
-        list = { VulnerabilitiesList(state.vulnerabilities) },
+        list = {
+            ListScreenList(
+                items = state.vulnerabilities,
+                itemsEmptyText = "No vulnerabilities found.",
+                item = { VulnerabilityCard(it) }
+            )
+        },
         filterPanel = { showFilterPanel ->
             VulnerabilitiesFilterPanel(
                 visible = showFilterPanel,
@@ -61,32 +61,6 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
             )
         }
     )
-}
-
-@Composable
-fun VulnerabilitiesList(vulnerabilities: List<DecoratedVulnerability>) {
-    if (vulnerabilities.isEmpty()) {
-        Text("No vulnerabilities found.", modifier = Modifier.padding(15.dp))
-    } else {
-        Box(modifier = Modifier.fillMaxSize()) {
-            val listState = rememberLazyListState()
-
-            LazyColumn(
-                contentPadding = PaddingValues(15.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                state = listState
-            ) {
-                items(vulnerabilities.size, key = { it }) { index ->
-                    VulnerabilityCard(vulnerabilities[index])
-                }
-            }
-
-            VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(scrollState = listState)
-            )
-        }
-    }
 }
 
 @Composable
