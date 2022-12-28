@@ -1,6 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
@@ -22,7 +20,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -49,6 +46,7 @@ import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
@@ -72,7 +70,7 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
                 VulnerabilitiesList(state.vulnerabilities)
             }
 
-            AnimatedVisibility(visible = showFilterPanel) {
+            SidePanel(visible = showFilterPanel) {
                 VulnerabilitiesFilterPanel(
                     state = state,
                     onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
@@ -210,42 +208,36 @@ fun VulnerabilitiesFilterPanel(
     onUpdateScoringSystemsFilter: (scoringSystem: String?) -> Unit,
     onUpdateSeveritiesFilter: (severity: String?) -> Unit,
 ) {
-    Surface(
-        modifier = Modifier.width(500.dp).fillMaxHeight(),
-        color = MaterialTheme.colors.surface,
-        elevation = 8.dp
-    ) {
-        Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("Filters", style = MaterialTheme.typography.h4)
+    Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text("Filters", style = MaterialTheme.typography.h4)
 
-            FilterButton(data = state.advisorFilter, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
+        FilterButton(data = state.advisorFilter, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
 
-            FilterButton(
-                data = state.scoringSystemFilter,
-                label = "Scoring System",
-                onFilterChange = onUpdateScoringSystemsFilter
-            )
+        FilterButton(
+            data = state.scoringSystemFilter,
+            label = "Scoring System",
+            onFilterChange = onUpdateScoringSystemsFilter
+        )
 
-            FilterButton(
-                data = state.severityFilter,
-                label = "Severity",
-                onFilterChange = onUpdateSeveritiesFilter
-            )
+        FilterButton(
+            data = state.severityFilter,
+            label = "Severity",
+            onFilterChange = onUpdateSeveritiesFilter
+        )
 
-            FilterButton(
-                data = state.identifierFilter,
-                label = "Package",
-                onFilterChange = onUpdateIdentifiersFilter,
-                convert = { it.toCoordinates() }
-            )
+        FilterButton(
+            data = state.identifierFilter,
+            label = "Package",
+            onFilterChange = onUpdateIdentifiersFilter,
+            convert = { it.toCoordinates() }
+        )
 
-            FilterButton(
-                data = state.resolutionStatusFilter,
-                label = "Resolution",
-                onFilterChange = onUpdateResolutionStatusFilter,
-                convert = { it.name.titlecase() }
-            )
-        }
+        FilterButton(
+            data = state.resolutionStatusFilter,
+            label = "Resolution",
+            onFilterChange = onUpdateResolutionStatusFilter,
+            convert = { it.name.titlecase() }
+        )
     }
 }
 

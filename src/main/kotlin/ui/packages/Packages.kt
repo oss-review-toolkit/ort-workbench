@@ -1,6 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui.packages
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
@@ -23,7 +21,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -47,6 +44,7 @@ import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.IconText
+import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
@@ -67,7 +65,7 @@ fun Packages(viewModel: PackagesViewModel) {
                 PackagesList(state.packages)
             }
 
-            AnimatedVisibility(visible = showFilterPanel) {
+            SidePanel(visible = showFilterPanel) {
                 PackagesFilterPanel(
                     state = state,
                     onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
@@ -201,60 +199,54 @@ fun PackagesFilterPanel(
     onUpdateViolationStatusFilter: (violationStatus: ViolationStatus?) -> Unit,
     onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus?) -> Unit
 ) {
-    Surface(
-        modifier = Modifier.width(500.dp).fillMaxHeight(),
-        color = MaterialTheme.colors.surface,
-        elevation = 8.dp
-    ) {
-        Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("Filters", style = MaterialTheme.typography.h4)
+    Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text("Filters", style = MaterialTheme.typography.h4)
 
-            FilterButton(data = state.typeFilter, label = "Type", onFilterChange = onUpdateTypeFilter)
+        FilterButton(data = state.typeFilter, label = "Type", onFilterChange = onUpdateTypeFilter)
 
-            FilterButton(
-                data = state.namespaceFilter,
-                label = "Namespace",
-                onFilterChange = onUpdateNamespaceFilter
-            )
+        FilterButton(
+            data = state.namespaceFilter,
+            label = "Namespace",
+            onFilterChange = onUpdateNamespaceFilter
+        )
 
-            FilterButton(
-                data = state.projectFilter,
-                label = "Project",
-                onFilterChange = onUpdateProjectFilter,
-                convert = { it.toCoordinates() }
-            )
+        FilterButton(
+            data = state.projectFilter,
+            label = "Project",
+            onFilterChange = onUpdateProjectFilter,
+            convert = { it.toCoordinates() }
+        )
 
-            FilterButton(data = state.scopeFilter, label = "Scope", onFilterChange = onUpdateScopeFilter)
+        FilterButton(data = state.scopeFilter, label = "Scope", onFilterChange = onUpdateScopeFilter)
 
-            FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+        FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
 
-            FilterButton(
-                data = state.issueStatusFilter,
-                label = "Issues",
-                onFilterChange = onUpdateIssueStatusFilter,
-                convert = { it.name.titlecase() }
-            )
+        FilterButton(
+            data = state.issueStatusFilter,
+            label = "Issues",
+            onFilterChange = onUpdateIssueStatusFilter,
+            convert = { it.name.titlecase() }
+        )
 
-            FilterButton(
-                data = state.violationStatusFilter,
-                label = "Violations",
-                onFilterChange = onUpdateViolationStatusFilter,
-                convert = { it.name.titlecase() }
-            )
+        FilterButton(
+            data = state.violationStatusFilter,
+            label = "Violations",
+            onFilterChange = onUpdateViolationStatusFilter,
+            convert = { it.name.titlecase() }
+        )
 
-            FilterButton(
-                data = state.vulnerabilityStatusFilter,
-                label = "Vulnerabilities",
-                onFilterChange = onUpdateVulnerabilityStatusFilter,
-                convert = { it.name.titlecase() }
-            )
+        FilterButton(
+            data = state.vulnerabilityStatusFilter,
+            label = "Vulnerabilities",
+            onFilterChange = onUpdateVulnerabilityStatusFilter,
+            convert = { it.name.titlecase() }
+        )
 
-            FilterButton(
-                data = state.exclusionStatusFilter,
-                label = "Excluded",
-                onFilterChange = onUpdateExclusionStatusFilter,
-                convert = { it.name.titlecase() }
-            )
-        }
+        FilterButton(
+            data = state.exclusionStatusFilter,
+            label = "Excluded",
+            onFilterChange = onUpdateExclusionStatusFilter,
+            convert = { it.name.titlecase() }
+        )
     }
 }
