@@ -1,6 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui.violations
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
@@ -22,7 +20,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -52,6 +49,7 @@ import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
+import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
@@ -75,7 +73,7 @@ fun Violations(viewModel: ViolationsViewModel) {
                 ViolationsList(state.violations)
             }
 
-            AnimatedVisibility(visible = showFilterPanel) {
+            SidePanel(visible = showFilterPanel) {
                 ViolationsFilterPanel(
                     state = state,
                     onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
@@ -210,45 +208,39 @@ fun ViolationsFilterPanel(
     onUpdateRuleFilter: (rule: String?) -> Unit,
     onUpdateSeverityFilter: (severity: Severity?) -> Unit
 ) {
-    Surface(
-        modifier = Modifier.width(500.dp).fillMaxHeight(),
-        color = MaterialTheme.colors.surface,
-        elevation = 8.dp
-    ) {
-        Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("Filters", style = MaterialTheme.typography.h4)
+    Column(modifier = Modifier.padding(15.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text("Filters", style = MaterialTheme.typography.h4)
 
-            FilterButton(
-                data = state.severityFilter,
-                label = "Severity",
-                onFilterChange = onUpdateSeverityFilter,
-                convert = { it.name.titlecase() }
-            )
+        FilterButton(
+            data = state.severityFilter,
+            label = "Severity",
+            onFilterChange = onUpdateSeverityFilter,
+            convert = { it.name.titlecase() }
+        )
 
-            FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+        FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
 
-            FilterButton(
-                data = state.licenseSourceFilter,
-                label = "License Source",
-                onFilterChange = onUpdateLicenseSourceFilter,
-                convert = { it.name.titlecase() }
-            )
+        FilterButton(
+            data = state.licenseSourceFilter,
+            label = "License Source",
+            onFilterChange = onUpdateLicenseSourceFilter,
+            convert = { it.name.titlecase() }
+        )
 
-            FilterButton(data = state.ruleFilter, label = "Rule", onFilterChange = onUpdateRuleFilter)
+        FilterButton(data = state.ruleFilter, label = "Rule", onFilterChange = onUpdateRuleFilter)
 
-            FilterButton(
-                data = state.identifierFilter,
-                label = "Package",
-                onFilterChange = onUpdateIdentifierFilter,
-                convert = { it.toCoordinates() }
-            )
+        FilterButton(
+            data = state.identifierFilter,
+            label = "Package",
+            onFilterChange = onUpdateIdentifierFilter,
+            convert = { it.toCoordinates() }
+        )
 
-            FilterButton(
-                data = state.resolutionStatusFilter,
-                label = "Resolution",
-                onFilterChange = onUpdateResolutionStatusFilter,
-                convert = { it.name.titlecase() }
-            )
-        }
+        FilterButton(
+            data = state.resolutionStatusFilter,
+            label = "Resolution",
+            onFilterChange = onUpdateResolutionStatusFilter,
+            convert = { it.name.titlecase() }
+        )
     }
 }

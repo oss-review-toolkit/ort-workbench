@@ -2,7 +2,6 @@
 
 package org.ossreviewtoolkit.workbench.ui.dependencies
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.clickable
@@ -26,7 +25,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -78,6 +76,7 @@ import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterTextField
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
+import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
@@ -162,19 +161,13 @@ fun Dependencies(viewModel: DependenciesViewModel) {
                     }
 
                     state.selectedItem.let { item ->
-                        AnimatedVisibility(visible = item != null) {
-                            Surface(
-                                modifier = Modifier.width(500.dp).fillMaxHeight(),
-                                color = MaterialTheme.colors.surface,
-                                elevation = 8.dp
-                            ) {
-                                if (item != null) {
-                                    Column {
-                                        when (item) {
-                                            is DependencyTreeProject -> ProjectDetails(item)
-                                            is DependencyTreeScope -> ScopeDetails(item)
-                                            is DependencyTreePackage -> PackageDetails(item)
-                                        }
+                        SidePanel(visible = item != null) {
+                            if (item != null) {
+                                Column {
+                                    when (item) {
+                                        is DependencyTreeProject -> ProjectDetails(item)
+                                        is DependencyTreeScope -> ScopeDetails(item)
+                                        is DependencyTreePackage -> PackageDetails(item)
                                     }
                                 }
                             }
