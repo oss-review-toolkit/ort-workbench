@@ -12,7 +12,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-import org.ossreviewtoolkit.workbench.util.Preview
+import org.ossreviewtoolkit.workbench.composables.Preview
 
 val Typography = Typography(
     h1 = TextStyle(

@@ -44,10 +44,10 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
-import org.ossreviewtoolkit.workbench.util.FilterButton
-import org.ossreviewtoolkit.workbench.util.FilterTextField
-import org.ossreviewtoolkit.workbench.util.IconText
-import org.ossreviewtoolkit.workbench.util.MaterialIcon
+import org.ossreviewtoolkit.workbench.composables.FilterButton
+import org.ossreviewtoolkit.workbench.composables.FilterTextField
+import org.ossreviewtoolkit.workbench.composables.IconText
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Packages(viewModel: PackagesViewModel) {

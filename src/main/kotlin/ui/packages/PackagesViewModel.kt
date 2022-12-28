@@ -20,14 +20,14 @@ import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.Violation
-import org.ossreviewtoolkit.workbench.util.SpdxExpressionStringComparator
-import org.ossreviewtoolkit.workbench.util.matchAnyValue
-import org.ossreviewtoolkit.workbench.util.matchExclusionStatus
-import org.ossreviewtoolkit.workbench.util.matchIssueStatus
-import org.ossreviewtoolkit.workbench.util.matchString
-import org.ossreviewtoolkit.workbench.util.matchStringContains
-import org.ossreviewtoolkit.workbench.util.matchViolationStatus
-import org.ossreviewtoolkit.workbench.util.matchVulnerabilityStatus
+import org.ossreviewtoolkit.workbench.utils.SpdxExpressionStringComparator
+import org.ossreviewtoolkit.workbench.utils.matchAnyValue
+import org.ossreviewtoolkit.workbench.utils.matchExclusionStatus
+import org.ossreviewtoolkit.workbench.utils.matchIssueStatus
+import org.ossreviewtoolkit.workbench.utils.matchString
+import org.ossreviewtoolkit.workbench.utils.matchStringContains
+import org.ossreviewtoolkit.workbench.utils.matchViolationStatus
+import org.ossreviewtoolkit.workbench.utils.matchVulnerabilityStatus
 
 class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)

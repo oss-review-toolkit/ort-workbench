@@ -33,10 +33,10 @@ import androidx.compose.ui.zIndex
 
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.ort.Environment
+import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.conditional
 import org.ossreviewtoolkit.workbench.model.OrtApiState
-import org.ossreviewtoolkit.workbench.util.MaterialIcon
-import org.ossreviewtoolkit.workbench.util.Preview
-import org.ossreviewtoolkit.workbench.util.conditional
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 enum class MenuItem(val icon: MaterialIcon) {
     SUMMARY(MaterialIcon.ASSESSMENT),

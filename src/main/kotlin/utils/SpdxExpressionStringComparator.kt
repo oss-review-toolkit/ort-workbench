@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.utils
 
 import org.ossreviewtoolkit.utils.spdx.SpdxExpression
 

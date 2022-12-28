@@ -23,11 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+import org.ossreviewtoolkit.workbench.composables.Link
+import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.StyledCard
 import org.ossreviewtoolkit.workbench.ui.MenuItem
-import org.ossreviewtoolkit.workbench.util.Link
-import org.ossreviewtoolkit.workbench.util.MaterialIcon
-import org.ossreviewtoolkit.workbench.util.Preview
-import org.ossreviewtoolkit.workbench.util.StyledCard
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val KIBI = 1024
 

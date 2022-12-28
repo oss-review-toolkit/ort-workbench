@@ -45,14 +45,14 @@ import org.ossreviewtoolkit.model.VulnerabilityReference
 import org.ossreviewtoolkit.model.config.VulnerabilityResolution
 import org.ossreviewtoolkit.model.config.VulnerabilityResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
+import org.ossreviewtoolkit.workbench.composables.ExpandableText
+import org.ossreviewtoolkit.workbench.composables.FilterButton
+import org.ossreviewtoolkit.workbench.composables.FilterTextField
+import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
-import org.ossreviewtoolkit.workbench.util.ExpandableText
-import org.ossreviewtoolkit.workbench.util.FilterButton
-import org.ossreviewtoolkit.workbench.util.FilterTextField
-import org.ossreviewtoolkit.workbench.util.MaterialIcon
-import org.ossreviewtoolkit.workbench.util.Preview
-import org.ossreviewtoolkit.workbench.util.ResolutionStatus
-import org.ossreviewtoolkit.workbench.util.WebLink
+import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {

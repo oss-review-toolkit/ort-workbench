@@ -3,7 +3,7 @@ package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.FilterData
-import org.ossreviewtoolkit.workbench.util.ResolutionStatus
+import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 
 data class VulnerabilitiesState(
     val vulnerabilities: List<DecoratedVulnerability>,

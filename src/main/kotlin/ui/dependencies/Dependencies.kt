@@ -71,16 +71,16 @@ import org.ossreviewtoolkit.utils.ort.ProcessedDeclaredLicense
 import org.ossreviewtoolkit.utils.spdx.SpdxExpression
 import org.ossreviewtoolkit.utils.spdx.SpdxLicense
 import org.ossreviewtoolkit.utils.spdx.toExpression
-import org.ossreviewtoolkit.workbench.util.CaptionedColumn
-import org.ossreviewtoolkit.workbench.util.CaptionedText
-import org.ossreviewtoolkit.workbench.util.ErrorCard
-import org.ossreviewtoolkit.workbench.util.Expandable
-import org.ossreviewtoolkit.workbench.util.ExpandableText
-import org.ossreviewtoolkit.workbench.util.FilterTextField
-import org.ossreviewtoolkit.workbench.util.MaterialIcon
-import org.ossreviewtoolkit.workbench.util.Preview
-import org.ossreviewtoolkit.workbench.util.SeverityIcon
-import org.ossreviewtoolkit.workbench.util.WebLink
+import org.ossreviewtoolkit.workbench.composables.CaptionedColumn
+import org.ossreviewtoolkit.workbench.composables.CaptionedText
+import org.ossreviewtoolkit.workbench.composables.ErrorCard
+import org.ossreviewtoolkit.workbench.composables.Expandable
+import org.ossreviewtoolkit.workbench.composables.ExpandableText
+import org.ossreviewtoolkit.workbench.composables.FilterTextField
+import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.SeverityIcon
+import org.ossreviewtoolkit.workbench.composables.WebLink
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Dependencies(viewModel: DependenciesViewModel) {

@@ -1,4 +1,4 @@
-package org.ossreviewtoolkit.workbench.util
+package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.Card
