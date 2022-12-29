@@ -7,6 +7,8 @@
 A basic workbench for [ORT](https://oss-review-toolkit.org) result files, implemented with
 [Compose Desktop](https://www.jetbrains.com/lp/compose-mpp/).
 
+![Screenshot](assets/screenshot.png)
+
 ## Getting Started
 
 The are currently no binary builds published, to run the workbench clone the repository and execute:
