@@ -19,23 +19,8 @@ The are currently no binary builds published, to run the workbench clone the rep
 
 ## Roadmap
 
-### Implemented Features
-
-* Dependency tree
-* Issue list
-* Package list
-* Rule violation list
-* Vulnerability list
-
-### Planned Features
-
-* Defect list
-* Scan result view
-* `.ort.yml` editor
-* Curation editor
-* Package configuration editor
-* Resolution editor
-* Run ORT tools from the workbench
+See [Milestones](https://github.com/oss-review-toolkit/ort-workbench/milestones?direction=asc&sort=title&state=open) for
+planned features.
 
 # License
 
