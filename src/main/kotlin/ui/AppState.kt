@@ -1,10 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 
 import java.nio.file.Path
 
@@ -23,9 +20,6 @@ import org.ossreviewtoolkit.workbench.ui.vulnerabilities.VulnerabilitiesViewMode
 fun rememberAppState() = remember { AppState() }
 
 class AppState(val ortModel: OrtModel = OrtModel.INSTANCE) {
-    var currentScreen by mutableStateOf(MenuItem.SUMMARY)
-        private set
-
     val dependenciesViewModel = DependenciesViewModel(ortModel)
     val issuesViewModel = IssuesViewModel(ortModel)
     val packagesViewModel = PackagesViewModel(ortModel)
@@ -35,10 +29,6 @@ class AppState(val ortModel: OrtModel = OrtModel.INSTANCE) {
     val vulnerabilitiesViewModel = VulnerabilitiesViewModel(ortModel)
 
     val openResultDialog = DialogState<Path?>()
-
-    fun switchScreen(menuItem: MenuItem) {
-        currentScreen = menuItem
-    }
 
     suspend fun openOrtResult() {
         if (ortModel.state.value !in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {

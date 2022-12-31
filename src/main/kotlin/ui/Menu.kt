@@ -31,41 +31,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
-import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.ort.Environment
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.conditional
 import org.ossreviewtoolkit.workbench.model.OrtApiState
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
-
-enum class MenuItem(val icon: MaterialIcon) {
-    SUMMARY(MaterialIcon.ASSESSMENT),
-    PACKAGES(MaterialIcon.INVENTORY),
-    DEPENDENCIES(MaterialIcon.ACCOUNT_TREE),
-    ISSUES(MaterialIcon.BUG_REPORT),
-    RULE_VIOLATIONS(MaterialIcon.GAVEL),
-    VULNERABILITIES(MaterialIcon.LOCK_OPEN),
-    SETTINGS(MaterialIcon.SETTINGS);
-
-    val readableName: String by lazy { name.split("_").joinToString(" ") { it.titlecase() } }
-}
 
 @Composable
-fun Menu(currentScreen: MenuItem, apiState: OrtApiState, onSwitchScreen: (MenuItem) -> Unit) {
+fun Menu(currentScreen: MainScreen, apiState: OrtApiState, onSwitchScreen: (MainScreen) -> Unit) {
     Surface(modifier = Modifier.fillMaxHeight().width(200.dp).zIndex(zIndex = 3f), elevation = 8.dp) {
         Column(
             modifier = Modifier.padding(vertical = 20.dp)
         ) {
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                MenuItem.values().filter { it != MenuItem.SETTINGS }.forEach { item ->
-                    MenuRow(item, isCurrent = item == currentScreen, apiState, onSwitchScreen)
-                }
+                MenuRow(MainScreen.Summary, currentScreen, apiState, onSwitchScreen)
+                MenuRow(MainScreen.Packages, currentScreen, apiState, onSwitchScreen)
+                MenuRow(MainScreen.Dependencies, currentScreen, apiState, onSwitchScreen)
+                MenuRow(MainScreen.Issues, currentScreen, apiState, onSwitchScreen)
+                MenuRow(MainScreen.RuleViolations, currentScreen, apiState, onSwitchScreen)
+                MenuRow(MainScreen.Vulnerabilities, currentScreen, apiState, onSwitchScreen)
 
                 Box(modifier = Modifier.weight(1f))
 
                 Divider()
 
-                MenuRow(MenuItem.SETTINGS, isCurrent = MenuItem.SETTINGS == currentScreen, apiState, onSwitchScreen)
+                MenuRow(MainScreen.Settings, currentScreen, apiState, onSwitchScreen)
 
                 Divider()
 
@@ -81,22 +70,24 @@ fun Menu(currentScreen: MenuItem, apiState: OrtApiState, onSwitchScreen: (MenuIt
 }
 
 @Composable
-fun MenuRow(item: MenuItem, isCurrent: Boolean, apiState: OrtApiState, onSwitchScreen: (MenuItem) -> Unit) {
-    val isEnabled = item == MenuItem.SUMMARY || apiState == OrtApiState.READY
+fun MenuRow(target: MainScreen, current: MainScreen, apiState: OrtApiState, onSwitchScreen: (MainScreen) -> Unit) {
+    val isEnabled = target is MainScreen.Summary || apiState == OrtApiState.READY
 
     if (isEnabled) {
+        val isCurrent = current::class == target::class
+
         Row(
-            modifier = Modifier.clickable { onSwitchScreen(item) }
+            modifier = Modifier.clickable { onSwitchScreen(target) }
                 .conditional(isCurrent) { background(MaterialTheme.colors.background) }
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(painterResource(item.icon.resource), item.readableName)
+            Icon(painterResource(target.icon.resource), target.name)
 
             Text(
-                text = item.readableName,
+                text = target.name,
                 style = MaterialTheme.typography.h6,
                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal
             )
@@ -108,6 +99,6 @@ fun MenuRow(item: MenuItem, isCurrent: Boolean, apiState: OrtApiState, onSwitchS
 @Preview
 private fun MenuPreview() {
     Preview {
-        Menu(currentScreen = MenuItem.SUMMARY, OrtApiState.READY) {}
+        Menu(currentScreen = MainScreen.Summary, OrtApiState.READY) {}
     }
 }

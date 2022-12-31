@@ -27,6 +27,9 @@ import kotlinx.coroutines.launch
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.FileDialog
 import org.ossreviewtoolkit.workbench.model.OrtApiState
+import org.ossreviewtoolkit.workbench.navigation.Navigation
+import org.ossreviewtoolkit.workbench.navigation.Screen
+import org.ossreviewtoolkit.workbench.navigation.rememberNavigationController
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
 import org.ossreviewtoolkit.workbench.ui.issues.Issues
@@ -35,6 +38,7 @@ import org.ossreviewtoolkit.workbench.ui.settings.Settings
 import org.ossreviewtoolkit.workbench.ui.summary.Summary
 import org.ossreviewtoolkit.workbench.ui.violations.Violations
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
+import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun App(state: AppState) {
@@ -64,29 +68,50 @@ fun App(state: AppState) {
     }
 }
 
+sealed class MainScreen(val name: String, val icon: MaterialIcon) : Screen {
+    object Dependencies : MainScreen("Dependencies", MaterialIcon.ACCOUNT_TREE)
+    object Issues : MainScreen("Issues", MaterialIcon.BUG_REPORT)
+    object Packages : MainScreen("Packages", MaterialIcon.INVENTORY)
+    object Settings : MainScreen("Settings", MaterialIcon.SETTINGS)
+    object Summary : MainScreen("Summary", MaterialIcon.ASSESSMENT)
+    object RuleViolations : MainScreen("Rule Violations", MaterialIcon.GAVEL)
+    object Vulnerabilities : MainScreen("Vulnerabilities", MaterialIcon.LOCK_OPEN)
+}
+
 @Composable
 fun MainLayout(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit) {
-    Column {
-        TopBar()
+    val navController = rememberNavigationController<MainScreen>(MainScreen.Summary)
 
-        Row {
-            Menu(state.currentScreen, apiState, state::switchScreen)
-            Content(state, onLoadResult)
+    Navigation(navController) { currentScreen ->
+        (currentScreen ?: MainScreen.Summary).let { screen ->
+            Column {
+                TopBar()
+
+                Row {
+                    Menu(screen, apiState, { navController.replace(it) })
+                    Content(screen, state, onLoadResult, { navController.replace(it) })
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun Content(state: AppState, onLoadResult: () -> Unit) {
+private fun Content(
+    currentScreen: MainScreen,
+    state: AppState,
+    onLoadResult: () -> Unit,
+    onSwitchScreen: (MainScreen) -> Unit
+) {
     SetupMaterialRichText {
-        when (state.currentScreen) {
-            MenuItem.SUMMARY -> Summary(state.summaryViewModel, state::switchScreen, onLoadResult)
-            MenuItem.PACKAGES -> Packages(state.packagesViewModel)
-            MenuItem.DEPENDENCIES -> Dependencies(state.dependenciesViewModel)
-            MenuItem.ISSUES -> Issues(state.issuesViewModel)
-            MenuItem.RULE_VIOLATIONS -> Violations(state.violationsViewModel)
-            MenuItem.VULNERABILITIES -> Vulnerabilities(state.vulnerabilitiesViewModel)
-            MenuItem.SETTINGS -> Settings(state.settingsViewModel)
+        when (currentScreen) {
+            is MainScreen.Summary -> Summary(state.summaryViewModel, onSwitchScreen, onLoadResult)
+            is MainScreen.Packages -> Packages(state.packagesViewModel)
+            is MainScreen.Dependencies -> Dependencies(state.dependenciesViewModel)
+            is MainScreen.Issues -> Issues(state.issuesViewModel)
+            is MainScreen.RuleViolations -> Violations(state.violationsViewModel)
+            is MainScreen.Vulnerabilities -> Vulnerabilities(state.vulnerabilitiesViewModel)
+            is MainScreen.Settings -> Settings(state.settingsViewModel)
         }
     }
 }
