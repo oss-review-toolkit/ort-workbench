@@ -20,8 +20,17 @@ version = "1.0.0"
 repositories {
     google()
     mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     maven("https://jitpack.io")
+
+    exclusiveContent {
+        forRepository {
+            maven("https://androidx.dev/storage/compose-compiler/repository")
+        }
+
+        filter {
+            includeGroup("androidx.compose.compiler")
+        }
+    }
 
     exclusiveContent {
         forRepository {
@@ -85,6 +94,7 @@ java {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
+        apiVersion = "1.8"
         jvmTarget = "17"
     }
 }
@@ -109,28 +119,34 @@ tasks.test {
     useJUnitPlatform()
 }
 
-compose.desktop {
-    application {
-        mainClass = "org.ossreviewtoolkit.workbench.MainKt"
+compose {
+    // See https://androidx.dev/storage/compose-compiler/repository
+    // and https://github.com/JetBrains/compose-jb/blob/master/VERSIONING.md#using-jetpack-compose-compiler.
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.0-dev-k1.8.0-33c0ad36f83")
 
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "ort-workbench"
-            packageVersion = "1.0.0"
+    desktop {
+        application {
+            mainClass = "org.ossreviewtoolkit.workbench.MainKt"
 
-            val iconsRoot = project.file("src/main/resources/app-icon")
+            nativeDistributions {
+                targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+                packageName = "ort-workbench"
+                packageVersion = "1.0.0"
 
-            macOS {
-                iconFile.set(iconsRoot.resolve("icon.icns"))
-                jvmArgs("-Dapple.awt.application.appearance=system")
-            }
+                val iconsRoot = project.file("src/main/resources/app-icon")
 
-            windows {
-                iconFile.set(iconsRoot.resolve("icon.ico"))
-            }
+                macOS {
+                    iconFile.set(iconsRoot.resolve("icon.icns"))
+                    jvmArgs("-Dapple.awt.application.appearance=system")
+                }
 
-            linux {
-                iconFile.set(iconsRoot.resolve("icon.png"))
+                windows {
+                    iconFile.set(iconsRoot.resolve("icon.ico"))
+                }
+
+                linux {
+                    iconFile.set(iconsRoot.resolve("icon.png"))
+                }
             }
         }
     }
