@@ -41,9 +41,11 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     init {
         scope.launch {
             ortModel.api.collect { api ->
-                val projectsAndPackages =
-                    (api.result.getProjects().map { it.toPackage().toCuratedPackage() } + api.result.getPackages())
-                        .sorted()
+                val projectPackages = api.result.getProjects().mapTo(mutableSetOf()) {
+                    it.toPackage().toCuratedPackage()
+                }
+
+                val projectsAndPackages = (projectPackages + api.result.getPackages()).sortedBy { it.metadata.id }
 
                 packages.value = projectsAndPackages.map { pkg ->
                     val references = api.getReferences(pkg.metadata.id)
