@@ -6,6 +6,7 @@ enum class MaterialIcon(val resource: String) {
     ASSESSMENT("material/assessment.svg"),
     BOOKMARK_BORDER("material/bookmark_border.svg"),
     BUG_REPORT("material/bug_report.svg"),
+    CHEVRON_RIGHT("material/chevron_right.svg"),
     ERROR("material/error.svg"),
     EXPAND_LESS("material/expand_less.svg"),
     EXPAND_MORE("material/expand_more.svg"),
