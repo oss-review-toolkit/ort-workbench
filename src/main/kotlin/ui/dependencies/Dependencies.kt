@@ -12,22 +12,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -77,59 +73,15 @@ import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
 import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.composables.WebLink
+import org.ossreviewtoolkit.workbench.composables.tree.Tree
+import org.ossreviewtoolkit.workbench.composables.tree.TreeItem
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Dependencies(viewModel: DependenciesViewModel) {
     val state by viewModel.state.collectAsState()
 
-    fun handleKeyEvent(event: KeyEvent) =
-        when (event.type) {
-            KeyEventType.KeyUp -> {
-                when (event.key) {
-                    Key.DirectionDown -> {
-                        state.selectNext()
-                        true
-                    }
-
-                    Key.DirectionUp -> {
-                        state.selectPrevious()
-                        true
-                    }
-
-                    Key.DirectionLeft -> {
-                        state.collapseSelectedItem()
-                        true
-                    }
-
-                    Key.DirectionRight -> {
-                        state.expandSelectedItem()
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-
-            else -> false
-        }
-
     when {
-        !state.initialized -> {
-            LaunchedEffect(Unit) {
-                state.initialize()
-            }
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                CircularProgressIndicator()
-                Text("Processing...")
-            }
-        }
-
         state.error != null -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 ErrorCard(state.error.orEmpty())
@@ -137,7 +89,7 @@ fun Dependencies(viewModel: DependenciesViewModel) {
         }
 
         else -> {
-            Column(modifier = Modifier.onKeyEvent(::handleKeyEvent)) {
+            Column {
                 TitleRow(
                     search = state.search,
                     searchCurrentHit = state.searchCurrentHit,
@@ -159,14 +111,15 @@ fun Dependencies(viewModel: DependenciesViewModel) {
                         }
                     }
 
-                    state.selectedItem.let { item ->
+                    state.treeState.selectedItem.let { item ->
                         SidePanel(visible = item != null) {
                             if (item != null) {
                                 Column {
-                                    when (item) {
-                                        is DependencyTreeProject -> ProjectDetails(item)
-                                        is DependencyTreeScope -> ScopeDetails(item)
-                                        is DependencyTreePackage -> PackageDetails(item)
+                                    when (item.node.value) {
+                                        is DependencyTreeProject -> ProjectDetails(item.node.value)
+                                        is DependencyTreeScope -> ScopeDetails(item.node.value)
+                                        is DependencyTreePackage -> PackageDetails(item.node.value)
+                                        is DependencyTreeError -> ErrorDetails(item.node.value)
                                     }
                                 }
                             }
@@ -292,61 +245,30 @@ private fun TitleRowPreview() {
 @Composable
 fun DependencyTree(
     state: DependenciesState,
-    indentationPerLevel: Int = 10
 ) {
-    // TODO: Use different icons for collapsing.
-    // TODO: Add icons for item type.
-    // TODO: Use different color for items with issues.
     Box(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
 
-        if (state.isItemAutoSelected) {
-            val selectedItemIndex = state.filteredDependencyTreeItems.indexOf(state.selectedItem)
-            if (selectedItemIndex >= 0) {
-                LaunchedEffect(selectedItemIndex) {
-                    listState.animateScrollToItem(selectedItemIndex)
-                }
-            }
-        }
-
-        LazyColumn(Modifier.fillMaxSize().padding(top = 5.dp, start = 15.dp, end = 15.dp), listState) {
-            items(state.filteredDependencyTreeItems.size, key = { it }) { index ->
-                val item = state.filteredDependencyTreeItems[index]
-
-                Row(
-                    modifier = Modifier.padding(start = (item.level * indentationPerLevel).dp)
-                        .padding(top = if (item.level == 0) 10.dp else 2.dp, bottom = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    val resource = when {
-                        !item.hasChildren -> MaterialIcon.BOOKMARK_BORDER.resource
-                        item.expanded -> MaterialIcon.REMOVE.resource
-                        else -> MaterialIcon.ADD.resource
-                    }
-
-                    val icon = painterResource(resource)
-
-                    Icon(
-                        painter = icon,
-                        contentDescription = "expand",
-                        modifier = Modifier.size(12.dp).clickable { state.toggleExpanded(item) }
-                    )
-
-                    Text(
-                        item.name,
-                        modifier = Modifier.clickable { state.selectItem(item, isAutoSelected = false) },
-                        fontWeight = if (item.index == state.selectedItem?.index) FontWeight.Bold else FontWeight.Normal
-                    )
-                }
-            }
-        }
+        Tree(
+            modifier = Modifier.fillMaxSize().padding(top = 5.dp, start = 15.dp, end = 15.dp),
+            state = state.treeState,
+            listState = listState,
+            itemContent = { item, isSelected -> DependencyItem(item, isSelected) }
+        )
 
         VerticalScrollbar(
             modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
             adapter = rememberScrollbarAdapter(scrollState = listState)
         )
     }
+}
+
+@Composable
+fun DependencyItem(item: TreeItem<DependencyTreeItem>, isSelected: Boolean) {
+    Text(
+        item.node.value.name,
+        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+    )
 }
 
 @Composable
@@ -414,6 +336,18 @@ fun ScopeDetails(item: DependencyTreeScope) {
         )
 
         Text("This scope contains $dependencyCount dependencies.", modifier = Modifier.padding(top = 15.dp))
+    }
+}
+
+@Composable
+fun ErrorDetails(item: DependencyTreeError) {
+    Column(modifier = Modifier.padding(15.dp)) {
+        Text(
+            text = "${item.id.name} ${item.id.version}",
+            style = MaterialTheme.typography.h4
+        )
+
+        Text(item.message, modifier = Modifier.padding(top = 15.dp))
     }
 }
 
@@ -527,9 +461,6 @@ private fun PackageDetailsPreview() {
         Text("test")
         PackageDetails(
             DependencyTreePackage(
-                index = 0,
-                level = 0,
-                hasChildren = true,
                 id = pkg.metadata.id,
                 pkg = pkg,
                 linkage = PackageLinkage.STATIC,

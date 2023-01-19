@@ -8,6 +8,9 @@ import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.PackageLinkage
 import org.ossreviewtoolkit.model.PackageReference
+import org.ossreviewtoolkit.model.Project
+import org.ossreviewtoolkit.model.Scope
+import org.ossreviewtoolkit.workbench.composables.tree.TreeNode
 import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
 
@@ -20,75 +23,73 @@ class DependenciesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) 
     init {
         scope.launch {
             ortModel.api.collect { api ->
-                _state.value = DependenciesState(createDependencyTreeItems(api))
+                _state.value = DependenciesState(createDependencyNodes(api))
             }
         }
     }
 
-    private fun createDependencyTreeItems(api: OrtApi): List<DependencyTreeItem> {
+    private fun createDependencyNodes(api: OrtApi): List<TreeNode<DependencyTreeItem>> {
         val resolvedLicenses = api.result.collectProjectsAndPackages().associateWith {
             api.licenseInfoResolver.resolveLicenseInfo(it).filterExcluded()
         }
 
-        return buildList {
-            var index = 0
-            api.result.getProjects().forEach { project ->
-                add(
-                    DependencyTreeProject(
-                        index,
-                        level = 0,
+        fun PackageReference.toTreeNode(): TreeNode<DependencyTreeItem> {
+            val children = dependencies.map { it.toTreeNode() }
+
+            return api.result.getProject(id)?.let { project ->
+                TreeNode(
+                    value = DependencyTreeProject(
                         project = project,
-                        linkage = PackageLinkage.PROJECT_STATIC,
-                        issues = emptyList(),
-                        resolvedLicense = resolvedLicenses.getValue(project.id)
+                        linkage = linkage,
+                        issues = issues,
+                        resolvedLicense = resolvedLicenses.getValue(id)
+                    ),
+                    children = children
+                )
+            } ?: api.result.getPackage(id)?.let { pkg ->
+                TreeNode(
+                    value = DependencyTreePackage(
+                        id = id,
+                        pkg = pkg,
+                        linkage = linkage,
+                        issues = issues,
+                        resolvedLicense = resolvedLicenses.getValue(id)
                     )
                 )
-                index++
-
-                project.scopes.forEach { scope ->
-                    add(DependencyTreeScope(index, level = 1, project, scope))
-                    index++
-
-                    fun addDependency(level: Int, pkgRef: PackageReference) {
-                        api.result.getProject(pkgRef.id)?.let { project ->
-                            add(
-                                DependencyTreeProject(
-                                    index = index,
-                                    level = level,
-                                    project = project,
-                                    linkage = pkgRef.linkage,
-                                    issues = pkgRef.issues,
-                                    resolvedLicense = resolvedLicenses.getValue(pkgRef.id)
-                                )
-                            )
-                            index++
-                        }
-
-                        // TODO: Handle cases where the package is missing in the package list.
-                        api.result.getPackage(pkgRef.id).let { pkg ->
-                            add(
-                                DependencyTreePackage(
-                                    index = index,
-                                    level = level,
-                                    hasChildren = pkgRef.dependencies.isNotEmpty(),
-                                    id = pkgRef.id,
-                                    pkg = pkg,
-                                    linkage = pkgRef.linkage,
-                                    issues = pkgRef.issues,
-                                    resolvedLicense = resolvedLicenses[pkgRef.id]
-                                )
-                            )
-                            index++
-                        }
-
-                        pkgRef.dependencies.forEach { addDependency(level + 1, it) }
-                    }
-
-                    scope.dependencies.forEach { pkgRef ->
-                        addDependency(level = 2, pkgRef)
-                    }
-                }
-            }
+            } ?: TreeNode(
+                value = DependencyTreeError(
+                    id = id,
+                    message = "Could not find package or project for id '${id.toCoordinates()}'."
+                )
+            )
         }
+
+        fun Scope.toTreeNode(project: Project): TreeNode<DependencyTreeItem> {
+            val children = dependencies.map { it.toTreeNode() }
+
+            return TreeNode(
+                value = DependencyTreeScope(
+                    project = project,
+                    scope = this
+                ),
+                children = children
+            )
+        }
+
+        fun Project.toTreeNode(): TreeNode<DependencyTreeItem> {
+            val children = scopes.map { it.toTreeNode(this) }
+
+            return TreeNode(
+                value = DependencyTreeProject(
+                    project = this,
+                    linkage = PackageLinkage.PROJECT_STATIC,
+                    issues = emptyList(),
+                    resolvedLicense = resolvedLicenses.getValue(id)
+                ),
+                children = children
+            )
+        }
+
+        return api.result.getProjects().map { it.toTreeNode() }
     }
 }
