@@ -122,7 +122,7 @@ tasks.test {
 compose {
     // See https://androidx.dev/storage/compose-compiler/repository
     // and https://github.com/JetBrains/compose-jb/blob/master/VERSIONING.md#using-jetpack-compose-compiler.
-    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.0-dev-k1.8.0-33c0ad36f83")
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.0")
 
     desktop {
         application {
