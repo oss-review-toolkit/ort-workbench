@@ -1,12 +1,12 @@
 package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
 
 data class VulnerabilitiesState(
-    val vulnerabilities: List<DecoratedVulnerability>,
+    val vulnerabilities: List<ResolvedVulnerability>,
     val textFilter: String,
     val advisorFilter: FilterData<String>,
     val scoringSystemFilter: FilterData<String>,

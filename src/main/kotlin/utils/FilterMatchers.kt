@@ -1,8 +1,8 @@
 package org.ossreviewtoolkit.workbench.utils
 
-import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.ResolvedIssue
+import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.ui.packages.ExclusionStatus
 import org.ossreviewtoolkit.workbench.ui.packages.IssueStatus
@@ -29,7 +29,7 @@ fun matchViolationStatus(filter: ViolationStatus?, value: List<Violation>) =
             || filter == ViolationStatus.HAS_VIOLATIONS && value.isNotEmpty()
             || filter == ViolationStatus.NO_VIOLATIONS && value.isEmpty()
 
-fun matchVulnerabilityStatus(filter: VulnerabilityStatus?, value: List<DecoratedVulnerability>) =
+fun matchVulnerabilityStatus(filter: VulnerabilityStatus?, value: List<ResolvedVulnerability>) =
     filter == null
             || filter == VulnerabilityStatus.HAS_VULNERABILITY && value.isNotEmpty()
             || filter == VulnerabilityStatus.NO_VULNERABILITY && value.isEmpty()

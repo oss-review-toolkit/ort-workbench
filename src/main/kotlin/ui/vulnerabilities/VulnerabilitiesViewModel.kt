@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
 import org.ossreviewtoolkit.workbench.utils.matchResolutionStatus
 import org.ossreviewtoolkit.workbench.utils.matchString
 import org.ossreviewtoolkit.workbench.utils.matchStringContains
@@ -19,7 +19,7 @@ import org.ossreviewtoolkit.workbench.utils.matchValue
 class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val vulnerabilities = MutableStateFlow(emptyList<DecoratedVulnerability>())
+    private val vulnerabilities = MutableStateFlow(emptyList<ResolvedVulnerability>())
     private val filter = MutableStateFlow(VulnerabilitiesFilter())
 
     private val _state = MutableStateFlow(VulnerabilitiesState.INITIAL)
@@ -52,7 +52,7 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANC
         }
     }
 
-    private fun initState(vulnerabilities: List<DecoratedVulnerability>) {
+    private fun initState(vulnerabilities: List<ResolvedVulnerability>) {
         _state.value = VulnerabilitiesState(
             vulnerabilities = vulnerabilities,
             textFilter = "",
@@ -105,7 +105,7 @@ data class VulnerabilitiesFilter(
     val severity: String? = null,
     val text: String = ""
 ) {
-    fun check(vulnerability: DecoratedVulnerability) =
+    fun check(vulnerability: ResolvedVulnerability) =
         matchString(advisor, vulnerability.advisor)
                 && matchValue(identifier, vulnerability.pkg)
                 && matchResolutionStatus(resolutionStatus, vulnerability.resolutions)

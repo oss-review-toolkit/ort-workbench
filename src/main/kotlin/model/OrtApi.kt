@@ -76,7 +76,7 @@ class OrtApi(
 
     fun getViolations(): List<Violation> = result.getRuleViolations().toViolations(resolutionProvider)
 
-    fun getVulnerabilities(): List<DecoratedVulnerability> =
+    fun getVulnerabilities(): List<ResolvedVulnerability> =
         result.getAdvisorResults().toDecoratedVulnerabilities(resolutionProvider)
 
     fun getScanResults(id: Identifier): List<ScanResult> = result.getScanResultsForId(id)
@@ -86,7 +86,7 @@ private fun Map<Identifier, List<AdvisorResult>>.toDecoratedVulnerabilities(reso
     flatMap { (pkg, results) ->
         results.flatMap { result ->
             result.vulnerabilities.map { vulnerability ->
-                DecoratedVulnerability(
+                ResolvedVulnerability(
                     pkg,
                     resolutionProvider.getVulnerabilityResolutionsFor(vulnerability),
                     result.advisor.name,
