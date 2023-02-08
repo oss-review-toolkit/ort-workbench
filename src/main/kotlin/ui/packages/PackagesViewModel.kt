@@ -14,11 +14,11 @@ import org.ossreviewtoolkit.model.ScanResult
 import org.ossreviewtoolkit.model.ScannerDetails
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
-import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.DependencyReference
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.ResolvedIssue
+import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.utils.SpdxExpressionStringComparator
 import org.ossreviewtoolkit.workbench.utils.matchAnyValue
@@ -168,7 +168,7 @@ data class PackageInfo(
     val references: List<DependencyReference>,
     val issues: List<ResolvedIssue>,
     val violations: List<Violation>,
-    val vulnerabilities: List<DecoratedVulnerability>,
+    val vulnerabilities: List<ResolvedVulnerability>,
     val scanResultInfos: List<ScanResultInfo>
 ) {
     fun isExcluded() = references.all { it.isExcluded || it.scopes.all { it.isExcluded } }

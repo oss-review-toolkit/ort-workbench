@@ -32,8 +32,8 @@ import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.WebLink
-import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
 
 @Composable
 fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
@@ -64,7 +64,7 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
 }
 
 @Composable
-fun VulnerabilityCard(vulnerability: DecoratedVulnerability) {
+fun VulnerabilityCard(vulnerability: ResolvedVulnerability) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -101,7 +101,7 @@ fun VulnerabilityCard(vulnerability: DecoratedVulnerability) {
 @Composable
 @Preview
 private fun VulnerabilityCardPreview() {
-    val vulnerability = DecoratedVulnerability(
+    val vulnerability = ResolvedVulnerability(
         pkg = Identifier("Maven:com.example:package:1.0.0-beta"),
         resolutions = listOf(
             VulnerabilityResolution(
