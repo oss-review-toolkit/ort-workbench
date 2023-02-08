@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.workbench.model.FilterData
-import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.model.ResolvedIssue
 import org.ossreviewtoolkit.workbench.model.Tool
 import org.ossreviewtoolkit.workbench.utils.matchResolutionStatus
 import org.ossreviewtoolkit.workbench.utils.matchString
@@ -21,7 +21,7 @@ import org.ossreviewtoolkit.workbench.utils.matchValue
 class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val issues = MutableStateFlow(emptyList<Issue>())
+    private val issues = MutableStateFlow(emptyList<ResolvedIssue>())
     private val filter = MutableStateFlow(IssuesFilter())
 
     private val _state = MutableStateFlow(IssuesState.INITIAL)
@@ -50,7 +50,7 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         }
     }
 
-    private fun initState(issues: List<Issue>) {
+    private fun initState(issues: List<ResolvedIssue>) {
         _state.value = IssuesState(
             issues = issues,
             textFilter = "",
@@ -95,7 +95,7 @@ data class IssuesFilter(
     val text: String = "",
     val tool: Tool? = null
 ) {
-    fun check(issue: Issue) =
+    fun check(issue: ResolvedIssue) =
         matchValue(identifier, issue.id)
                 && matchResolutionStatus(resolutionStatus, issue.resolutions)
                 && matchValue(severity, issue.severity)
