@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Hash
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.model.OrtIssue
+import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.PackageCurationResult
 import org.ossreviewtoolkit.model.PackageLinkage
@@ -452,7 +452,7 @@ private fun PackageDetailsPreview() {
         unmatchedCopyrights = emptyMap()
     )
 
-    val issue = OrtIssue(
+    val issue = Issue(
         source = pkg.metadata.id.type,
         message = "Some long message. ".repeat(20)
     )
@@ -687,7 +687,7 @@ fun CurationSection(curations: List<PackageCurationResult>) {
 }
 
 @Composable
-fun IssuesSection(issues: List<OrtIssue>) {
+fun IssuesSection(issues: List<Issue>) {
     // TODO: Support resolutions.
     Expandable(
         header = {

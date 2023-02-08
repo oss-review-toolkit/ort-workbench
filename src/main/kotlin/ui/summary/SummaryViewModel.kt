@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-import org.ossreviewtoolkit.model.OrtIssue
+import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.reporter.reporters.evaluatedmodel.IssueStatistics
@@ -80,7 +80,7 @@ data class IssueStats(
 
 val EMPTY_STATS = IssueStatistics(0, 0, 0)
 
-private fun Collection<OrtIssue>.toStats(): IssueStatistics {
+private fun Collection<Issue>.toStats(): IssueStatistics {
     val grouped = groupBy { it.severity }
 
     return IssueStatistics(

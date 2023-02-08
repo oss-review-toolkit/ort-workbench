@@ -2,7 +2,7 @@ package org.ossreviewtoolkit.workbench.model
 
 import org.ossreviewtoolkit.model.AdvisorResult
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.model.OrtIssue
+import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.RuleViolation
 import org.ossreviewtoolkit.model.ScanResult
@@ -96,7 +96,7 @@ private fun Map<Identifier, List<AdvisorResult>>.toDecoratedVulnerabilities(reso
         }
     }
 
-private fun Map<Identifier, Set<OrtIssue>>.toIssues(tool: Tool, resolutionProvider: ResolutionProvider) =
+private fun Map<Identifier, Set<Issue>>.toIssues(tool: Tool, resolutionProvider: ResolutionProvider) =
     flatMap { (id, issues) ->
         issues.map { issue ->
             ResolvedIssue(id, tool, resolutionProvider.getIssueResolutionsFor(issue), issue)

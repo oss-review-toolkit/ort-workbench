@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 
 import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.model.OrtIssue
+import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.PackageLinkage
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.Scope
@@ -82,7 +82,7 @@ sealed class DependencyTreeItem {
 class DependencyTreeProject(
     val project: Project,
     val linkage: PackageLinkage,
-    val issues: List<OrtIssue>,
+    val issues: List<Issue>,
     val resolvedLicense: ResolvedLicenseInfo
 ) : DependencyTreeItem() {
     override val name = project.id.toCoordinates()
@@ -96,7 +96,7 @@ class DependencyTreePackage(
     val id: Identifier,
     val pkg: CuratedPackage?,
     val linkage: PackageLinkage,
-    val issues: List<OrtIssue>,
+    val issues: List<Issue>,
     val resolvedLicense: ResolvedLicenseInfo?
 ) : DependencyTreeItem() {
     override val name = id.toCoordinates()
