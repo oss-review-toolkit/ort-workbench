@@ -55,7 +55,7 @@ class OrtApi(
         }
     }
 
-    fun getIssues(): List<Issue> =
+    fun getIssues(): List<ResolvedIssue> =
         result.analyzer?.result?.collectIssues().orEmpty().toIssues(Tool.ANALYZER, resolutionProvider) +
                 result.advisor?.results?.collectIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
                 result.scanner?.collectIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
@@ -99,7 +99,7 @@ private fun Map<Identifier, List<AdvisorResult>>.toDecoratedVulnerabilities(reso
 private fun Map<Identifier, Set<OrtIssue>>.toIssues(tool: Tool, resolutionProvider: ResolutionProvider) =
     flatMap { (id, issues) ->
         issues.map { issue ->
-            Issue(id, tool, resolutionProvider.getIssueResolutionsFor(issue), issue)
+            ResolvedIssue(id, tool, resolutionProvider.getIssueResolutionsFor(issue), issue)
         }
     }
 

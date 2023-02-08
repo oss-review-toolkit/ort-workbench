@@ -7,7 +7,7 @@ import org.ossreviewtoolkit.model.OrtIssue
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.config.IssueResolution
 
-data class Issue(
+data class ResolvedIssue(
     val id: Identifier,
     val tool: Tool,
     val resolutions: List<IssueResolution>,

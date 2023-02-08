@@ -17,8 +17,8 @@ import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
 import org.ossreviewtoolkit.workbench.model.DependencyReference
 import org.ossreviewtoolkit.workbench.model.FilterData
-import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.OrtModel
+import org.ossreviewtoolkit.workbench.model.ResolvedIssue
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.utils.SpdxExpressionStringComparator
 import org.ossreviewtoolkit.workbench.utils.matchAnyValue
@@ -166,7 +166,7 @@ data class PackageInfo(
     val curations: List<PackageCurationResult>,
     val resolvedLicenseInfo: ResolvedLicenseInfo,
     val references: List<DependencyReference>,
-    val issues: List<Issue>,
+    val issues: List<ResolvedIssue>,
     val violations: List<Violation>,
     val vulnerabilities: List<DecoratedVulnerability>,
     val scanResultInfos: List<ScanResultInfo>

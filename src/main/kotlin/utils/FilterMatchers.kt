@@ -1,8 +1,8 @@
 package org.ossreviewtoolkit.workbench.utils
 
 import org.ossreviewtoolkit.workbench.model.DecoratedVulnerability
-import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.model.ResolvedIssue
 import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.ui.packages.ExclusionStatus
 import org.ossreviewtoolkit.workbench.ui.packages.IssueStatus
@@ -14,7 +14,7 @@ fun matchExclusionStatus(filter: ExclusionStatus?, value: Boolean) =
             || filter == ExclusionStatus.EXCLUDED && value
             || filter == ExclusionStatus.INCLUDED && !value
 
-fun matchIssueStatus(filter: IssueStatus?, value: List<Issue>) =
+fun matchIssueStatus(filter: IssueStatus?, value: List<ResolvedIssue>) =
     filter == null
             || filter == IssueStatus.HAS_ISSUES && value.isNotEmpty()
             || filter == IssueStatus.NO_ISSUES && value.isEmpty()

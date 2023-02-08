@@ -33,8 +33,8 @@ import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
-import org.ossreviewtoolkit.workbench.model.Issue
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
+import org.ossreviewtoolkit.workbench.model.ResolvedIssue
 import org.ossreviewtoolkit.workbench.model.Tool
 
 @Composable
@@ -66,7 +66,7 @@ fun Issues(viewModel: IssuesViewModel) {
 }
 
 @Composable
-fun IssueCard(issue: Issue) {
+fun IssueCard(issue: ResolvedIssue) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Row(
@@ -95,7 +95,7 @@ fun IssueCard(issue: Issue) {
 @Composable
 @Preview
 private fun IssueCardPreview() {
-    val issue = Issue(
+    val issue = ResolvedIssue(
         id = Identifier("Maven:org.example:package:1.0.0-beta"),
         tool = Tool.ANALYZER,
         resolutions = listOf(
