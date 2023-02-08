@@ -2,8 +2,8 @@ package org.ossreviewtoolkit.workbench.utils
 
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.ResolvedIssue
+import org.ossreviewtoolkit.workbench.model.ResolvedRuleViolation
 import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
-import org.ossreviewtoolkit.workbench.model.Violation
 import org.ossreviewtoolkit.workbench.ui.packages.ExclusionStatus
 import org.ossreviewtoolkit.workbench.ui.packages.IssueStatus
 import org.ossreviewtoolkit.workbench.ui.packages.ViolationStatus
@@ -24,7 +24,7 @@ fun <T> matchResolutionStatus(filter: ResolutionStatus?, value: List<T>) =
             || filter == ResolutionStatus.RESOLVED && value.isNotEmpty()
             || filter == ResolutionStatus.UNRESOLVED && value.isEmpty()
 
-fun matchViolationStatus(filter: ViolationStatus?, value: List<Violation>) =
+fun matchViolationStatus(filter: ViolationStatus?, value: List<ResolvedRuleViolation>) =
     filter == null
             || filter == ViolationStatus.HAS_VIOLATIONS && value.isNotEmpty()
             || filter == ViolationStatus.NO_VIOLATIONS && value.isEmpty()

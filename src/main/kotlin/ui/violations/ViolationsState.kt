@@ -6,10 +6,10 @@ import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
-import org.ossreviewtoolkit.workbench.model.Violation
+import org.ossreviewtoolkit.workbench.model.ResolvedRuleViolation
 
 data class ViolationsState(
-    val violations: List<Violation>,
+    val violations: List<ResolvedRuleViolation>,
     val textFilter: String,
     val identifierFilter: FilterData<Identifier>,
     val licenseFilter: FilterData<SpdxSingleLicenseExpression>,

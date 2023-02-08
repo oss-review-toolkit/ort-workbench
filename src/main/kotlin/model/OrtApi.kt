@@ -74,7 +74,7 @@ class OrtApi(
             )
         }
 
-    fun getViolations(): List<Violation> = result.getRuleViolations().toViolations(resolutionProvider)
+    fun getViolations(): List<ResolvedRuleViolation> = result.getRuleViolations().toViolations(resolutionProvider)
 
     fun getVulnerabilities(): List<ResolvedVulnerability> =
         result.getAdvisorResults().toDecoratedVulnerabilities(resolutionProvider)
@@ -104,4 +104,4 @@ private fun Map<Identifier, Set<OrtIssue>>.toIssues(tool: Tool, resolutionProvid
     }
 
 private fun List<RuleViolation>.toViolations(resolutionProvider: ResolutionProvider) =
-    map { violation -> Violation(resolutionProvider.getRuleViolationResolutionsFor(violation), violation) }
+    map { violation -> ResolvedRuleViolation(resolutionProvider.getRuleViolationResolutionsFor(violation), violation) }
