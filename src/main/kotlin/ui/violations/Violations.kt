@@ -35,7 +35,7 @@ import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
-import org.ossreviewtoolkit.workbench.model.Violation
+import org.ossreviewtoolkit.workbench.model.ResolvedRuleViolation
 
 @Composable
 @Preview
@@ -68,7 +68,7 @@ fun Violations(viewModel: ViolationsViewModel) {
 }
 
 @Composable
-fun ViolationCard(violation: Violation) {
+fun ViolationCard(violation: ResolvedRuleViolation) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -97,7 +97,7 @@ fun ViolationCard(violation: Violation) {
 @Composable
 @Preview
 private fun ViolationCardPreview() {
-    val violation = Violation(
+    val violation = ResolvedRuleViolation(
         pkg = Identifier("Maven:com.example:package:1.0.0-beta"),
         rule = "RULE_NAME",
         license = SpdxLicenseIdExpression("Apache-2.0"),

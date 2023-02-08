@@ -7,7 +7,7 @@ import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.config.RuleViolationResolution
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 
-data class Violation(
+data class ResolvedRuleViolation(
     val pkg: Identifier?,
     val rule: String,
     val license: SpdxSingleLicenseExpression?,
