@@ -7,7 +7,7 @@ versionsPlugin = "0.46.0"
 
 jackson = "2.14.2"
 kotlinxCoroutines = "1.6.4"
-log4jApi = "2.19.0"
+log4jApi = "2.20.0"
 log4jApiKotlin = "1.2.0"
 logbackImpl = "1.4.5"
 ort = "13f5dd2759"
