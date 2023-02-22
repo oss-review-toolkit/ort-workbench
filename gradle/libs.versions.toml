@@ -10,7 +10,7 @@ kotlinxCoroutines = "1.6.4"
 log4jApi = "2.20.0"
 log4jApiKotlin = "1.2.0"
 logbackImpl = "1.4.5"
-ort = "13f5dd2759"
+ort = "af0a83a2f8"
 richtext = "0.16.0"
 
 [plugins]
