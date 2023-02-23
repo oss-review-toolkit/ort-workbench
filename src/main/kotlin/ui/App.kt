@@ -24,6 +24,7 @@ import com.halilibo.richtext.ui.material.SetupMaterialRichText
 
 import kotlinx.coroutines.launch
 
+import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.FileDialog
 import org.ossreviewtoolkit.workbench.model.OrtApiState
@@ -33,6 +34,7 @@ import org.ossreviewtoolkit.workbench.navigation.rememberNavigationController
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
 import org.ossreviewtoolkit.workbench.ui.issues.Issues
+import org.ossreviewtoolkit.workbench.ui.packagedetails.PackageDetails
 import org.ossreviewtoolkit.workbench.ui.packages.Packages
 import org.ossreviewtoolkit.workbench.ui.settings.Settings
 import org.ossreviewtoolkit.workbench.ui.summary.Summary
@@ -71,6 +73,7 @@ fun App(state: AppState) {
 sealed class MainScreen(val name: String, val icon: MaterialIcon) : Screen {
     object Dependencies : MainScreen("Dependencies", MaterialIcon.ACCOUNT_TREE)
     object Issues : MainScreen("Issues", MaterialIcon.BUG_REPORT)
+    class PackageDetails(val pkg: Identifier) : MainScreen("Package Details", MaterialIcon.INVENTORY)
     object Packages : MainScreen("Packages", MaterialIcon.INVENTORY)
     object Settings : MainScreen("Settings", MaterialIcon.SETTINGS)
     object Summary : MainScreen("Summary", MaterialIcon.ASSESSMENT)
@@ -88,8 +91,15 @@ fun MainLayout(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit)
                 TopBar()
 
                 Row {
-                    Menu(screen, apiState, { navController.replace(it) })
-                    Content(screen, state, onLoadResult, { navController.replace(it) })
+                    Menu(screen, apiState, onSwitchScreen = { navController.replace(it) })
+                    Content(
+                        screen,
+                        state,
+                        onLoadResult,
+                        onSwitchScreen = { navController.replace(it) },
+                        onPushScreen = { navController.push(it) },
+                        onBack = { navController.pop() }
+                    )
                 }
             }
         }
@@ -101,12 +111,15 @@ private fun Content(
     currentScreen: MainScreen,
     state: AppState,
     onLoadResult: () -> Unit,
-    onSwitchScreen: (MainScreen) -> Unit
+    onSwitchScreen: (MainScreen) -> Unit,
+    onPushScreen: (MainScreen) -> Unit,
+    onBack: () -> Unit
 ) {
     SetupMaterialRichText {
         when (currentScreen) {
             is MainScreen.Summary -> Summary(state.summaryViewModel, onSwitchScreen, onLoadResult)
-            is MainScreen.Packages -> Packages(state.packagesViewModel)
+            is MainScreen.Packages -> Packages(state.packagesViewModel, onPushScreen)
+            is MainScreen.PackageDetails -> PackageDetails(currentScreen.pkg, onBack)
             is MainScreen.Dependencies -> Dependencies(state.dependenciesViewModel)
             is MainScreen.Issues -> Issues(state.issuesViewModel)
             is MainScreen.RuleViolations -> Violations(state.violationsViewModel)

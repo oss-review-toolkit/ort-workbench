@@ -12,6 +12,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -30,10 +31,11 @@ import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.IconText
 import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.ListScreenList
+import org.ossreviewtoolkit.workbench.ui.MainScreen
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
-fun Packages(viewModel: PackagesViewModel) {
+fun Packages(viewModel: PackagesViewModel, onPushScreen: (MainScreen) -> Unit) {
     val state by viewModel.state.collectAsState()
 
     ListScreenContent(
@@ -43,7 +45,9 @@ fun Packages(viewModel: PackagesViewModel) {
             ListScreenList(
                 items = state.packages,
                 itemsEmptyText = "No packages found.",
-                item = { PackageCard(it) }
+                item = { pkg ->
+                    PackageCard(pkg, onSelectPackage = { onPushScreen(MainScreen.PackageDetails(pkg.metadata.id)) })
+                }
             )
         },
         filterPanel = { showFilterPanel ->
@@ -65,7 +69,7 @@ fun Packages(viewModel: PackagesViewModel) {
 }
 
 @Composable
-fun PackageCard(pkg: PackageInfo) {
+fun PackageCard(pkg: PackageInfo, onSelectPackage: (PackageInfo) -> Unit) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -104,6 +108,10 @@ fun PackageCard(pkg: PackageInfo) {
                         IconText(painterResource(MaterialIcon.BUG_REPORT.resource), pkg.issues.size.toString())
                         IconText(painterResource(MaterialIcon.GAVEL.resource), pkg.violations.size.toString())
                         IconText(painterResource(MaterialIcon.LOCK_OPEN.resource), pkg.vulnerabilities.size.toString())
+
+                        TextButton(onClick = { onSelectPackage(pkg) }) {
+                            Text("Details")
+                        }
 
                         // TODO: Add entries for scan results and curations.
                     }
