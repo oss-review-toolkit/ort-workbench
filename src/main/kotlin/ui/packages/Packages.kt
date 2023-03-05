@@ -1,22 +1,25 @@
 package org.ossreviewtoolkit.workbench.ui.packages
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +34,7 @@ import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.IconText
 import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.ListScreenList
+import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.ui.MainScreen
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
@@ -69,25 +73,37 @@ fun Packages(viewModel: PackagesViewModel, onPushScreen: (MainScreen) -> Unit) {
 }
 
 @Composable
-fun PackageCard(pkg: PackageInfo, onSelectPackage: (PackageInfo) -> Unit) {
+fun PackageCard(pkg: PackageInfo, onSelectPackage: () -> Unit) {
+    PackageCard(
+        id = pkg.metadata.id,
+        description = pkg.metadata.description,
+        license = pkg.resolvedLicenseInfo.effectiveLicense(LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED).toString(),
+        issues = pkg.issues.size,
+        vulnerabilities = pkg.vulnerabilities.size,
+        ruleViolations = pkg.violations.size,
+        onSelectPackage = onSelectPackage
+    )
+}
+
+@Composable
+fun PackageCard(
+    id: Identifier,
+    description: String,
+    license: String?,
+    issues: Int,
+    vulnerabilities: Int,
+    ruleViolations: Int,
+    onSelectPackage: () -> Unit
+) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(pkg.metadata.id.toCoordinates(), fontWeight = FontWeight.Bold)
-
-                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Text("PURL: ${pkg.metadata.purl}", style = MaterialTheme.typography.caption)
-                    if (pkg.metadata.cpe != null) {
-                        Text("CPE: ${pkg.metadata.cpe}", style = MaterialTheme.typography.caption)
-                    }
-                }
-            }
+            Text(id.toCoordinates(), fontWeight = FontWeight.Bold, modifier = Modifier.padding(10.dp))
 
             Divider()
 
-            if (pkg.metadata.description.isNotBlank()) {
+            if (description.isNotBlank()) {
                 Column(modifier = Modifier.padding(10.dp)) {
-                    Text(pkg.metadata.description)
+                    Text(description)
                 }
 
                 Divider()
@@ -95,23 +111,25 @@ fun PackageCard(pkg: PackageInfo, onSelectPackage: (PackageInfo) -> Unit) {
 
             Column(modifier = Modifier.padding(10.dp)) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                        val license =
-                            pkg.resolvedLicenseInfo.effectiveLicense(LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED)
-
-                        Text("${license ?: "Unknown license"}")
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(license ?: "Unknown license")
 
                         Box(modifier = Modifier.weight(1f))
 
                         // TODO: Add links to other view, pre-filtered by this package.
                         // TODO: Take resolutions into account.
-                        IconText(painterResource(MaterialIcon.BUG_REPORT.resource), pkg.issues.size.toString())
-                        IconText(painterResource(MaterialIcon.GAVEL.resource), pkg.violations.size.toString())
-                        IconText(painterResource(MaterialIcon.LOCK_OPEN.resource), pkg.vulnerabilities.size.toString())
+                        IconText(painterResource(MaterialIcon.BUG_REPORT.resource), issues.toString())
+                        IconText(painterResource(MaterialIcon.GAVEL.resource), ruleViolations.toString())
+                        IconText(painterResource(MaterialIcon.LOCK_OPEN.resource), vulnerabilities.toString())
 
-                        TextButton(onClick = { onSelectPackage(pkg) }) {
-                            Text("Details")
-                        }
+                        TextButton(
+                            onClick = onSelectPackage,
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                        ) { Text("Details") }
 
                         // TODO: Add entries for scan results and curations.
                     }
@@ -183,6 +201,22 @@ fun PackagesFilterPanel(
             label = "Excluded",
             onFilterChange = onUpdateExclusionStatusFilter,
             convert = { it.name.titlecase() }
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun PackageCardPreview() {
+    Preview {
+        PackageCard(
+            id = Identifier("Maven:org.ossreviewtoolkit:ort-workbench:1.0.0"),
+            description = "A desktop workbench for OSS Review Toolkit result files.",
+            license = "Apache-2.0",
+            issues = 1,
+            vulnerabilities = 2,
+            ruleViolations = 3,
+            onSelectPackage = {}
         )
     }
 }
