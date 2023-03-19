@@ -119,12 +119,14 @@ private fun Content(
         when (currentScreen) {
             is MainScreen.Summary -> Summary(state.summaryViewModel, onSwitchScreen, onLoadResult)
             is MainScreen.Packages -> Packages(state.packagesViewModel, onPushScreen)
-            is MainScreen.PackageDetails -> PackageDetails(currentScreen.pkg, onBack)
             is MainScreen.Dependencies -> Dependencies(state.dependenciesViewModel)
             is MainScreen.Issues -> Issues(state.issuesViewModel)
             is MainScreen.RuleViolations -> Violations(state.violationsViewModel)
             is MainScreen.Vulnerabilities -> Vulnerabilities(state.vulnerabilitiesViewModel)
             is MainScreen.Settings -> Settings(state.settingsViewModel)
+            is MainScreen.PackageDetails -> {
+                PackageDetails(state, currentScreen.pkg, onBack)
+            }
         }
     }
 }
