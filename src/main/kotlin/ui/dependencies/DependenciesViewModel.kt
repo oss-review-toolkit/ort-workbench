@@ -54,7 +54,8 @@ class DependenciesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) 
                         linkage = linkage,
                         issues = issues,
                         resolvedLicense = resolvedLicenses.getValue(id)
-                    )
+                    ),
+                    children = children
                 )
             } ?: TreeNode(
                 value = DependencyTreeError(
