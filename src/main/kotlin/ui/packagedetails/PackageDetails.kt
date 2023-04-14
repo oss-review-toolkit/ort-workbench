@@ -254,7 +254,9 @@ private fun PackageCurations(curations: List<PackageCurationResult>) {
 
 @Composable
 private fun PackageScanResults() {
-    Text("Scan Results")
+    Column(modifier = Modifier.fillMaxWidth().padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("Coming soon...")
+    }
 }
 
 fun Any?.toStringOrDash() = this?.toString()?.takeIf { it.isNotEmpty() } ?: "-"
