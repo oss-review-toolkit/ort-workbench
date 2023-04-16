@@ -28,7 +28,7 @@ class IssuesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     val state: StateFlow<IssuesState> get() = _state
 
     init {
-        scope.launch { ortModel.api.collect { issues.value = it.getIssues() } }
+        scope.launch { ortModel.api.collect { issues.value = it.getResolvedIssues() } }
 
         scope.launch { issues.collect { initState(it) } }
 

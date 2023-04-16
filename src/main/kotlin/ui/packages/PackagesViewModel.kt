@@ -41,15 +41,15 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
     init {
         scope.launch {
             ortModel.api.collect { api ->
-                val projectPackages = api.result.getProjects().mapTo(mutableSetOf()) {
+                val projectPackages = api.getProjects().mapTo(mutableSetOf()) {
                     it.toPackage().toCuratedPackage()
                 }
 
-                val projectsAndPackages = (projectPackages + api.result.getPackages()).sortedBy { it.metadata.id }
+                val projectsAndPackages = (projectPackages + api.getCuratedPackages()).sortedBy { it.metadata.id }
 
                 packages.value = projectsAndPackages.map { pkg ->
                     val references = api.getReferences(pkg.metadata.id)
-                    val issues = api.getIssues().filter { it.id == pkg.metadata.id }
+                    val issues = api.getResolvedIssues().filter { it.id == pkg.metadata.id }
                     val violations = api.getViolations().filter { it.pkg == pkg.metadata.id }
                     val vulnerabilities = api.getVulnerabilities().filter { it.pkg == pkg.metadata.id }
                     val scanResultInfos = api.getScanResults(pkg.metadata.id).map { it.toInfo() }
@@ -57,7 +57,7 @@ class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
                     PackageInfo(
                         metadata = pkg.metadata,
                         curations = pkg.curations,
-                        resolvedLicenseInfo = api.licenseInfoResolver.resolveLicenseInfo(pkg.metadata.id),
+                        resolvedLicenseInfo = api.getResolvedLicense(pkg.metadata.id),
                         references = references,
                         issues = issues,
                         violations = violations,

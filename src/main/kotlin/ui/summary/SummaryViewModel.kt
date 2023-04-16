@@ -6,15 +6,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Issue
-import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.reporter.reporters.evaluatedmodel.IssueStatistics
+import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
 
 class SummaryViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
@@ -27,8 +26,8 @@ class SummaryViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
         scope.launch {
             combine(
                 ortModel.ortResultFile.map { it.toResultFileInfo() },
-                ortModel.api.map { IssueStats(it.result) /* TODO: Take resolutions into account. */ },
-                ortModel.api.map { DependencyStats(it.result) /* TODO: Take resolutions into account. */ }
+                ortModel.api.map { IssueStats(it) /* TODO: Take resolutions into account. */ },
+                ortModel.api.map { DependencyStats(it) /* TODO: Take resolutions into account. */ }
             ) { resultFileInfo, issueStats, dependencyStats ->
                 SummaryState(
                     resultFileInfo,
@@ -70,11 +69,11 @@ data class IssueStats(
         val EMPTY = IssueStats(EMPTY_STATS, EMPTY_STATS, EMPTY_STATS, EMPTY_STATS)
     }
 
-    constructor(result: OrtResult) : this(
-        totalIssues = result.collectIssues().values.flatten().toStats(),
-        analyzerIssues = result.analyzer?.result?.collectIssues()?.values?.flatten()?.toStats() ?: EMPTY_STATS,
-        advisorIssues = result.advisor?.results?.collectIssues()?.values?.flatten()?.toStats() ?: EMPTY_STATS,
-        scannerIssues = result.scanner?.collectIssues()?.values?.flatten()?.toStats() ?: EMPTY_STATS
+    constructor(api: OrtApi) : this(
+        totalIssues = api.getIssues().values.flatten().toStats(),
+        analyzerIssues = api.getAnalyzerIssues().values.flatten().toStats(),
+        advisorIssues = api.getAdvisorIssues().values.flatten().toStats(),
+        scannerIssues = api.getScannerIssues().values.flatten().toStats()
     )
 }
 
@@ -105,11 +104,11 @@ data class DependencyStats(
         )
     }
 
-    constructor(result: OrtResult) : this(
-        projectsTotal = result.getProjects().size,
-        projectsByPackageManager = result.getProjects().groupBy { it.id.type }.mapValues { it.value.size },
-        dependenciesTotal = result.getPackages().size,
-        dependenciesByPackageManager = result.getProjects().groupBy { it.id.type }
-            .mapValues { it.value.flatMapTo(mutableSetOf()) { project -> result.collectDependencies(project.id) }.size }
+    constructor(api: OrtApi) : this(
+        projectsTotal = api.getProjects().size,
+        projectsByPackageManager = api.getProjects().groupBy { it.id.type }.mapValues { it.value.size },
+        dependenciesTotal = api.getCuratedPackages().size,
+        dependenciesByPackageManager = api.getProjects().groupBy { it.id.type }
+            .mapValues { it.value.flatMapTo(mutableSetOf()) { project -> api.getProjectDependencies(project.id) }.size }
     )
 }
