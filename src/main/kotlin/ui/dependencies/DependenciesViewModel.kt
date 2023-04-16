@@ -29,14 +29,14 @@ class DependenciesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) 
     }
 
     private fun createDependencyNodes(api: OrtApi): List<TreeNode<DependencyTreeItem>> {
-        val resolvedLicenses = api.result.collectProjectsAndPackages().associateWith {
-            api.licenseInfoResolver.resolveLicenseInfo(it).filterExcluded()
+        val resolvedLicenses = api.getProjectAndPackageIdentifiers().associateWith {
+            api.getResolvedLicense(it).filterExcluded()
         }
 
         fun PackageReference.toTreeNode(): TreeNode<DependencyTreeItem> {
             val children = dependencies.map { it.toTreeNode() }
 
-            return api.result.getProject(id)?.let { project ->
+            return api.getProject(id)?.let { project ->
                 TreeNode(
                     value = DependencyTreeProject(
                         project = project,
@@ -46,7 +46,7 @@ class DependenciesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) 
                     ),
                     children = children
                 )
-            } ?: api.result.getPackage(id)?.let { pkg ->
+            } ?: api.getCuratedPackage(id)?.let { pkg ->
                 TreeNode(
                     value = DependencyTreePackage(
                         id = id,
@@ -91,6 +91,6 @@ class DependenciesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) 
             )
         }
 
-        return api.result.getProjects().map { it.toTreeNode() }
+        return api.getProjects().map { it.toTreeNode() }
     }
 }

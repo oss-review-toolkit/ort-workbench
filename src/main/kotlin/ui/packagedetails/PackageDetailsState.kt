@@ -15,14 +15,14 @@ import org.ossreviewtoolkit.workbench.ui.AppState
 fun rememberPackageDetailsState(appState: AppState, id: Identifier): PackageDetailsState {
     val api by appState.ortModel.api.collectAsState()
     val packageInfo = remember(id) {
-        val pkg = api.result.getPackageOrProject(id)
-        val project = api.result.getProject(id)
+        val pkg = api.getCuratedPackageOrProject(id)
+        val project = api.getProject(id)
 
         PackageInfo(
             id = id,
             pkg = pkg,
             project = project,
-            license = api.licenseInfoResolver.resolveLicenseInfo(id)
+            license = api.getResolvedLicense(id)
         )
     }
 
