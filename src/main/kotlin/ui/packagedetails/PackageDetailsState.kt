@@ -2,6 +2,7 @@ package org.ossreviewtoolkit.workbench.ui.packagedetails
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 
 import org.ossreviewtoolkit.model.CuratedPackage
@@ -12,16 +13,16 @@ import org.ossreviewtoolkit.workbench.ui.AppState
 
 @Composable
 fun rememberPackageDetailsState(appState: AppState, id: Identifier): PackageDetailsState {
-    val api = appState.ortModel.api.collectAsState()
+    val api by appState.ortModel.api.collectAsState()
     val packageInfo = remember(id) {
-        val pkg = api.value.result.getPackageOrProject(id)
-        val project = api.value.result.getProject(id)
+        val pkg = api.result.getPackageOrProject(id)
+        val project = api.result.getProject(id)
 
         PackageInfo(
             id = id,
             pkg = pkg,
             project = project,
-            license = api.value.licenseInfoResolver.resolveLicenseInfo(id)
+            license = api.licenseInfoResolver.resolveLicenseInfo(id)
         )
     }
 
