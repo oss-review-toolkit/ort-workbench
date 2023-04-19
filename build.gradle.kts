@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.molecule)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.versions)
 }
