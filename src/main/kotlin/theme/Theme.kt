@@ -2,7 +2,7 @@ package org.ossreviewtoolkit.workbench.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalMinimumTouchTargetEnforcement
+import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -52,7 +52,7 @@ fun OrtWorkbenchTheme(theme: WorkbenchTheme, content: @Composable () -> Unit) {
     }
 
     CompositionLocalProvider(
-        LocalMinimumTouchTargetEnforcement provides false,
+        LocalMinimumInteractiveComponentEnforcement provides false
     ) {
         MaterialTheme(
             colors = colors,
