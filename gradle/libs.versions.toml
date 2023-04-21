@@ -28,15 +28,12 @@ kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-sw
 log4jApiKotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4jApiKotlin" }
 log4jApiToSlf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version.ref = "log4jApi" }
 logbackClassic = { module = "ch.qos.logback:logback-classic", version.ref = "logbackImpl" }
-ortAnalyzer = { module = "com.github.oss-review-toolkit.ort:analyzer", version.ref = "ort" }
 ortDetektRules = { module = "com.github.oss-review-toolkit.ort:detekt-rules", version.ref = "ort" }
-ortDownloader = { module = "com.github.oss-review-toolkit.ort:downloader", version.ref = "ort" }
-ortEvaluator = { module = "com.github.oss-review-toolkit.ort:evaluator", version.ref = "ort" }
+ortModel = { module = "com.github.oss-review-toolkit.ort:model", version.ref = "ort" }
 ortReporter = { module = "com.github.oss-review-toolkit.ort:reporter", version.ref = "ort" }
-ortScanner = { module = "com.github.oss-review-toolkit.ort:scanner", version.ref = "ort" }
 richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonmark", version.ref = "richtext" }
 richtextUiMaterial = { module = "com.halilibo.compose-richtext:richtext-ui-material", version.ref = "richtext" }
 
 [bundles]
-ort = ["ortAnalyzer", "ortDownloader", "ortEvaluator", "ortReporter", "ortScanner"]
+ort = ["ortModel", "ortReporter"]
 richtext = ["richtextCommonmark", "richtextUiMaterial"]
