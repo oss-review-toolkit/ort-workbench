@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.Severity
-import org.ossreviewtoolkit.reporter.reporters.evaluatedmodel.IssueStatistics
+import org.ossreviewtoolkit.reporter.IssueStatistics
 import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
 
@@ -77,7 +77,7 @@ data class IssueStats(
     )
 }
 
-val EMPTY_STATS = IssueStatistics(0, 0, 0)
+val EMPTY_STATS = IssueStatistics(0, 0, 0, 0)
 
 private fun Collection<Issue>.toStats(): IssueStatistics {
     val grouped = groupBy { it.severity }
@@ -85,7 +85,8 @@ private fun Collection<Issue>.toStats(): IssueStatistics {
     return IssueStatistics(
         errors = grouped[Severity.ERROR]?.size ?: 0,
         warnings = grouped[Severity.WARNING]?.size ?: 0,
-        hints = grouped[Severity.HINT]?.size ?: 0
+        hints = grouped[Severity.HINT]?.size ?: 0,
+        severe = 0 // TODO: Calculate the number of severe issues.
     )
 }
 
