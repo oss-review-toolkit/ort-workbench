@@ -58,9 +58,9 @@ class OrtApi(
         }
     }
 
-    fun getAdvisorIssues(): Map<Identifier, Set<Issue>> = result.advisor?.results?.collectIssues().orEmpty()
+    fun getAdvisorIssues(): Map<Identifier, Set<Issue>> = result.advisor?.results?.getIssues().orEmpty()
 
-    fun getAnalyzerIssues(): Map<Identifier, Set<Issue>> = result.analyzer?.result?.collectIssues().orEmpty()
+    fun getAnalyzerIssues(): Map<Identifier, Set<Issue>> = result.analyzer?.result?.getAllIssues().orEmpty()
 
     fun getCuratedPackage(id: Identifier): CuratedPackage? = result.getPackage(id)
 
@@ -68,15 +68,15 @@ class OrtApi(
 
     fun getCuratedPackageOrProject(id: Identifier): CuratedPackage? = result.getPackageOrProject(id)
 
-    fun getIssues(): Map<Identifier, Set<Issue>> = result.collectIssues()
+    fun getIssues(): Map<Identifier, Set<Issue>> = result.getIssues()
 
     fun getProject(id: Identifier): Project? = result.getProject(id)
 
-    fun getProjectDependencies(id: Identifier): Set<Identifier> = result.collectDependencies(id)
+    fun getProjectDependencies(id: Identifier): Set<Identifier> = result.getDependencies(id)
 
     fun getProjects(): Set<Project> = result.getProjects()
 
-    fun getProjectAndPackageIdentifiers(): Set<Identifier> = result.collectProjectsAndPackages()
+    fun getProjectAndPackageIdentifiers(): Set<Identifier> = result.getProjectsAndPackages()
 
     fun getReferences(id: Identifier): List<DependencyReference> =
         result.getProjects().filter { it.contains(id) }.map { project ->
@@ -93,13 +93,13 @@ class OrtApi(
         }
 
     fun getResolvedIssues(): List<ResolvedIssue> =
-        result.analyzer?.result?.collectIssues().orEmpty().toIssues(Tool.ANALYZER, resolutionProvider) +
-                result.advisor?.results?.collectIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
-                result.scanner?.collectIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
+        result.analyzer?.result?.getAllIssues().orEmpty().toIssues(Tool.ANALYZER, resolutionProvider) +
+                result.advisor?.results?.getIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
+                result.scanner?.getIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
 
     fun getResolvedLicense(id: Identifier): ResolvedLicenseInfo = licenseInfoResolver.resolveLicenseInfo(id)
 
-    fun getScannerIssues(): Map<Identifier, Set<Issue>> = result.scanner?.collectIssues().orEmpty()
+    fun getScannerIssues(): Map<Identifier, Set<Issue>> = result.scanner?.getIssues().orEmpty()
 
     fun getScanResults(id: Identifier): List<ScanResult> = result.getScanResultsForId(id)
 
