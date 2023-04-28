@@ -9,14 +9,18 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 
 import org.ossreviewtoolkit.workbench.ui.App
-import org.ossreviewtoolkit.workbench.ui.rememberAppState
+import org.ossreviewtoolkit.workbench.ui.AppState
 
-fun main() = singleWindowApplication(
-    title = "ORT Workbench",
-    state = WindowState(
-        size = DpSize(1440.dp, 810.dp)
-    ),
-    icon = BitmapPainter(useResource("app-icon/icon.png", ::loadImageBitmap))
-) {
-    App(rememberAppState())
+fun main() {
+    val appState = AppState()
+
+    singleWindowApplication(
+        title = "ORT Workbench",
+        state = WindowState(
+            size = DpSize(1440.dp, 810.dp)
+        ),
+        icon = BitmapPainter(useResource("app-icon/icon.png", ::loadImageBitmap))
+    ) {
+        App(appState)
+    }
 }

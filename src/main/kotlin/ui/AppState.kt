@@ -1,8 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-
 import java.nio.file.Path
 
 import org.ossreviewtoolkit.workbench.model.OrtApiState
@@ -15,9 +12,6 @@ import org.ossreviewtoolkit.workbench.ui.settings.SettingsViewModel
 import org.ossreviewtoolkit.workbench.ui.summary.SummaryViewModel
 import org.ossreviewtoolkit.workbench.ui.violations.ViolationsViewModel
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.VulnerabilitiesViewModel
-
-@Composable
-fun rememberAppState() = remember { AppState() }
 
 class AppState(val ortModel: OrtModel = OrtModel.INSTANCE) {
     val dependenciesViewModel = DependenciesViewModel(ortModel)
