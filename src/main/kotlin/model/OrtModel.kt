@@ -47,11 +47,6 @@ private const val ORT_WORKBENCH_CONFIG_FILENAME = "settings.yml"
 
 class OrtModel {
     companion object : Logging {
-        /**
-         * The global instance of the [OrtModel], should be replaced with dependency injection later on.
-         */
-        val INSTANCE = OrtModel()
-
         private val settingsMapper =
             YAMLMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)).apply {
                 registerKotlinModule()

@@ -29,7 +29,7 @@ import org.ossreviewtoolkit.workbench.utils.matchStringContains
 import org.ossreviewtoolkit.workbench.utils.matchViolationStatus
 import org.ossreviewtoolkit.workbench.utils.matchVulnerabilityStatus
 
-class PackagesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
+class PackagesViewModel(private val ortModel: OrtModel) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private val packages = MutableStateFlow(emptyList<PackageInfo>())

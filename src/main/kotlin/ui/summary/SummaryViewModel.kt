@@ -16,7 +16,7 @@ import org.ossreviewtoolkit.reporter.IssueStatistics
 import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
 
-class SummaryViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
+class SummaryViewModel(private val ortModel: OrtModel) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private val _state = MutableStateFlow(SummaryState())

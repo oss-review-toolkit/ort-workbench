@@ -24,7 +24,7 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
 import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 
-class SettingsViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
+class SettingsViewModel(private val ortModel: OrtModel) {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _tab = MutableStateFlow(SettingsTab.CONFIG_FILES)
