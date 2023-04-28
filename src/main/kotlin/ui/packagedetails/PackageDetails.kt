@@ -43,15 +43,15 @@ import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
-import org.ossreviewtoolkit.workbench.ui.AppState
+import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val TAB_METADATA = 0
 private const val TAB_SCAN_RESULTS = 1
 
 @Composable
-fun PackageDetails(appState: AppState, id: Identifier, onBack: () -> Unit) {
-    val state = rememberPackageDetailsState(appState, id)
+fun PackageDetails(controller: WorkbenchController, id: Identifier, onBack: () -> Unit) {
+    val state = rememberPackageDetailsState(controller, id)
 
     Column {
         ScreenAppBar(

@@ -13,7 +13,7 @@ import org.ossreviewtoolkit.workbench.ui.summary.SummaryViewModel
 import org.ossreviewtoolkit.workbench.ui.violations.ViolationsViewModel
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.VulnerabilitiesViewModel
 
-class AppState(val ortModel: OrtModel = OrtModel.INSTANCE) {
+class WorkbenchController(val ortModel: OrtModel = OrtModel.INSTANCE) {
     val dependenciesViewModel = DependenciesViewModel(ortModel)
     val issuesViewModel = IssuesViewModel(ortModel)
     val packagesViewModel = PackagesViewModel(ortModel)

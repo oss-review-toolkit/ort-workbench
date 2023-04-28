@@ -9,10 +9,10 @@ import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 
 import org.ossreviewtoolkit.workbench.ui.App
-import org.ossreviewtoolkit.workbench.ui.AppState
+import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 
 fun main() {
-    val appState = AppState()
+    val workbenchController = WorkbenchController()
 
     singleWindowApplication(
         title = "ORT Workbench",
@@ -21,6 +21,6 @@ fun main() {
         ),
         icon = BitmapPainter(useResource("app-icon/icon.png", ::loadImageBitmap))
     ) {
-        App(appState)
+        App(workbenchController)
     }
 }

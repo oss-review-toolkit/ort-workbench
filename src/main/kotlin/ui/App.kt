@@ -43,27 +43,27 @@ import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
-fun App(state: AppState) {
-    val apiState by state.ortModel.state.collectAsState()
-    val settings by state.ortModel.settings.collectAsState()
+fun App(controller: WorkbenchController) {
+    val apiState by controller.ortModel.state.collectAsState()
+    val settings by controller.ortModel.settings.collectAsState()
     val scope = rememberCoroutineScope()
 
-    fun loadResult() = scope.launch { state.openOrtResult() }
+    fun loadResult() = scope.launch { controller.openOrtResult() }
 
     OrtWorkbenchTheme(settings.theme) {
         Surface(color = MaterialTheme.colors.background) {
             if (apiState == OrtApiState.READY) {
-                MainLayout(state, apiState, ::loadResult)
+                MainLayout(controller, apiState, ::loadResult)
             } else {
-                LoadResult(state, apiState, ::loadResult)
+                LoadResult(controller, apiState, ::loadResult)
             }
 
-            if (state.openResultDialog.isAwaiting) {
+            if (controller.openResultDialog.isAwaiting) {
                 FileDialog(
                     title = "Load ORT result",
                     isLoad = true,
                     fileExtensionFilter = listOf("json", "yml"),
-                    onResult = { state.openResultDialog.onResult(it) }
+                    onResult = { controller.openResultDialog.onResult(it) }
                 )
             }
         }
@@ -82,7 +82,7 @@ sealed class MainScreen(val name: String, val icon: MaterialIcon) : OldScreen {
 }
 
 @Composable
-fun MainLayout(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit) {
+fun MainLayout(controller: WorkbenchController, apiState: OrtApiState, onLoadResult: () -> Unit) {
     val navController = rememberNavigationController<MainScreen>(MainScreen.Summary)
 
     Navigation(navController) { currentScreen ->
@@ -94,7 +94,7 @@ fun MainLayout(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit)
                     Menu(screen, apiState, onSwitchScreen = { navController.replace(it) })
                     Content(
                         screen,
-                        state,
+                        controller,
                         onLoadResult,
                         onSwitchScreen = { navController.replace(it) },
                         onPushScreen = { navController.push(it) },
@@ -109,7 +109,7 @@ fun MainLayout(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit)
 @Composable
 private fun Content(
     currentScreen: MainScreen,
-    state: AppState,
+    controller: WorkbenchController,
     onLoadResult: () -> Unit,
     onSwitchScreen: (MainScreen) -> Unit,
     onPushScreen: (MainScreen) -> Unit,
@@ -117,23 +117,23 @@ private fun Content(
 ) {
     SetupMaterialRichText {
         when (currentScreen) {
-            is MainScreen.Summary -> Summary(state.summaryViewModel, onSwitchScreen, onLoadResult)
-            is MainScreen.Packages -> Packages(state.packagesViewModel, onPushScreen)
-            is MainScreen.Dependencies -> Dependencies(state.dependenciesViewModel)
-            is MainScreen.Issues -> Issues(state.issuesViewModel)
-            is MainScreen.RuleViolations -> Violations(state.violationsViewModel)
-            is MainScreen.Vulnerabilities -> Vulnerabilities(state.vulnerabilitiesViewModel)
-            is MainScreen.Settings -> Settings(state.settingsViewModel)
+            is MainScreen.Summary -> Summary(controller.summaryViewModel, onSwitchScreen, onLoadResult)
+            is MainScreen.Packages -> Packages(controller.packagesViewModel, onPushScreen)
+            is MainScreen.Dependencies -> Dependencies(controller.dependenciesViewModel)
+            is MainScreen.Issues -> Issues(controller.issuesViewModel)
+            is MainScreen.RuleViolations -> Violations(controller.violationsViewModel)
+            is MainScreen.Vulnerabilities -> Vulnerabilities(controller.vulnerabilitiesViewModel)
+            is MainScreen.Settings -> Settings(controller.settingsViewModel)
             is MainScreen.PackageDetails -> {
-                PackageDetails(state, currentScreen.pkg, onBack)
+                PackageDetails(controller, currentScreen.pkg, onBack)
             }
         }
     }
 }
 
 @Composable
-private fun LoadResult(state: AppState, apiState: OrtApiState, onLoadResult: () -> Unit) {
-    val error by state.ortModel.error.collectAsState()
+private fun LoadResult(controller: WorkbenchController, apiState: OrtApiState, onLoadResult: () -> Unit) {
+    val error by controller.ortModel.error.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),

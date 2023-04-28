@@ -9,11 +9,11 @@ import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
-import org.ossreviewtoolkit.workbench.ui.AppState
+import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 
 @Composable
-fun rememberPackageDetailsState(appState: AppState, id: Identifier): PackageDetailsState {
-    val api by appState.ortModel.api.collectAsState()
+fun rememberPackageDetailsState(controller: WorkbenchController, id: Identifier): PackageDetailsState {
+    val api by controller.ortModel.api.collectAsState()
     val packageInfo = remember(id) {
         val pkg = api.getCuratedPackageOrProject(id)
         val project = api.getProject(id)
