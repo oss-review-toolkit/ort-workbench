@@ -29,7 +29,7 @@ import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.FileDialog
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.navigation.Navigation
-import org.ossreviewtoolkit.workbench.navigation.Screen
+import org.ossreviewtoolkit.workbench.navigation.OldScreen
 import org.ossreviewtoolkit.workbench.navigation.rememberNavigationController
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
@@ -70,7 +70,7 @@ fun App(state: AppState) {
     }
 }
 
-sealed class MainScreen(val name: String, val icon: MaterialIcon) : Screen {
+sealed class MainScreen(val name: String, val icon: MaterialIcon) : OldScreen {
     object Dependencies : MainScreen("Dependencies", MaterialIcon.ACCOUNT_TREE)
     object Issues : MainScreen("Issues", MaterialIcon.BUG_REPORT)
     class PackageDetails(val pkg: Identifier) : MainScreen("Package Details", MaterialIcon.INVENTORY)

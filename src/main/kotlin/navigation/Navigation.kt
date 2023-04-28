@@ -5,7 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
 @Composable
-fun <SCREEN : Screen> Navigation(
+fun <SCREEN : OldScreen> Navigation(
     navigationController: NavigationController<SCREEN>,
     content: @Composable (screen: SCREEN?) -> Unit
 ) {
