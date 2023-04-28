@@ -6,7 +6,7 @@ import androidx.compose.runtime.remember
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class NavigationController<SCREEN : Screen>(initialScreen: SCREEN? = null) {
+class NavigationController<SCREEN : OldScreen>(initialScreen: SCREEN? = null) {
     private val stack = ArrayDeque<SCREEN>()
 
     private val _currentScreen = MutableStateFlow<SCREEN?>(null)
@@ -32,5 +32,5 @@ class NavigationController<SCREEN : Screen>(initialScreen: SCREEN? = null) {
 }
 
 @Composable
-fun <SCREEN : Screen> rememberNavigationController(initialScreen: SCREEN? = null) =
+fun <SCREEN : OldScreen> rememberNavigationController(initialScreen: SCREEN? = null) =
     remember { NavigationController(initialScreen) }

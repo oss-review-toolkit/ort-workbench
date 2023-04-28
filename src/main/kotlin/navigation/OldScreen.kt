@@ -1,3 +1,3 @@
 package org.ossreviewtoolkit.workbench.navigation
 
-interface Screen
+interface OldScreen
