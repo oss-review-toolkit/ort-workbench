@@ -16,7 +16,7 @@ import org.ossreviewtoolkit.workbench.utils.matchString
 import org.ossreviewtoolkit.workbench.utils.matchStringContains
 import org.ossreviewtoolkit.workbench.utils.matchValue
 
-class VulnerabilitiesViewModel(private val ortModel: OrtModel = OrtModel.INSTANCE) {
+class VulnerabilitiesViewModel(private val ortModel: OrtModel) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private val vulnerabilities = MutableStateFlow(emptyList<ResolvedVulnerability>())

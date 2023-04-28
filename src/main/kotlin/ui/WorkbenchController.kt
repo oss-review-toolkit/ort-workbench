@@ -13,7 +13,7 @@ import org.ossreviewtoolkit.workbench.ui.summary.SummaryViewModel
 import org.ossreviewtoolkit.workbench.ui.violations.ViolationsViewModel
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.VulnerabilitiesViewModel
 
-class WorkbenchController(val ortModel: OrtModel = OrtModel.INSTANCE) {
+class WorkbenchController(val ortModel: OrtModel) {
     val dependenciesViewModel = DependenciesViewModel(ortModel)
     val issuesViewModel = IssuesViewModel(ortModel)
     val packagesViewModel = PackagesViewModel(ortModel)
@@ -28,7 +28,7 @@ class WorkbenchController(val ortModel: OrtModel = OrtModel.INSTANCE) {
         if (ortModel.state.value !in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
             val path = openResultDialog.awaitResult()
             if (path != null) {
-                OrtModel.INSTANCE.loadOrtResult(path.toFile())
+                ortModel.loadOrtResult(path.toFile())
             }
         }
     }
