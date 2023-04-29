@@ -5,8 +5,6 @@ import java.nio.file.Path
 
 import kotlin.io.path.invariantSeparatorsPathString
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,13 +18,12 @@ import org.ossreviewtoolkit.utils.ort.ORT_LICENSE_CLASSIFICATIONS_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CURATIONS_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_RESOLUTIONS_FILENAME
+import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
 import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 
-class SettingsViewModel(private val ortModel: OrtModel) {
-    private val scope = CoroutineScope(Dispatchers.IO)
-
+class SettingsViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val _tab = MutableStateFlow(SettingsTab.CONFIG_FILES)
     val tab: StateFlow<SettingsTab> get() = _tab
 

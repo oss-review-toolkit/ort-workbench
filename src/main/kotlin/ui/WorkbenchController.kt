@@ -4,23 +4,11 @@ import java.nio.file.Path
 
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.model.OrtModel
+import org.ossreviewtoolkit.workbench.navigation.NavController
 import org.ossreviewtoolkit.workbench.state.DialogState
-import org.ossreviewtoolkit.workbench.ui.dependencies.DependenciesViewModel
-import org.ossreviewtoolkit.workbench.ui.issues.IssuesViewModel
-import org.ossreviewtoolkit.workbench.ui.packages.PackagesViewModel
-import org.ossreviewtoolkit.workbench.ui.settings.SettingsViewModel
-import org.ossreviewtoolkit.workbench.ui.summary.SummaryViewModel
-import org.ossreviewtoolkit.workbench.ui.violations.ViolationsViewModel
-import org.ossreviewtoolkit.workbench.ui.vulnerabilities.VulnerabilitiesViewModel
 
 class WorkbenchController(val ortModel: OrtModel) {
-    val dependenciesViewModel = DependenciesViewModel(ortModel)
-    val issuesViewModel = IssuesViewModel(ortModel)
-    val packagesViewModel = PackagesViewModel(ortModel)
-    val settingsViewModel = SettingsViewModel(ortModel)
-    val summaryViewModel = SummaryViewModel(ortModel)
-    val violationsViewModel = ViolationsViewModel(ortModel)
-    val vulnerabilitiesViewModel = VulnerabilitiesViewModel(ortModel)
+    val navController = NavController(MainScreen.Summary(ortModel))
 
     val openResultDialog = DialogState<Path?>()
 

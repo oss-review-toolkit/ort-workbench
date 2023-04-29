@@ -23,13 +23,13 @@ import androidx.compose.ui.unit.dp
 import org.ossreviewtoolkit.workbench.composables.Link
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.StyledCard
-import org.ossreviewtoolkit.workbench.ui.MainScreen
+import org.ossreviewtoolkit.workbench.ui.MenuItem
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val KIBI = 1024
 
 @Composable
-fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MainScreen) -> Unit, onOpenResult: () -> Unit) {
+fun Summary(viewModel: SummaryViewModel, onSelectMenuItem: (MenuItem) -> Unit, onOpenResult: () -> Unit) {
     val state by viewModel.state.collectAsState()
 
     Column(modifier = Modifier.padding(15.dp)) {
@@ -37,11 +37,11 @@ fun Summary(viewModel: SummaryViewModel, onSwitchScreen: (MainScreen) -> Unit, o
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
                 ResultFileInfoCard(state.resultFileInfo, onOpenResult)
 
-                DependencyStatsCard(state.dependencyStats) { onSwitchScreen(MainScreen.Dependencies) }
+                DependencyStatsCard(state.dependencyStats) { onSelectMenuItem(MenuItem.DEPENDENCIES) }
             }
 
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                IssueStatsCard(state.issueStats) { onSwitchScreen(MainScreen.Issues) }
+                IssueStatsCard(state.issueStats) { onSelectMenuItem(MenuItem.ISSUES) }
             }
         }
     }
@@ -83,7 +83,7 @@ fun IssueStatsCard(
     onClickDetails: () -> Unit
 ) {
     StyledCard(
-        titleIcon = painterResource(MainScreen.Issues.icon.resource),
+        titleIcon = painterResource(MenuItem.ISSUES.icon.resource),
         title = "Issue Stats"
     ) {
         LazyVerticalGrid(
@@ -131,7 +131,7 @@ private fun IssueStatsCardPreview() {
 @Composable
 fun DependencyStatsCard(stats: DependencyStats, onClickDetails: () -> Unit) {
     StyledCard(
-        titleIcon = painterResource(MainScreen.Dependencies.icon.resource),
+        titleIcon = painterResource(MenuItem.DEPENDENCIES.icon.resource),
         title = "Dependency Stats"
     ) {
         Text(

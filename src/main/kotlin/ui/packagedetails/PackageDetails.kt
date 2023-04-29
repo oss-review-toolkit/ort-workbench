@@ -35,7 +35,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.PackageCurationResult
 import org.ossreviewtoolkit.model.Project
@@ -43,19 +42,21 @@ import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
-import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val TAB_METADATA = 0
 private const val TAB_SCAN_RESULTS = 1
 
 @Composable
-fun PackageDetails(controller: WorkbenchController, id: Identifier, onBack: () -> Unit) {
-    val state = rememberPackageDetailsState(controller, id)
+fun PackageDetails(state: PackageDetailsState, onBack: () -> Unit) {
+    if (state.packageInfo == null) {
+        // TODO: Show package not found message.
+        return
+    }
 
     Column {
         ScreenAppBar(
-            title = { Text(id.toCoordinates(), style = MaterialTheme.typography.h3) },
+            title = { Text(state.packageInfo.id.toCoordinates(), style = MaterialTheme.typography.h3) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(
