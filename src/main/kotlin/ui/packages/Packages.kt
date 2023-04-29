@@ -35,11 +35,10 @@ import org.ossreviewtoolkit.workbench.composables.IconText
 import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
-import org.ossreviewtoolkit.workbench.ui.MainScreen
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
-fun Packages(viewModel: PackagesViewModel, onPushScreen: (MainScreen) -> Unit) {
+fun Packages(viewModel: PackagesViewModel, onSelectPackage: (Identifier) -> Unit) {
     val state by viewModel.state.collectAsState()
 
     ListScreenContent(
@@ -50,7 +49,7 @@ fun Packages(viewModel: PackagesViewModel, onPushScreen: (MainScreen) -> Unit) {
                 items = state.packages,
                 itemsEmptyText = "No packages found.",
                 item = { pkg ->
-                    PackageCard(pkg, onSelectPackage = { onPushScreen(MainScreen.PackageDetails(pkg.metadata.id)) })
+                    PackageCard(pkg, onSelectPackage = { onSelectPackage(pkg.metadata.id) })
                 }
             )
         },

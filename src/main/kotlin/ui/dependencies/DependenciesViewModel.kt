@@ -1,7 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui.dependencies
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -11,12 +9,11 @@ import org.ossreviewtoolkit.model.PackageReference
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.Scope
 import org.ossreviewtoolkit.workbench.composables.tree.TreeNode
+import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
 
-class DependenciesViewModel(private val ortModel: OrtModel) {
-    private val scope = CoroutineScope(Dispatchers.Default)
-
+class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val _state = MutableStateFlow(DependenciesState(emptyList()))
     val state: StateFlow<DependenciesState> get() = _state
 

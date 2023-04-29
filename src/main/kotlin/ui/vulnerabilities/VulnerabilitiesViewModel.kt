@@ -1,12 +1,11 @@
 package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
+import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
@@ -16,9 +15,7 @@ import org.ossreviewtoolkit.workbench.utils.matchString
 import org.ossreviewtoolkit.workbench.utils.matchStringContains
 import org.ossreviewtoolkit.workbench.utils.matchValue
 
-class VulnerabilitiesViewModel(private val ortModel: OrtModel) {
-    private val scope = CoroutineScope(Dispatchers.Default)
-
+class VulnerabilitiesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val vulnerabilities = MutableStateFlow(emptyList<ResolvedVulnerability>())
     private val filter = MutableStateFlow(VulnerabilitiesFilter())
 

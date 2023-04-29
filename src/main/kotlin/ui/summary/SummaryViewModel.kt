@@ -2,8 +2,6 @@ package org.ossreviewtoolkit.workbench.ui.summary
 
 import java.io.File
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -13,12 +11,11 @@ import kotlinx.coroutines.launch
 import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.reporter.IssueStatistics
+import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
 
-class SummaryViewModel(private val ortModel: OrtModel) {
-    private val scope = CoroutineScope(Dispatchers.Default)
-
+class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val _state = MutableStateFlow(SummaryState())
     val state: StateFlow<SummaryState> get() = _state
 

@@ -34,27 +34,28 @@ import androidx.compose.ui.zIndex
 import org.ossreviewtoolkit.utils.ort.Environment
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.conditional
+import org.ossreviewtoolkit.workbench.composables.enumcase
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 
 @Composable
-fun Menu(currentScreen: MainScreen, apiState: OrtApiState, onSwitchScreen: (MainScreen) -> Unit) {
+fun Menu(currentItem: MenuItem?, apiState: OrtApiState, onSelectMenuItem: (MenuItem) -> Unit) {
     Surface(modifier = Modifier.fillMaxHeight().width(200.dp).zIndex(zIndex = 3f), elevation = 8.dp) {
         Column(
             modifier = Modifier.padding(vertical = 20.dp)
         ) {
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                MenuRow(MainScreen.Summary, currentScreen, apiState, onSwitchScreen)
-                MenuRow(MainScreen.Packages, currentScreen, apiState, onSwitchScreen)
-                MenuRow(MainScreen.Dependencies, currentScreen, apiState, onSwitchScreen)
-                MenuRow(MainScreen.Issues, currentScreen, apiState, onSwitchScreen)
-                MenuRow(MainScreen.RuleViolations, currentScreen, apiState, onSwitchScreen)
-                MenuRow(MainScreen.Vulnerabilities, currentScreen, apiState, onSwitchScreen)
+                MenuRow(MenuItem.SUMMARY, currentItem, apiState) { onSelectMenuItem(MenuItem.SUMMARY) }
+                MenuRow(MenuItem.PACKAGES, currentItem, apiState) { onSelectMenuItem(MenuItem.PACKAGES) }
+                MenuRow(MenuItem.DEPENDENCIES, currentItem, apiState) { onSelectMenuItem(MenuItem.DEPENDENCIES) }
+                MenuRow(MenuItem.ISSUES, currentItem, apiState) { onSelectMenuItem(MenuItem.ISSUES) }
+                MenuRow(MenuItem.RULE_VIOLATIONS, currentItem, apiState) { onSelectMenuItem(MenuItem.RULE_VIOLATIONS) }
+                MenuRow(MenuItem.VULNERABILITIES, currentItem, apiState) { onSelectMenuItem(MenuItem.VULNERABILITIES) }
 
                 Box(modifier = Modifier.weight(1f))
 
                 Divider()
 
-                MenuRow(MainScreen.Settings, currentScreen, apiState, onSwitchScreen)
+                MenuRow(MenuItem.SETTINGS, currentItem, apiState) { onSelectMenuItem(MenuItem.SETTINGS) }
 
                 Divider()
 
@@ -70,24 +71,24 @@ fun Menu(currentScreen: MainScreen, apiState: OrtApiState, onSwitchScreen: (Main
 }
 
 @Composable
-fun MenuRow(target: MainScreen, current: MainScreen, apiState: OrtApiState, onSwitchScreen: (MainScreen) -> Unit) {
-    val isEnabled = target is MainScreen.Summary || apiState == OrtApiState.READY
+fun MenuRow(item: MenuItem, currentItem: MenuItem?, apiState: OrtApiState, onSelect: () -> Unit) {
+    val isEnabled = item == MenuItem.SUMMARY || apiState == OrtApiState.READY
 
     if (isEnabled) {
-        val isCurrent = current::class == target::class
+        val isCurrent = item == currentItem
 
         Row(
-            modifier = Modifier.clickable { onSwitchScreen(target) }
+            modifier = Modifier.clickable { onSelect() }
                 .conditional(isCurrent) { background(MaterialTheme.colors.background) }
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(painterResource(target.icon.resource), target.name)
+            Icon(painterResource(item.icon.resource), item.name)
 
             Text(
-                text = target.name,
+                text = item.name.enumcase(),
                 style = MaterialTheme.typography.h6,
                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal
             )
@@ -99,6 +100,6 @@ fun MenuRow(target: MainScreen, current: MainScreen, apiState: OrtApiState, onSw
 @Preview
 private fun MenuPreview() {
     Preview {
-        Menu(currentScreen = MainScreen.Summary, OrtApiState.READY) {}
+        Menu(currentItem = MenuItem.SUMMARY, OrtApiState.READY) {}
     }
 }

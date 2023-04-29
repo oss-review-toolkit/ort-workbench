@@ -1,7 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui.packages
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,6 +12,7 @@ import org.ossreviewtoolkit.model.ScanResult
 import org.ossreviewtoolkit.model.ScannerDetails
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
+import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.DependencyReference
 import org.ossreviewtoolkit.workbench.model.FilterData
 import org.ossreviewtoolkit.workbench.model.OrtModel
@@ -29,9 +28,7 @@ import org.ossreviewtoolkit.workbench.utils.matchStringContains
 import org.ossreviewtoolkit.workbench.utils.matchViolationStatus
 import org.ossreviewtoolkit.workbench.utils.matchVulnerabilityStatus
 
-class PackagesViewModel(private val ortModel: OrtModel) {
-    private val scope = CoroutineScope(Dispatchers.Default)
-
+class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val packages = MutableStateFlow(emptyList<PackageInfo>())
     private val filter = MutableStateFlow(PackagesFilter())
 

@@ -24,15 +24,18 @@ import com.halilibo.richtext.ui.material.SetupMaterialRichText
 
 import kotlinx.coroutines.launch
 
+import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.FileDialog
 import org.ossreviewtoolkit.workbench.model.OrtApiState
-import org.ossreviewtoolkit.workbench.navigation.Navigation
-import org.ossreviewtoolkit.workbench.navigation.rememberNavigationController
+import org.ossreviewtoolkit.workbench.navigation.BackstackEntry
+import org.ossreviewtoolkit.workbench.navigation.NavHost
+import org.ossreviewtoolkit.workbench.navigation.viewModel
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
 import org.ossreviewtoolkit.workbench.ui.issues.Issues
 import org.ossreviewtoolkit.workbench.ui.packagedetails.PackageDetails
+import org.ossreviewtoolkit.workbench.ui.packagedetails.PackageDetailsViewModel
 import org.ossreviewtoolkit.workbench.ui.packages.Packages
 import org.ossreviewtoolkit.workbench.ui.settings.Settings
 import org.ossreviewtoolkit.workbench.ui.summary.Summary
@@ -69,24 +72,42 @@ fun App(controller: WorkbenchController) {
 
 @Composable
 fun MainLayout(controller: WorkbenchController, apiState: OrtApiState, onLoadResult: () -> Unit) {
-    val navController = rememberNavigationController<MainScreen>(MainScreen.Summary)
+    val navController = controller.navController
 
-    Navigation(navController) { currentScreen ->
-        (currentScreen ?: MainScreen.Summary).let { screen ->
-            Column {
-                TopBar()
+    fun onSelectMenuItem(item: MenuItem) {
+        val screen = when (item) {
+            MenuItem.DEPENDENCIES -> MainScreen.Dependencies(controller.ortModel)
+            MenuItem.ISSUES -> MainScreen.Issues(controller.ortModel)
+            MenuItem.PACKAGES -> MainScreen.Packages(controller.ortModel)
+            MenuItem.RULE_VIOLATIONS -> MainScreen.RuleViolations(controller.ortModel)
+            MenuItem.SETTINGS -> MainScreen.Settings(controller.ortModel)
+            MenuItem.SUMMARY -> MainScreen.Summary(controller.ortModel)
+            MenuItem.VULNERABILITIES -> MainScreen.Vulnerabilities(controller.ortModel)
+        }
 
-                Row {
-                    Menu(screen, apiState, onSwitchScreen = { navController.replace(it) })
-                    Content(
-                        screen,
-                        controller,
-                        onLoadResult,
-                        onSwitchScreen = { navController.replace(it) },
-                        onPushScreen = { navController.push(it) },
-                        onBack = { navController.pop() }
-                    )
-                }
+        navController.navigate(screen, launchSingleTop = true)
+    }
+
+    NavHost(navController) { backstackEntry ->
+        Column {
+            TopBar()
+
+            Row {
+                val currentMenuItem = (backstackEntry.screen as? MainScreen)?.menuItem
+
+                Menu(currentMenuItem, apiState, onSelectMenuItem = ::onSelectMenuItem)
+                Content(
+                    backstackEntry,
+                    onLoadResult,
+                    onSelectMenuItem = ::onSelectMenuItem,
+                    onSelectPackage = { pkgId ->
+                        navController.navigate(
+                            MainScreen.PackageDetails(controller.ortModel, pkgId),
+                            launchSingleTop = false
+                        )
+                    },
+                    onBack = { navController.back() }
+                )
             }
         }
     }
@@ -94,24 +115,31 @@ fun MainLayout(controller: WorkbenchController, apiState: OrtApiState, onLoadRes
 
 @Composable
 private fun Content(
-    currentScreen: MainScreen,
-    controller: WorkbenchController,
+    backstackEntry: BackstackEntry,
     onLoadResult: () -> Unit,
-    onSwitchScreen: (MainScreen) -> Unit,
-    onPushScreen: (MainScreen) -> Unit,
+    onSelectMenuItem: (MenuItem) -> Unit,
+    onSelectPackage: (Identifier) -> Unit,
     onBack: () -> Unit
 ) {
     SetupMaterialRichText {
-        when (currentScreen) {
-            is MainScreen.Summary -> Summary(controller.summaryViewModel, onSwitchScreen, onLoadResult)
-            is MainScreen.Packages -> Packages(controller.packagesViewModel, onPushScreen)
-            is MainScreen.Dependencies -> Dependencies(controller.dependenciesViewModel)
-            is MainScreen.Issues -> Issues(controller.issuesViewModel)
-            is MainScreen.RuleViolations -> Violations(controller.violationsViewModel)
-            is MainScreen.Vulnerabilities -> Vulnerabilities(controller.vulnerabilitiesViewModel)
-            is MainScreen.Settings -> Settings(controller.settingsViewModel)
+        if (backstackEntry.screen !is MainScreen<*>) {
+            // TODO: Show error.
+            return@SetupMaterialRichText
+        }
+
+        when (backstackEntry.screen) {
+            is MainScreen.Summary -> Summary(backstackEntry.viewModel(), onSelectMenuItem, onLoadResult)
+            is MainScreen.Packages -> Packages(backstackEntry.viewModel(), onSelectPackage)
+            is MainScreen.Dependencies -> Dependencies(backstackEntry.viewModel())
+            is MainScreen.Issues -> Issues(backstackEntry.viewModel())
+            is MainScreen.RuleViolations -> Violations(backstackEntry.viewModel())
+            is MainScreen.Vulnerabilities -> Vulnerabilities(backstackEntry.viewModel())
+            is MainScreen.Settings -> Settings(backstackEntry.viewModel())
+
             is MainScreen.PackageDetails -> {
-                PackageDetails(controller, currentScreen.pkg, onBack)
+                val viewModel = backstackEntry.viewModel<PackageDetailsViewModel>()
+                val state by viewModel.model.collectAsState()
+                PackageDetails(state, onBack)
             }
         }
     }

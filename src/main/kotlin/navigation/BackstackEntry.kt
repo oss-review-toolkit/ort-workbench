@@ -9,3 +9,8 @@ class BackstackEntry(
     val screen: Screen<*>,
     val viewModel: ViewModel
 )
+
+/**
+ * Get the [ViewModel] of type [VM].
+ */
+inline fun <reified VM : ViewModel> BackstackEntry.viewModel(): VM = viewModel as VM
