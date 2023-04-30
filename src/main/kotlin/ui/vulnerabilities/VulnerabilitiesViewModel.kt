@@ -23,45 +23,32 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel) : ViewModel() {
     val state: StateFlow<VulnerabilitiesState> get() = _state
 
     init {
-        scope.launch {
-            ortModel.api.collect { api ->
-                vulnerabilities.value = api.getVulnerabilities()
-            }
-        }
+        scope.launch { ortModel.api.collect { api -> vulnerabilities.value = api.getVulnerabilities() } }
 
-        scope.launch { vulnerabilities.collect { initState(it) } }
+        scope.launch { vulnerabilities.collect { initFilter(it) } }
 
         scope.launch {
             filter.collect { newFilter ->
-                val oldState = state.value
-                _state.value = oldState.copy(
+                _state.value = _state.value.copy(
                     vulnerabilities = vulnerabilities.value.filter(newFilter::check),
-                    textFilter = newFilter.text,
-                    advisorFilter = oldState.advisorFilter.copy(selectedItem = newFilter.advisor),
-                    identifierFilter = oldState.identifierFilter.copy(selectedItem = newFilter.identifier),
-                    resolutionStatusFilter = oldState.resolutionStatusFilter.copy(
-                        selectedItem = newFilter.resolutionStatus
-                    ),
-                    scoringSystemFilter = oldState.scoringSystemFilter.copy(selectedItem = newFilter.scoringSystem),
-                    severityFilter = oldState.severityFilter.copy(selectedItem = newFilter.severity),
+                    filter = newFilter
                 )
             }
         }
     }
 
-    private fun initState(vulnerabilities: List<ResolvedVulnerability>) {
-        _state.value = VulnerabilitiesState(
-            vulnerabilities = vulnerabilities,
-            textFilter = "",
-            advisorFilter = FilterData(vulnerabilities.mapTo(sortedSetOf()) { it.advisor }.toList()),
-            identifierFilter = FilterData(vulnerabilities.mapTo(sortedSetOf()) { it.pkg }.toList()),
-            resolutionStatusFilter = FilterData(ResolutionStatus.values().toList()),
-            scoringSystemFilter = FilterData(
+    private fun initFilter(vulnerabilities: List<ResolvedVulnerability>) {
+        filter.value = VulnerabilitiesFilter(
+            text = "",
+            advisor = FilterData(vulnerabilities.mapTo(sortedSetOf()) { it.advisor }.toList()),
+            identifier = FilterData(vulnerabilities.mapTo(sortedSetOf()) { it.pkg }.toList()),
+            resolutionStatus = FilterData(ResolutionStatus.values().toList()),
+            scoringSystem = FilterData(
                 vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
                     vulnerability.references.mapNotNull { it.scoringSystem }
                 }.toList()
             ),
-            severityFilter = FilterData(
+            severity = FilterData(
                 vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
                     vulnerability.references.mapNotNull { it.severity }
                 }.toList()
@@ -74,39 +61,41 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     fun updateAdvisorsFilter(advisor: String?) {
-        filter.value = filter.value.copy(advisor = advisor)
+        filter.value = filter.value.copy(advisor = filter.value.advisor.copy(selectedItem = advisor))
     }
 
     fun updateIdentifiersFilter(identifier: Identifier?) {
-        filter.value = filter.value.copy(identifier = identifier)
+        filter.value = filter.value.copy(identifier = filter.value.identifier.copy(selectedItem = identifier))
     }
 
     fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus?) {
-        filter.value = filter.value.copy(resolutionStatus = resolutionStatus)
+        filter.value = filter.value.copy(
+            resolutionStatus = filter.value.resolutionStatus.copy(selectedItem = resolutionStatus)
+        )
     }
 
     fun updateScoringSystemsFilter(scoringSystem: String?) {
-        filter.value = filter.value.copy(scoringSystem = scoringSystem)
+        filter.value = filter.value.copy(scoringSystem = filter.value.scoringSystem.copy(selectedItem = scoringSystem))
     }
 
     fun updateSeveritiesFilter(severity: String?) {
-        filter.value = filter.value.copy(severity = severity)
+        filter.value = filter.value.copy(severity = filter.value.severity.copy(selectedItem = severity))
     }
 }
 
 data class VulnerabilitiesFilter(
-    val advisor: String? = null,
-    val identifier: Identifier? = null,
-    val resolutionStatus: ResolutionStatus? = null,
-    val scoringSystem: String? = null,
-    val severity: String? = null,
+    val advisor: FilterData<String> = FilterData(),
+    val identifier: FilterData<Identifier> = FilterData(),
+    val resolutionStatus: FilterData<ResolutionStatus> = FilterData(),
+    val scoringSystem: FilterData<String> = FilterData(),
+    val severity: FilterData<String> = FilterData(),
     val text: String = ""
 ) {
     fun check(vulnerability: ResolvedVulnerability) =
-        matchString(advisor, vulnerability.advisor)
-                && matchValue(identifier, vulnerability.pkg)
-                && matchResolutionStatus(resolutionStatus, vulnerability.resolutions)
-                && matchString(scoringSystem, vulnerability.references.mapNotNull { it.scoringSystem })
-                && matchString(severity, vulnerability.references.mapNotNull { it.severity })
+        matchString(advisor.selectedItem, vulnerability.advisor)
+                && matchValue(identifier.selectedItem, vulnerability.pkg)
+                && matchResolutionStatus(resolutionStatus.selectedItem, vulnerability.resolutions)
+                && matchString(scoringSystem.selectedItem, vulnerability.references.mapNotNull { it.scoringSystem })
+                && matchString(severity.selectedItem, vulnerability.references.mapNotNull { it.severity })
                 && matchStringContains(text, vulnerability.pkg.toCoordinates(), vulnerability.id, vulnerability.advisor)
 }

@@ -29,41 +29,31 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     init {
         scope.launch { ortModel.api.collect { violations.value = it.getViolations() } }
 
-        scope.launch { violations.collect { initState(it) } }
+        scope.launch { violations.collect { initFilter(it) } }
 
         scope.launch {
             filter.collect { newFilter ->
-                val oldState = state.value
-                _state.value = oldState.copy(
+                _state.value = _state.value.copy(
                     violations = violations.value.filter(newFilter::check),
-                    textFilter = newFilter.text,
-                    identifierFilter = oldState.identifierFilter.copy(selectedItem = newFilter.identifier),
-                    licenseFilter = oldState.licenseFilter.copy(selectedItem = newFilter.license),
-                    licenseSourceFilter = oldState.licenseSourceFilter.copy(selectedItem = newFilter.licenseSource),
-                    resolutionStatusFilter = oldState.resolutionStatusFilter.copy(
-                        selectedItem = newFilter.resolutionStatus
-                    ),
-                    ruleFilter = oldState.ruleFilter.copy(selectedItem = newFilter.rule),
-                    severityFilter = oldState.severityFilter.copy(selectedItem = newFilter.severity)
+                    filter = newFilter
                 )
             }
         }
     }
 
-    private fun initState(violations: List<ResolvedRuleViolation>) {
-        _state.value = ViolationsState(
-            violations = violations,
-            textFilter = "",
-            identifierFilter = FilterData(violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()),
-            licenseFilter = FilterData(
+    private fun initFilter(violations: List<ResolvedRuleViolation>) {
+        filter.value = ViolationsFilter(
+            text = "",
+            identifier = FilterData(violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()),
+            license = FilterData(
                 violations.mapNotNullTo(sortedSetOf(SpdxExpressionStringComparator())) {
                     it.license
                 }.toList()
             ),
-            licenseSourceFilter = FilterData(LicenseSource.values().toList()),
-            resolutionStatusFilter = FilterData(ResolutionStatus.values().toList()),
-            ruleFilter = FilterData(violations.mapTo(sortedSetOf()) { it.rule }.toList()),
-            severityFilter = FilterData(Severity.values().toList())
+            licenseSource = FilterData(LicenseSource.values().toList()),
+            resolutionStatus = FilterData(ResolutionStatus.values().toList()),
+            rule = FilterData(violations.mapTo(sortedSetOf()) { it.rule }.toList()),
+            severity = FilterData(Severity.values().toList())
         )
     }
 
@@ -72,46 +62,48 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     fun updateIdentifierFilter(identifier: Identifier?) {
-        filter.value = filter.value.copy(identifier = identifier)
+        filter.value = filter.value.copy(identifier = filter.value.identifier.copy(selectedItem = identifier))
     }
 
     fun updateLicenseFilter(license: SpdxSingleLicenseExpression?) {
-        filter.value = filter.value.copy(license = license)
+        filter.value = filter.value.copy(license = filter.value.license.copy(selectedItem = license))
     }
 
     fun updateLicenseSourceFilter(licenseSource: LicenseSource?) {
-        filter.value = filter.value.copy(licenseSource = licenseSource)
+        filter.value = filter.value.copy(licenseSource = filter.value.licenseSource.copy(selectedItem = licenseSource))
     }
 
     fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus?) {
-        filter.value = filter.value.copy(resolutionStatus = resolutionStatus)
+        filter.value = filter.value.copy(
+            resolutionStatus = filter.value.resolutionStatus.copy(selectedItem = resolutionStatus)
+        )
     }
 
     fun updateRuleFilter(rule: String?) {
-        filter.value = filter.value.copy(rule = rule)
+        filter.value = filter.value.copy(rule = filter.value.rule.copy(selectedItem = rule))
     }
 
     fun updateSeverityFilter(severity: Severity?) {
-        filter.value = filter.value.copy(severity = severity)
+        filter.value = filter.value.copy(severity = filter.value.severity.copy(selectedItem = severity))
     }
 }
 
 data class ViolationsFilter(
-    val identifier: Identifier? = null,
-    val license: SpdxSingleLicenseExpression? = null,
-    val licenseSource: LicenseSource? = null,
-    val resolutionStatus: ResolutionStatus? = null,
-    val rule: String? = null,
-    val severity: Severity? = null,
+    val identifier: FilterData<Identifier> = FilterData(),
+    val license: FilterData<SpdxSingleLicenseExpression> = FilterData(),
+    val licenseSource: FilterData<LicenseSource> = FilterData(),
+    val resolutionStatus: FilterData<ResolutionStatus> = FilterData(),
+    val rule: FilterData<String> = FilterData(),
+    val severity: FilterData<Severity> = FilterData(),
     val text: String = ""
 ) {
     fun check(violation: ResolvedRuleViolation) =
-        matchValue(identifier, violation.pkg)
-                && matchValue(license, violation.license)
-                && matchValue(licenseSource, violation.licenseSource)
-                && matchResolutionStatus(resolutionStatus, violation.resolutions)
-                && matchString(rule, violation.rule)
-                && matchValue(severity, violation.severity)
+        matchValue(identifier.selectedItem, violation.pkg)
+                && matchValue(license.selectedItem, violation.license)
+                && matchValue(licenseSource.selectedItem, violation.licenseSource)
+                && matchResolutionStatus(resolutionStatus.selectedItem, violation.resolutions)
+                && matchString(rule.selectedItem, violation.rule)
+                && matchValue(severity.selectedItem, violation.severity)
                 && matchStringContains(
             text,
             listOfNotNull(

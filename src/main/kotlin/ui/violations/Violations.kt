@@ -43,7 +43,7 @@ fun Violations(viewModel: ViolationsViewModel) {
     val state by viewModel.state.collectAsState()
 
     ListScreenContent(
-        filterText = state.textFilter,
+        filterText = state.filter.text,
         onUpdateFilterText = viewModel::updateTextFilter,
         list = {
             ListScreenList(
@@ -138,32 +138,32 @@ fun ViolationsFilterPanel(
 ) {
     FilterPanel(visible = visible) {
         FilterButton(
-            data = state.severityFilter,
+            data = state.filter.severity,
             label = "Severity",
             onFilterChange = onUpdateSeverityFilter,
             convert = { it.name.titlecase() }
         )
 
-        FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+        FilterButton(data = state.filter.license, label = "License", onFilterChange = onUpdateLicenseFilter)
 
         FilterButton(
-            data = state.licenseSourceFilter,
+            data = state.filter.licenseSource,
             label = "License Source",
             onFilterChange = onUpdateLicenseSourceFilter,
             convert = { it.name.titlecase() }
         )
 
-        FilterButton(data = state.ruleFilter, label = "Rule", onFilterChange = onUpdateRuleFilter)
+        FilterButton(data = state.filter.rule, label = "Rule", onFilterChange = onUpdateRuleFilter)
 
         FilterButton(
-            data = state.identifierFilter,
+            data = state.filter.identifier,
             label = "Package",
             onFilterChange = onUpdateIdentifierFilter,
             convert = { it.toCoordinates() }
         )
 
         FilterButton(
-            data = state.resolutionStatusFilter,
+            data = state.filter.resolutionStatus,
             label = "Resolution",
             onFilterChange = onUpdateResolutionStatusFilter,
             convert = { it.name.titlecase() }

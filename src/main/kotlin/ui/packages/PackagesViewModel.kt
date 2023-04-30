@@ -65,55 +65,38 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
             }
         }
 
-        scope.launch { packages.collect { initState(it) } }
+        scope.launch { packages.collect { initFilter(it) } }
 
         scope.launch {
             filter.collect { newFilter ->
-                val oldState = state.value
-                _state.value = oldState.copy(
+                _state.value = _state.value.copy(
                     packages = packages.value.filter(newFilter::check),
-                    textFilter = newFilter.text,
-                    exclusionStatusFilter = oldState.exclusionStatusFilter.copy(
-                        selectedItem = newFilter.exclusionStatus
-                    ),
-                    issueStatusFilter = oldState.issueStatusFilter.copy(selectedItem = newFilter.issueStatus),
-                    licenseFilter = oldState.licenseFilter.copy(selectedItem = newFilter.license),
-                    namespaceFilter = oldState.namespaceFilter.copy(selectedItem = newFilter.namespace),
-                    projectFilter = oldState.projectFilter.copy(selectedItem = newFilter.project),
-                    scopeFilter = oldState.scopeFilter.copy(selectedItem = newFilter.scope),
-                    typeFilter = oldState.typeFilter.copy(selectedItem = newFilter.type),
-                    violationStatusFilter = oldState.violationStatusFilter.copy(
-                        selectedItem = newFilter.violationStatus
-                    ),
-                    vulnerabilityStatusFilter = oldState.vulnerabilityStatusFilter.copy(
-                        selectedItem = newFilter.vulnerabilityStatus
-                    )
+                    filter = newFilter
                 )
             }
         }
     }
 
-    private fun initState(packages: List<PackageInfo>) {
-        _state.value = PackagesState(
-            packages = packages,
-            textFilter = "",
-            exclusionStatusFilter = FilterData(ExclusionStatus.values().toList()),
-            issueStatusFilter = FilterData(IssueStatus.values().toList()),
-            licenseFilter = FilterData(
+    private fun initFilter(packages: List<PackageInfo>) {
+        filter.value = PackagesFilter(
+            text = "",
+            exclusionStatus = FilterData(ExclusionStatus.values().toList()),
+            issueStatus = FilterData(IssueStatus.values().toList()),
+            license = FilterData(
                 packages.flatMapTo(sortedSetOf(SpdxExpressionStringComparator())) {
                     it.resolvedLicenseInfo.licenses.map { it.license }
                 }.toList()
             ),
-            namespaceFilter = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()),
-            projectFilter = FilterData(packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()),
-            scopeFilter = FilterData(
+            namespace = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()),
+            project = FilterData(packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()),
+            scope = FilterData(
                 packages.flatMapTo(sortedSetOf()) {
                     it.references.flatMap { it.scopes.map { it.scope } }
                 }.toList()
             ),
-            typeFilter = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()),
-            violationStatusFilter = FilterData(ViolationStatus.values().toList()),
-            vulnerabilityStatusFilter = FilterData(VulnerabilityStatus.values().toList())
+            type = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()),
+            violationStatus = FilterData(ViolationStatus.values().toList()),
+            vulnerabilityStatus = FilterData(VulnerabilityStatus.values().toList())
         )
     }
 
@@ -122,39 +105,45 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     fun updateExclusionStatusFilter(exclusionStatus: ExclusionStatus?) {
-        filter.value = filter.value.copy(exclusionStatus = exclusionStatus)
+        filter.value = filter.value.copy(
+            exclusionStatus = filter.value.exclusionStatus.copy(selectedItem = exclusionStatus)
+        )
     }
 
     fun updateIssueStatusFilter(issueStatus: IssueStatus?) {
-        filter.value = filter.value.copy(issueStatus = issueStatus)
+        filter.value = filter.value.copy(issueStatus = filter.value.issueStatus.copy(selectedItem = issueStatus))
     }
 
     fun updateLicenseFilter(license: SpdxSingleLicenseExpression?) {
-        filter.value = filter.value.copy(license = license)
+        filter.value = filter.value.copy(license = filter.value.license.copy(selectedItem = license))
     }
 
     fun updateNamespaceFilter(namespace: String?) {
-        filter.value = filter.value.copy(namespace = namespace)
+        filter.value = filter.value.copy(namespace = filter.value.namespace.copy(selectedItem = namespace))
     }
 
     fun updateProjectFilter(project: Identifier?) {
-        filter.value = filter.value.copy(project = project)
+        filter.value = filter.value.copy(project = filter.value.project.copy(selectedItem = project))
     }
 
     fun updateScopeFilter(scope: String?) {
-        filter.value = filter.value.copy(scope = scope)
+        filter.value = filter.value.copy(scope = filter.value.scope.copy(selectedItem = scope))
     }
 
     fun updateTypeFilter(type: String?) {
-        filter.value = filter.value.copy(type = type)
+        filter.value = filter.value.copy(type = filter.value.type.copy(selectedItem = type))
     }
 
     fun updateViolationStatusFilter(violationStatus: ViolationStatus?) {
-        filter.value = filter.value.copy(violationStatus = violationStatus)
+        filter.value = filter.value.copy(
+            violationStatus = filter.value.violationStatus.copy(selectedItem = violationStatus)
+        )
     }
 
     fun updateVulnerabilityStatusFilter(vulnerabilityStatus: VulnerabilityStatus?) {
-        filter.value = filter.value.copy(vulnerabilityStatus = vulnerabilityStatus)
+        filter.value = filter.value.copy(
+            vulnerabilityStatus = filter.value.vulnerabilityStatus.copy(selectedItem = vulnerabilityStatus)
+        )
     }
 }
 
@@ -178,27 +167,27 @@ data class ScanResultInfo(
 
 data class PackagesFilter(
     val text: String = "",
-    val type: String? = null,
-    val namespace: String? = null,
-    val project: Identifier? = null,
-    val scope: String? = null,
-    val license: SpdxSingleLicenseExpression? = null,
-    val issueStatus: IssueStatus? = null,
-    val violationStatus: ViolationStatus? = null,
-    val vulnerabilityStatus: VulnerabilityStatus? = null,
-    val exclusionStatus: ExclusionStatus? = null
+    val type: FilterData<String> = FilterData(),
+    val namespace: FilterData<String> = FilterData(),
+    val project: FilterData<Identifier> = FilterData(),
+    val scope: FilterData<String> = FilterData(),
+    val license: FilterData<SpdxSingleLicenseExpression> = FilterData(),
+    val issueStatus: FilterData<IssueStatus> = FilterData(),
+    val violationStatus: FilterData<ViolationStatus> = FilterData(),
+    val vulnerabilityStatus: FilterData<VulnerabilityStatus> = FilterData(),
+    val exclusionStatus: FilterData<ExclusionStatus> = FilterData()
 ) {
     fun check(pkg: PackageInfo) =
         matchStringContains(text, pkg.metadata.id.toCoordinates())
-                && matchString(type, pkg.metadata.id.type)
-                && matchString(namespace, pkg.metadata.id.namespace)
-                && matchAnyValue(project, pkg.references.map { it.project })
-                && matchString(scope, pkg.references.flatMap { it.scopes.map { it.scope } })
-                && matchAnyValue(license, pkg.resolvedLicenseInfo.licenses.map { it.license })
-                && matchIssueStatus(issueStatus, pkg.issues)
-                && matchViolationStatus(violationStatus, pkg.violations)
-                && matchVulnerabilityStatus(vulnerabilityStatus, pkg.vulnerabilities)
-                && matchExclusionStatus(exclusionStatus, pkg.isExcluded())
+                && matchString(type.selectedItem, pkg.metadata.id.type)
+                && matchString(namespace.selectedItem, pkg.metadata.id.namespace)
+                && matchAnyValue(project.selectedItem, pkg.references.map { it.project })
+                && matchString(scope.selectedItem, pkg.references.flatMap { it.scopes.map { it.scope } })
+                && matchAnyValue(license.selectedItem, pkg.resolvedLicenseInfo.licenses.map { it.license })
+                && matchIssueStatus(issueStatus.selectedItem, pkg.issues)
+                && matchViolationStatus(violationStatus.selectedItem, pkg.violations)
+                && matchVulnerabilityStatus(vulnerabilityStatus.selectedItem, pkg.vulnerabilities)
+                && matchExclusionStatus(exclusionStatus.selectedItem, pkg.isExcluded())
 }
 
 enum class IssueStatus {

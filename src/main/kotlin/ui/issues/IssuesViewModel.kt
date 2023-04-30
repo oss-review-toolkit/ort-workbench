@@ -27,35 +27,26 @@ class IssuesViewModel(private val ortModel: OrtModel) : ViewModel() {
     init {
         scope.launch { ortModel.api.collect { issues.value = it.getResolvedIssues() } }
 
-        scope.launch { issues.collect { initState(it) } }
+        scope.launch { issues.collect { initFilter(it) } }
 
         scope.launch {
             filter.collect { newFilter ->
-                val oldState = state.value
-                _state.value = oldState.copy(
+                _state.value = _state.value.copy(
                     issues = issues.value.filter(newFilter::check),
-                    textFilter = newFilter.text,
-                    identifierFilter = oldState.identifierFilter.copy(selectedItem = newFilter.identifier),
-                    resolutionStatusFilter = oldState.resolutionStatusFilter.copy(
-                        selectedItem = newFilter.resolutionStatus
-                    ),
-                    severityFilter = oldState.severityFilter.copy(selectedItem = newFilter.severity),
-                    sourceFilter = oldState.sourceFilter.copy(selectedItem = newFilter.source),
-                    toolFilter = oldState.toolFilter.copy(selectedItem = newFilter.tool)
+                    filter = newFilter
                 )
             }
         }
     }
 
-    private fun initState(issues: List<ResolvedIssue>) {
-        _state.value = IssuesState(
-            issues = issues,
-            textFilter = "",
-            identifierFilter = FilterData(issues.mapTo(sortedSetOf()) { it.id }.toList()),
-            resolutionStatusFilter = FilterData(ResolutionStatus.values().toList()),
-            severityFilter = FilterData(Severity.values().toList()),
-            sourceFilter = FilterData(issues.mapTo(sortedSetOf()) { it.source }.toList()),
-            toolFilter = FilterData(Tool.values().toList())
+    private fun initFilter(issues: List<ResolvedIssue>) {
+        filter.value = IssuesFilter(
+            text = "",
+            identifier = FilterData(issues.mapTo(sortedSetOf()) { it.id }.toList()),
+            resolutionStatus = FilterData(ResolutionStatus.values().toList()),
+            severity = FilterData(Severity.values().toList()),
+            source = FilterData(issues.mapTo(sortedSetOf()) { it.source }.toList()),
+            tool = FilterData(Tool.values().toList())
         )
     }
 
@@ -64,39 +55,41 @@ class IssuesViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     fun updateIdentifierFilter(identifier: Identifier?) {
-        filter.value = filter.value.copy(identifier = identifier)
+        filter.value = filter.value.copy(identifier = filter.value.identifier.copy(selectedItem = identifier))
     }
 
     fun updateResolutionStatusFilter(resolutionStatus: ResolutionStatus?) {
-        filter.value = filter.value.copy(resolutionStatus = resolutionStatus)
+        filter.value = filter.value.copy(
+            resolutionStatus = filter.value.resolutionStatus.copy(selectedItem = resolutionStatus)
+        )
     }
 
     fun updateSeverityFilter(severity: Severity?) {
-        filter.value = filter.value.copy(severity = severity)
+        filter.value = filter.value.copy(severity = filter.value.severity.copy(selectedItem = severity))
     }
 
     fun updateSourceFilter(source: String?) {
-        filter.value = filter.value.copy(source = source)
+        filter.value = filter.value.copy(source = filter.value.source.copy(selectedItem = source))
     }
 
     fun updateToolFilter(tool: Tool?) {
-        filter.value = filter.value.copy(tool = tool)
+        filter.value = filter.value.copy(tool = filter.value.tool.copy(selectedItem = tool))
     }
 }
 
 data class IssuesFilter(
-    val identifier: Identifier? = null,
-    val resolutionStatus: ResolutionStatus? = null,
-    val severity: Severity? = null,
-    val source: String? = null,
+    val identifier: FilterData<Identifier> = FilterData(),
+    val resolutionStatus: FilterData<ResolutionStatus> = FilterData(),
+    val severity: FilterData<Severity> = FilterData(),
+    val source: FilterData<String> = FilterData(),
     val text: String = "",
-    val tool: Tool? = null
+    val tool: FilterData<Tool> = FilterData()
 ) {
     fun check(issue: ResolvedIssue) =
-        matchValue(identifier, issue.id)
-                && matchResolutionStatus(resolutionStatus, issue.resolutions)
-                && matchValue(severity, issue.severity)
-                && matchString(source, issue.source)
+        matchValue(identifier.selectedItem, issue.id)
+                && matchResolutionStatus(resolutionStatus.selectedItem, issue.resolutions)
+                && matchValue(severity.selectedItem, issue.severity)
+                && matchString(source.selectedItem, issue.source)
                 && matchStringContains(text, issue.id.toCoordinates(), issue.source, issue.message)
-                && matchValue(tool, issue.tool)
+                && matchValue(tool.selectedItem, issue.tool)
 }
