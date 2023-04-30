@@ -42,7 +42,7 @@ fun Packages(viewModel: PackagesViewModel, onSelectPackage: (Identifier) -> Unit
     val state by viewModel.state.collectAsState()
 
     ListScreenContent(
-        filterText = state.textFilter,
+        filterText = state.filter.text,
         onUpdateFilterText = viewModel::updateTextFilter,
         list = {
             ListScreenList(
@@ -155,48 +155,48 @@ fun PackagesFilterPanel(
     onUpdateVulnerabilityStatusFilter: (vulnerabilityStatus: VulnerabilityStatus?) -> Unit
 ) {
     FilterPanel(visible = visible) {
-        FilterButton(data = state.typeFilter, label = "Type", onFilterChange = onUpdateTypeFilter)
+        FilterButton(data = state.filter.type, label = "Type", onFilterChange = onUpdateTypeFilter)
 
         FilterButton(
-            data = state.namespaceFilter,
+            data = state.filter.namespace,
             label = "Namespace",
             onFilterChange = onUpdateNamespaceFilter
         )
 
         FilterButton(
-            data = state.projectFilter,
+            data = state.filter.project,
             label = "Project",
             onFilterChange = onUpdateProjectFilter,
             convert = { it.toCoordinates() }
         )
 
-        FilterButton(data = state.scopeFilter, label = "Scope", onFilterChange = onUpdateScopeFilter)
+        FilterButton(data = state.filter.scope, label = "Scope", onFilterChange = onUpdateScopeFilter)
 
-        FilterButton(data = state.licenseFilter, label = "License", onFilterChange = onUpdateLicenseFilter)
+        FilterButton(data = state.filter.license, label = "License", onFilterChange = onUpdateLicenseFilter)
 
         FilterButton(
-            data = state.issueStatusFilter,
+            data = state.filter.issueStatus,
             label = "Issues",
             onFilterChange = onUpdateIssueStatusFilter,
             convert = { it.name.titlecase() }
         )
 
         FilterButton(
-            data = state.violationStatusFilter,
+            data = state.filter.violationStatus,
             label = "Violations",
             onFilterChange = onUpdateViolationStatusFilter,
             convert = { it.name.titlecase() }
         )
 
         FilterButton(
-            data = state.vulnerabilityStatusFilter,
+            data = state.filter.vulnerabilityStatus,
             label = "Vulnerabilities",
             onFilterChange = onUpdateVulnerabilityStatusFilter,
             convert = { it.name.titlecase() }
         )
 
         FilterButton(
-            data = state.exclusionStatusFilter,
+            data = state.filter.exclusionStatus,
             label = "Excluded",
             onFilterChange = onUpdateExclusionStatusFilter,
             convert = { it.name.titlecase() }

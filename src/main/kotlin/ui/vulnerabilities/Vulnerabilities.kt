@@ -40,7 +40,7 @@ fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
     val state by viewModel.state.collectAsState()
 
     ListScreenContent(
-        filterText = state.textFilter,
+        filterText = state.filter.text,
         onUpdateFilterText = viewModel::updateTextFilter,
         list = {
             ListScreenList(
@@ -137,29 +137,29 @@ fun VulnerabilitiesFilterPanel(
     onUpdateSeveritiesFilter: (severity: String?) -> Unit,
 ) {
     FilterPanel(visible = visible) {
-        FilterButton(data = state.advisorFilter, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
+        FilterButton(data = state.filter.advisor, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)
 
         FilterButton(
-            data = state.scoringSystemFilter,
+            data = state.filter.scoringSystem,
             label = "Scoring System",
             onFilterChange = onUpdateScoringSystemsFilter
         )
 
         FilterButton(
-            data = state.severityFilter,
+            data = state.filter.severity,
             label = "Severity",
             onFilterChange = onUpdateSeveritiesFilter
         )
 
         FilterButton(
-            data = state.identifierFilter,
+            data = state.filter.identifier,
             label = "Package",
             onFilterChange = onUpdateIdentifiersFilter,
             convert = { it.toCoordinates() }
         )
 
         FilterButton(
-            data = state.resolutionStatusFilter,
+            data = state.filter.resolutionStatus,
             label = "Resolution",
             onFilterChange = onUpdateResolutionStatusFilter,
             convert = { it.name.titlecase() }
