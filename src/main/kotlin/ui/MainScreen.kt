@@ -14,38 +14,38 @@ import org.ossreviewtoolkit.workbench.ui.violations.ViolationsViewModel
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.VulnerabilitiesViewModel
 
 sealed class MainScreen<VM : ViewModel>(val name: String, val menuItem: MenuItem? = null) : Screen<VM> {
-    class Dependencies(private val ortModel: OrtModel) :
+    data class Dependencies(private val ortModel: OrtModel) :
         MainScreen<DependenciesViewModel>("Dependencies", MenuItem.DEPENDENCIES) {
         override fun createViewModel() = DependenciesViewModel(ortModel)
     }
 
-    class Issues(private val ortModel: OrtModel) : MainScreen<IssuesViewModel>("Issues", MenuItem.ISSUES) {
+    data class Issues(private val ortModel: OrtModel) : MainScreen<IssuesViewModel>("Issues", MenuItem.ISSUES) {
         override fun createViewModel() = IssuesViewModel(ortModel)
     }
 
-    class PackageDetails(private val ortModel: OrtModel, private val pkgId: Identifier) :
+    data class PackageDetails(private val ortModel: OrtModel, private val pkgId: Identifier) :
         MainScreen<PackageDetailsViewModel>("Package Details") {
         override fun createViewModel() = PackageDetailsViewModel(ortModel, pkgId)
     }
 
-    class Packages(private val ortModel: OrtModel) : MainScreen<PackagesViewModel>("Packages", MenuItem.PACKAGES) {
+    data class Packages(private val ortModel: OrtModel) : MainScreen<PackagesViewModel>("Packages", MenuItem.PACKAGES) {
         override fun createViewModel() = PackagesViewModel(ortModel)
     }
 
-    class Settings(private val ortModel: OrtModel) : MainScreen<SettingsViewModel>("Settings", MenuItem.SETTINGS) {
+    data class Settings(private val ortModel: OrtModel) : MainScreen<SettingsViewModel>("Settings", MenuItem.SETTINGS) {
         override fun createViewModel() = SettingsViewModel(ortModel)
     }
 
-    class Summary(private val ortModel: OrtModel) : MainScreen<SummaryViewModel>("Summary", MenuItem.SUMMARY) {
+    data class Summary(private val ortModel: OrtModel) : MainScreen<SummaryViewModel>("Summary", MenuItem.SUMMARY) {
         override fun createViewModel() = SummaryViewModel(ortModel)
     }
 
-    class RuleViolations(private val ortModel: OrtModel) :
+    data class RuleViolations(private val ortModel: OrtModel) :
         MainScreen<ViolationsViewModel>("Rule Violations", MenuItem.RULE_VIOLATIONS) {
         override fun createViewModel() = ViolationsViewModel(ortModel)
     }
 
-    class Vulnerabilities(private val ortModel: OrtModel) :
+    data class Vulnerabilities(private val ortModel: OrtModel) :
         MainScreen<VulnerabilitiesViewModel>("Vulnerabilities", MenuItem.VULNERABILITIES) {
         override fun createViewModel() = VulnerabilitiesViewModel(ortModel)
     }
