@@ -18,5 +18,5 @@ class DialogState<T> {
         return result
     }
 
-    fun onResult(result: T) = onResult!!.complete(result)
+    fun onResult(result: T) = onResult?.complete(result)
 }
