@@ -8,12 +8,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 
-import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.ui.App
 import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 
 fun main() {
-    val workbenchController = WorkbenchController(OrtModel())
+    val workbenchController = WorkbenchController()
 
     singleWindowApplication(
         title = "ORT Workbench",

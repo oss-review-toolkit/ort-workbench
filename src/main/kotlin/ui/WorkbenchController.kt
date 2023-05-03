@@ -7,7 +7,8 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.navigation.NavController
 import org.ossreviewtoolkit.workbench.state.DialogState
 
-class WorkbenchController(val ortModel: OrtModel) {
+class WorkbenchController {
+    val ortModel = OrtModel()
     val navController = NavController(MainScreen.Summary(ortModel))
 
     val openResultDialog = DialogState<Path?>()
