@@ -42,10 +42,10 @@ import org.ossreviewtoolkit.workbench.composables.DirectoryChooser
 import org.ossreviewtoolkit.workbench.composables.EditFileLink
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.WebLink
-import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 import org.ossreviewtoolkit.workbench.state.DialogState
 import org.ossreviewtoolkit.workbench.theme.Error
+import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 
 @Composable
 fun Settings(viewModel: SettingsViewModel) {
@@ -215,7 +215,7 @@ fun OptionCard(
 @Preview
 private fun ConfigFilesSettingsPreview() {
     Preview {
-        ConfigFilesSettings(SettingsViewModel(OrtModel()))
+        ConfigFilesSettings(SettingsViewModel(WorkbenchController()))
     }
 }
 
