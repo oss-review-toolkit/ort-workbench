@@ -20,7 +20,7 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val filter = MutableStateFlow(VulnerabilitiesFilter())
 
     private val _state = MutableStateFlow(VulnerabilitiesState.INITIAL)
-    val state: StateFlow<VulnerabilitiesState> get() = _state
+    val state: StateFlow<VulnerabilitiesState> = _state
 
     init {
         scope.launch { ortModel.api.collect { api -> vulnerabilities.value = api.getVulnerabilities() } }

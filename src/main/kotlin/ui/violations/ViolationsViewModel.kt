@@ -24,7 +24,7 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val filter = MutableStateFlow(ViolationsFilter())
 
     private val _state = MutableStateFlow(ViolationsState.INITIAL)
-    val state: StateFlow<ViolationsState> get() = _state
+    val state: StateFlow<ViolationsState> = _state
 
     init {
         scope.launch { ortModel.api.collect { violations.value = it.getViolations() } }

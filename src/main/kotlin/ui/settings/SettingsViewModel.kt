@@ -25,7 +25,7 @@ import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
 
 class SettingsViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val _tab = MutableStateFlow(SettingsTab.CONFIG_FILES)
-    val tab: StateFlow<SettingsTab> get() = _tab
+    val tab: StateFlow<SettingsTab> = _tab
 
     private val _ortConfigDir = MutableStateFlow(
         OrtConfigFileInfo(
@@ -33,13 +33,13 @@ class SettingsViewModel(private val ortModel: OrtModel) : ViewModel() {
             File(WorkbenchSettings.default().ortConfigDir).toFileInfo(FileType.DIRECTORY)
         )
     )
-    val ortConfigDir: StateFlow<OrtConfigFileInfo> get() = _ortConfigDir
+    val ortConfigDir: StateFlow<OrtConfigFileInfo> = _ortConfigDir
 
     private val _theme = MutableStateFlow(WorkbenchTheme.AUTO)
-    val theme: StateFlow<WorkbenchTheme> get() = _theme
+    val theme: StateFlow<WorkbenchTheme> = _theme
 
     private val _ortConfigFiles = MutableStateFlow(emptyList<OrtConfigFileInfo>())
-    val ortConfigFiles: StateFlow<List<OrtConfigFileInfo>> get() = _ortConfigFiles
+    val ortConfigFiles: StateFlow<List<OrtConfigFileInfo>> = _ortConfigFiles
 
     init {
         scope.launch {

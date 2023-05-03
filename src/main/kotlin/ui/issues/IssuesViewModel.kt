@@ -22,7 +22,7 @@ class IssuesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val filter = MutableStateFlow(IssuesFilter())
 
     private val _state = MutableStateFlow(IssuesState.INITIAL)
-    val state: StateFlow<IssuesState> get() = _state
+    val state: StateFlow<IssuesState> = _state
 
     init {
         scope.launch { ortModel.api.collect { issues.value = it.getResolvedIssues() } }

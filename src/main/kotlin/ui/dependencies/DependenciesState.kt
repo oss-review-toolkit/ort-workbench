@@ -26,7 +26,7 @@ class DependenciesState(rootNodes: List<TreeNode<DependencyTreeItem>>) {
         private set
 
     private val _searchHits = mutableStateListOf<Int>()
-    val searchHits: List<Int> get() = _searchHits
+    val searchHits: List<Int> = _searchHits
 
     val treeState: TreeState<DependencyTreeItem> = TreeState(rootNodes)
 

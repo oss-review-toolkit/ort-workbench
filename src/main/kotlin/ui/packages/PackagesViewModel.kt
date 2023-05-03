@@ -33,7 +33,7 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val filter = MutableStateFlow(PackagesFilter())
 
     private val _state = MutableStateFlow(PackagesState.INITIAL)
-    val state: StateFlow<PackagesState> get() = _state
+    val state: StateFlow<PackagesState> = _state
 
     init {
         scope.launch {
