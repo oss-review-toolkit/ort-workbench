@@ -17,7 +17,7 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 
 class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val _state = MutableStateFlow(SummaryState())
-    val state: StateFlow<SummaryState> get() = _state
+    val state: StateFlow<SummaryState> = _state
 
     init {
         scope.launch {

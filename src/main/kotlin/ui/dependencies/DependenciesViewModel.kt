@@ -15,7 +15,7 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 
 class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val _state = MutableStateFlow(DependenciesState(emptyList()))
-    val state: StateFlow<DependenciesState> get() = _state
+    val state: StateFlow<DependenciesState> = _state
 
     init {
         scope.launch {

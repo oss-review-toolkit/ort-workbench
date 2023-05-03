@@ -61,21 +61,21 @@ class OrtModel {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private val _settings = MutableStateFlow(WorkbenchSettings.default())
-    val settings: StateFlow<WorkbenchSettings> get() = _settings
+    val settings: StateFlow<WorkbenchSettings> = _settings
 
     private val _state = MutableStateFlow(OrtApiState.UNINITIALIZED)
-    val state: StateFlow<OrtApiState> get() = _state
+    val state: StateFlow<OrtApiState> = _state
 
     private val _ortResultFile: MutableStateFlow<File?> = MutableStateFlow(null)
-    val ortResultFile: StateFlow<File?> get() = _ortResultFile
+    val ortResultFile: StateFlow<File?> = _ortResultFile
 
     private val _ortResult = MutableStateFlow<OrtResult?>(null)
 
     private val _api = MutableStateFlow(OrtApi.EMPTY)
-    val api: StateFlow<OrtApi> get() = _api
+    val api: StateFlow<OrtApi> = _api
 
     private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> get() = _error
+    val error: StateFlow<String?> = _error
 
     init {
         scope.launch { loadSettings() }
