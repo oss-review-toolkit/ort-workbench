@@ -32,8 +32,9 @@ sealed class MainScreen<VM : ViewModel>(val name: String, val menuItem: MenuItem
         override fun createViewModel() = PackagesViewModel(ortModel)
     }
 
-    data class Settings(private val ortModel: OrtModel) : MainScreen<SettingsViewModel>("Settings", MenuItem.SETTINGS) {
-        override fun createViewModel() = SettingsViewModel(ortModel)
+    data class Settings(private val controller: WorkbenchController) :
+        MainScreen<SettingsViewModel>("Settings", MenuItem.SETTINGS) {
+        override fun createViewModel() = SettingsViewModel(controller)
     }
 
     data class Summary(private val ortModel: OrtModel) : MainScreen<SummaryViewModel>("Summary", MenuItem.SUMMARY) {

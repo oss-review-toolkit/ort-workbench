@@ -45,7 +45,7 @@ import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
 @Composable
 fun App(controller: WorkbenchController) {
     val apiState by controller.ortModel.state.collectAsState()
-    val settings by controller.ortModel.settings.collectAsState()
+    val settings by controller.settings.collectAsState()
     val scope = rememberCoroutineScope()
 
     fun loadResult() = scope.launch { controller.openOrtResult() }
@@ -80,7 +80,7 @@ fun MainLayout(controller: WorkbenchController, apiState: OrtApiState, onLoadRes
             MenuItem.ISSUES -> MainScreen.Issues(controller.ortModel)
             MenuItem.PACKAGES -> MainScreen.Packages(controller.ortModel)
             MenuItem.RULE_VIOLATIONS -> MainScreen.RuleViolations(controller.ortModel)
-            MenuItem.SETTINGS -> MainScreen.Settings(controller.ortModel)
+            MenuItem.SETTINGS -> MainScreen.Settings(controller)
             MenuItem.SUMMARY -> MainScreen.Summary(controller.ortModel)
             MenuItem.VULNERABILITIES -> MainScreen.Vulnerabilities(controller.ortModel)
         }

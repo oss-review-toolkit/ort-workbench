@@ -19,11 +19,11 @@ import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CURATIONS_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_RESOLUTIONS_FILENAME
 import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
-import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
 import org.ossreviewtoolkit.workbench.model.WorkbenchTheme
+import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 
-class SettingsViewModel(private val ortModel: OrtModel) : ViewModel() {
+class SettingsViewModel(private val controller: WorkbenchController) : ViewModel() {
     private val _tab = MutableStateFlow(SettingsTab.CONFIG_FILES)
     val tab: StateFlow<SettingsTab> = _tab
 
@@ -43,7 +43,7 @@ class SettingsViewModel(private val ortModel: OrtModel) : ViewModel() {
 
     init {
         scope.launch {
-            ortModel.settings.collect { settings ->
+            controller.settings.collect { settings ->
                 val configDir = File(settings.ortConfigDir)
 
                 _ortConfigDir.value = OrtConfigFileInfo(
@@ -64,7 +64,7 @@ class SettingsViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     suspend fun setConfigDir(path: Path) {
-        ortModel.updateSettings(ortModel.settings.value.copy(ortConfigDir = path.invariantSeparatorsPathString))
+        controller.updateSettings(controller.settings.value.copy(ortConfigDir = path.invariantSeparatorsPathString))
     }
 
     fun setTab(tab: SettingsTab) {
@@ -72,7 +72,7 @@ class SettingsViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     suspend fun setTheme(theme: WorkbenchTheme) {
-        ortModel.updateSettings(ortModel.settings.value.copy(theme = theme))
+        controller.updateSettings(controller.settings.value.copy(theme = theme))
     }
 }
 

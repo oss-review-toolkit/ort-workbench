@@ -1,11 +1,5 @@
 package org.ossreviewtoolkit.workbench.model
 
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-
 import java.io.File
 
 import kotlinx.coroutines.CoroutineScope
@@ -34,36 +28,20 @@ import org.ossreviewtoolkit.model.utils.DefaultResolutionProvider
 import org.ossreviewtoolkit.model.utils.DirectoryPackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.PackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.createLicenseInfoResolver
-import org.ossreviewtoolkit.utils.common.safeMkdirs
 import org.ossreviewtoolkit.utils.ort.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_COPYRIGHT_GARBAGE_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.ort.ORT_RESOLUTIONS_FILENAME
 import org.ossreviewtoolkit.utils.ort.ortConfigDirectory
-import org.ossreviewtoolkit.utils.ort.ortDataDirectory
 import org.ossreviewtoolkit.workbench.navigation.NavController
 import org.ossreviewtoolkit.workbench.ui.MainScreen
 
-private const val ORT_WORKBENCH_CONFIG_DIRNAME = "workbench"
-private const val ORT_WORKBENCH_CONFIG_FILENAME = "settings.yml"
-
-class OrtModel {
-    companion object : Logging {
-        private val settingsMapper =
-            YAMLMapper(YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)).apply {
-                registerKotlinModule()
-            }
-    }
+class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
+    companion object : Logging
 
     private val mutex = Mutex()
 
-    private val settingsFile =
-        ortDataDirectory.resolve(ORT_WORKBENCH_CONFIG_DIRNAME).resolve(ORT_WORKBENCH_CONFIG_FILENAME)
-
     private val scope = CoroutineScope(Dispatchers.Default)
-
-    private val _settings = MutableStateFlow(WorkbenchSettings.default())
-    val settings: StateFlow<WorkbenchSettings> = _settings
 
     private val _state = MutableStateFlow(OrtApiState.UNINITIALIZED)
     val state: StateFlow<OrtApiState> = _state
@@ -82,8 +60,6 @@ class OrtModel {
     val navController = NavController(MainScreen.Summary(this))
 
     init {
-        scope.launch { loadSettings() }
-
         scope.launch {
             combine(
                 settings.map { it.ortConfigDir },
@@ -126,35 +102,6 @@ class OrtModel {
                     _state.value = OrtApiState.UNINITIALIZED
                 }
             }
-        }
-    }
-
-    suspend fun updateSettings(settings: WorkbenchSettings) {
-        mutex.withLock {
-            withContext(Dispatchers.IO + NonCancellable) {
-                _settings.value = settings
-                saveSettings(settings)
-            }
-        }
-    }
-
-    private fun loadSettings() {
-        val settings =
-            settingsFile.takeIf { it.isFile }?.let { settingsMapper.readValue(it) } ?: WorkbenchSettings.default()
-
-        _settings.value = settings
-
-        if (!settingsFile.exists()) {
-            saveSettings(settings)
-        }
-    }
-
-    private fun saveSettings(settings: WorkbenchSettings) {
-        runCatching {
-            settingsFile.parentFile.safeMkdirs()
-            settingsMapper.writeValue(settingsFile, settings)
-        }.onFailure {
-            _error.value = "Could not save settings at ${settingsFile.absolutePath}: ${it.message}"
         }
     }
 
