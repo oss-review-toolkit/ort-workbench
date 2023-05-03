@@ -44,8 +44,10 @@ import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
 
 @Composable
 fun App(controller: WorkbenchController) {
-    val apiState by controller.ortModel.state.collectAsState()
     val settings by controller.settings.collectAsState()
+    val ortModel by controller.ortModel.collectAsState()
+    val apiState = ortModel?.state?.collectAsState()?.value
+
     val scope = rememberCoroutineScope()
 
     fun loadResult() = scope.launch { controller.openOrtResult() }
@@ -53,9 +55,9 @@ fun App(controller: WorkbenchController) {
     OrtWorkbenchTheme(settings.theme) {
         Surface(color = MaterialTheme.colors.background) {
             if (apiState == OrtApiState.READY) {
-                MainLayout(controller, apiState, ::loadResult)
+                MainLayout(controller, ::loadResult)
             } else {
-                LoadResult(controller, apiState, ::loadResult)
+                LoadResult(controller, ::loadResult)
             }
 
             if (controller.openResultDialog.isAwaiting) {
@@ -71,18 +73,22 @@ fun App(controller: WorkbenchController) {
 }
 
 @Composable
-fun MainLayout(controller: WorkbenchController, apiState: OrtApiState, onLoadResult: () -> Unit) {
-    val navController = controller.ortModel.navController
+fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
+    val ortModelState = controller.ortModel.collectAsState()
+    val ortModel = ortModelState.value ?: return
+    val apiState by ortModel.state.collectAsState()
+
+    val navController = ortModel.navController
 
     fun onSelectMenuItem(item: MenuItem) {
         val screen = when (item) {
-            MenuItem.DEPENDENCIES -> MainScreen.Dependencies(controller.ortModel)
-            MenuItem.ISSUES -> MainScreen.Issues(controller.ortModel)
-            MenuItem.PACKAGES -> MainScreen.Packages(controller.ortModel)
-            MenuItem.RULE_VIOLATIONS -> MainScreen.RuleViolations(controller.ortModel)
+            MenuItem.DEPENDENCIES -> MainScreen.Dependencies(ortModel)
+            MenuItem.ISSUES -> MainScreen.Issues(ortModel)
+            MenuItem.PACKAGES -> MainScreen.Packages(ortModel)
+            MenuItem.RULE_VIOLATIONS -> MainScreen.RuleViolations(ortModel)
             MenuItem.SETTINGS -> MainScreen.Settings(controller)
-            MenuItem.SUMMARY -> MainScreen.Summary(controller.ortModel)
-            MenuItem.VULNERABILITIES -> MainScreen.Vulnerabilities(controller.ortModel)
+            MenuItem.SUMMARY -> MainScreen.Summary(ortModel)
+            MenuItem.VULNERABILITIES -> MainScreen.Vulnerabilities(ortModel)
         }
 
         navController.navigate(screen, launchSingleTop = true)
@@ -102,7 +108,7 @@ fun MainLayout(controller: WorkbenchController, apiState: OrtApiState, onLoadRes
                     onSelectMenuItem = ::onSelectMenuItem,
                     onSelectPackage = { pkgId ->
                         navController.navigate(
-                            MainScreen.PackageDetails(controller.ortModel, pkgId),
+                            MainScreen.PackageDetails(ortModel, pkgId),
                             launchSingleTop = false
                         )
                     },
@@ -146,8 +152,11 @@ private fun Content(
 }
 
 @Composable
-private fun LoadResult(controller: WorkbenchController, apiState: OrtApiState, onLoadResult: () -> Unit) {
-    val error by controller.ortModel.error.collectAsState()
+private fun LoadResult(controller: WorkbenchController, onLoadResult: () -> Unit) {
+    val ortModelState = controller.ortModel.collectAsState()
+    val ortModel = ortModelState.value
+    val apiState = ortModel?.state?.collectAsState()?.value
+    val error by controller.error.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -160,7 +169,7 @@ private fun LoadResult(controller: WorkbenchController, apiState: OrtApiState, o
 
         if (apiState in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
             CircularProgressIndicator()
-            Text("${apiState.name.replace("_", " ").titlecase()}...")
+            Text("${apiState?.name.orEmpty().replace("_", " ").titlecase()}...")
         } else {
             Button(onClick = onLoadResult) {
                 Text("Load ORT Result")

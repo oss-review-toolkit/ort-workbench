@@ -48,7 +48,11 @@ class WorkbenchController {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    val ortModel = OrtModel(settings)
+    private val _ortModels = MutableStateFlow(emptyList<OrtModel>())
+    val ortModels: StateFlow<List<OrtModel>> = _ortModels
+
+    private val _ortModel = MutableStateFlow<OrtModel?>(null)
+    val ortModel: StateFlow<OrtModel?> = _ortModel
 
     val openResultDialog = DialogState<Path?>()
 
@@ -57,10 +61,14 @@ class WorkbenchController {
     }
 
     suspend fun openOrtResult() {
-        if (ortModel.state.value !in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
+        val newOrtModel = OrtModel(settings)
+
+        if (newOrtModel.state.value !in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
             val path = openResultDialog.awaitResult()
             if (path != null) {
-                ortModel.loadOrtResult(path.toFile())
+                _ortModels.value = _ortModels.value + newOrtModel
+                _ortModel.value = newOrtModel
+                newOrtModel.loadOrtResult(path.toFile())
             }
         }
     }

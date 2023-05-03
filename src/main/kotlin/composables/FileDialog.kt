@@ -20,12 +20,9 @@ fun FileDialog(
         object : FileDialog(ComposeWindow(), title, if (isLoad) LOAD else SAVE) {
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
-                if (value) {
-                    if (file != null) {
-                        onResult(File(directory).resolve(file).toPath())
-                    } else {
-                        onResult(null)
-                    }
+
+                if (value && directory != null && file != null) {
+                    onResult(File(directory).resolve(file).toPath())
                 }
             }
         }.apply {
