@@ -41,6 +41,8 @@ import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.ort.ORT_RESOLUTIONS_FILENAME
 import org.ossreviewtoolkit.utils.ort.ortConfigDirectory
 import org.ossreviewtoolkit.utils.ort.ortDataDirectory
+import org.ossreviewtoolkit.workbench.navigation.NavController
+import org.ossreviewtoolkit.workbench.ui.MainScreen
 
 private const val ORT_WORKBENCH_CONFIG_DIRNAME = "workbench"
 private const val ORT_WORKBENCH_CONFIG_FILENAME = "settings.yml"
@@ -76,6 +78,8 @@ class OrtModel {
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+
+    val navController = NavController(MainScreen.Summary(this))
 
     init {
         scope.launch { loadSettings() }

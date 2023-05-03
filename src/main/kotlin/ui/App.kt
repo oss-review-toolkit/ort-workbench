@@ -72,7 +72,7 @@ fun App(controller: WorkbenchController) {
 
 @Composable
 fun MainLayout(controller: WorkbenchController, apiState: OrtApiState, onLoadResult: () -> Unit) {
-    val navController = controller.navController
+    val navController = controller.ortModel.navController
 
     fun onSelectMenuItem(item: MenuItem) {
         val screen = when (item) {
