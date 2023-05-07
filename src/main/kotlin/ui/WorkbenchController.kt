@@ -22,6 +22,7 @@ import org.ossreviewtoolkit.utils.common.safeMkdirs
 import org.ossreviewtoolkit.utils.ort.ortDataDirectory
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.model.OrtModel
+import org.ossreviewtoolkit.workbench.model.OrtModelInfo
 import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
 import org.ossreviewtoolkit.workbench.state.DialogState
 
@@ -99,6 +100,25 @@ class WorkbenchController {
             settingsMapper.writeValue(settingsFile, settings)
         }.onFailure {
             _error.value = "Could not save settings at ${settingsFile.absolutePath}: ${it.message}"
+        }
+    }
+
+    fun selectOrtModel(ortModelInfo: OrtModelInfo) {
+        scope.launch {
+            ortModels.value.find { it.info.value == ortModelInfo }?.let {
+                _ortModel.value = it
+            }
+        }
+    }
+
+    fun closeOrtModel(ortModelInfo: OrtModelInfo) {
+        scope.launch {
+            ortModels.value.find { it.info.value == ortModelInfo }?.let {
+                _ortModels.value = _ortModels.value - it
+                if (ortModel.value?.info?.value == ortModelInfo) {
+                    _ortModel.value = _ortModels.value.firstOrNull()
+                }
+            }
         }
     }
 }

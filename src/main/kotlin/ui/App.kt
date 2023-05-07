@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 
 import com.halilibo.richtext.ui.material.SetupMaterialRichText
 
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
@@ -103,7 +104,17 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
 
     NavHost(navController) { backstackEntry ->
         Column {
-            TopBar()
+            val ortModels by controller.ortModels.collectAsState()
+            val ortModelInfos by combine(ortModels.map { it.info }) { it.filterNotNull() }.collectAsState(emptyList())
+            val selectedOrtModelInfo by ortModel.info.collectAsState()
+
+            TopBar(
+                selectedOrtModelInfo,
+                ortModelInfos,
+                onLoadFile = onLoadResult,
+                onSelectModel = { controller.selectOrtModel(it) },
+                onCloseModel = { controller.closeOrtModel(it) }
+            )
 
             Row {
                 val currentMenuItem = (backstackEntry.screen as? MainScreen)?.menuItem
