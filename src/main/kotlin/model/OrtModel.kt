@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -51,6 +52,9 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
 
     private val _ortResult = MutableStateFlow<OrtResult?>(null)
 
+    private val _info = MutableStateFlow<OrtModelInfo?>(null)
+    val info: StateFlow<OrtModelInfo?> = _info
+
     private val _api = MutableStateFlow(OrtApi.EMPTY)
     val api: StateFlow<OrtApi> = _api
 
@@ -79,6 +83,29 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
                     _api.value = api
                     _state.value = OrtApiState.READY
                 }
+            }
+        }
+
+        scope.launch {
+            combine(ortResultFile, _ortResult) { resultFile, result ->
+                val projectsByPackageManager =
+                    result?.getProjects()?.groupBy { it.id.type }?.mapValues { it.value.size }.orEmpty()
+
+                val name = result?.repository?.vcs?.url?.substringAfterLast("/")?.removeSuffix(".git")
+                    ?: result?.getProjects(omitExcluded = true)
+                        ?.minByOrNull { project -> project.definitionFilePath.count { it == '/' } }
+                        ?.id?.name
+                    ?: resultFile?.parentFile?.name
+                    ?: "<unknown>"
+
+                OrtModelInfo(
+                    name = name,
+                    filePath = resultFile?.absolutePath.orEmpty(),
+                    fileSize = resultFile?.length() ?: 0L,
+                    projectsByPackageManager = projectsByPackageManager
+                )
+            }.collect {
+                _info.value = it
             }
         }
     }
