@@ -127,7 +127,6 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
 
                 Content(
                     backstackEntry,
-                    onLoadResult,
                     onSelectMenuItem = { selectMenuItem(controller, ortModel, navController, it) },
                     onSelectPackage = { pkgId ->
                         navController.navigate(
@@ -145,7 +144,6 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
 @Composable
 private fun Content(
     backstackEntry: BackstackEntry,
-    onLoadResult: () -> Unit,
     onSelectMenuItem: (MenuItem) -> Unit,
     onSelectPackage: (Identifier) -> Unit,
     onBack: () -> Unit
@@ -157,7 +155,7 @@ private fun Content(
         }
 
         when (backstackEntry.screen) {
-            is MainScreen.Summary -> Summary(backstackEntry.viewModel(), onSelectMenuItem, onLoadResult)
+            is MainScreen.Summary -> Summary(backstackEntry.viewModel(), onSelectMenuItem)
             is MainScreen.Packages -> Packages(backstackEntry.viewModel(), onSelectPackage)
             is MainScreen.Dependencies -> Dependencies(backstackEntry.viewModel())
             is MainScreen.Issues -> Issues(backstackEntry.viewModel())
