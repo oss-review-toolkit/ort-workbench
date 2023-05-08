@@ -28,7 +28,9 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.FileDialog
 import org.ossreviewtoolkit.workbench.model.OrtApiState
+import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.navigation.BackstackEntry
+import org.ossreviewtoolkit.workbench.navigation.NavController
 import org.ossreviewtoolkit.workbench.navigation.NavHost
 import org.ossreviewtoolkit.workbench.navigation.viewModel
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
@@ -72,6 +74,25 @@ fun App(controller: WorkbenchController) {
     }
 }
 
+private fun selectMenuItem(
+    controller: WorkbenchController,
+    ortModel: OrtModel,
+    navController: NavController,
+    item: MenuItem
+) {
+    val screen = when (item) {
+        MenuItem.DEPENDENCIES -> MainScreen.Dependencies(ortModel)
+        MenuItem.ISSUES -> MainScreen.Issues(ortModel)
+        MenuItem.PACKAGES -> MainScreen.Packages(ortModel)
+        MenuItem.RULE_VIOLATIONS -> MainScreen.RuleViolations(ortModel)
+        MenuItem.SETTINGS -> MainScreen.Settings(controller)
+        MenuItem.SUMMARY -> MainScreen.Summary(ortModel)
+        MenuItem.VULNERABILITIES -> MainScreen.Vulnerabilities(ortModel)
+    }
+
+    navController.navigate(screen, launchSingleTop = true)
+}
+
 @Composable
 fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
     val ortModelState = controller.ortModel.collectAsState()
@@ -80,20 +101,6 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
 
     val navController = ortModel.navController
 
-    fun onSelectMenuItem(item: MenuItem) {
-        val screen = when (item) {
-            MenuItem.DEPENDENCIES -> MainScreen.Dependencies(ortModel)
-            MenuItem.ISSUES -> MainScreen.Issues(ortModel)
-            MenuItem.PACKAGES -> MainScreen.Packages(ortModel)
-            MenuItem.RULE_VIOLATIONS -> MainScreen.RuleViolations(ortModel)
-            MenuItem.SETTINGS -> MainScreen.Settings(controller)
-            MenuItem.SUMMARY -> MainScreen.Summary(ortModel)
-            MenuItem.VULNERABILITIES -> MainScreen.Vulnerabilities(ortModel)
-        }
-
-        navController.navigate(screen, launchSingleTop = true)
-    }
-
     NavHost(navController) { backstackEntry ->
         Column {
             TopBar()
@@ -101,11 +108,16 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
             Row {
                 val currentMenuItem = (backstackEntry.screen as? MainScreen)?.menuItem
 
-                Menu(currentMenuItem, apiState, onSelectMenuItem = ::onSelectMenuItem)
+                Menu(
+                    currentMenuItem,
+                    apiState,
+                    onSelectMenuItem = { selectMenuItem(controller, ortModel, navController, it) }
+                )
+
                 Content(
                     backstackEntry,
                     onLoadResult,
-                    onSelectMenuItem = ::onSelectMenuItem,
+                    onSelectMenuItem = { selectMenuItem(controller, ortModel, navController, it) },
                     onSelectPackage = { pkgId ->
                         navController.navigate(
                             MainScreen.PackageDetails(ortModel, pkgId),
