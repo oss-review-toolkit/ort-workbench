@@ -67,9 +67,17 @@ class WorkbenchController {
         if (newOrtModel.state.value !in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
             val path = openResultDialog.awaitResult()
             if (path != null) {
-                _ortModels.value = _ortModels.value + newOrtModel
-                _ortModel.value = newOrtModel
-                newOrtModel.loadOrtResult(path.toFile())
+                val file = path.toFile()
+                val matchingModel = ortModels.value.find { it.info.value?.filePath == file.absolutePath }
+
+                if (matchingModel != null) {
+                    // If the file was already loaded do not load it again but switch the selected model.
+                    _ortModel.value = matchingModel
+                } else {
+                    _ortModels.value = _ortModels.value + newOrtModel
+                    _ortModel.value = newOrtModel
+                    newOrtModel.loadOrtResult(file)
+                }
             }
         }
     }
