@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package org.ossreviewtoolkit.workbench.ui
 
 import androidx.compose.foundation.Image
@@ -14,13 +16,22 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.DragData
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.onExternalDrag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 import com.halilibo.richtext.ui.material.SetupMaterialRichText
+
+import java.io.File
+import java.net.URI
 
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -56,7 +67,26 @@ fun App(controller: WorkbenchController) {
     fun loadResult() = scope.launch { controller.openOrtResult() }
 
     OrtWorkbenchTheme(settings.theme) {
-        Surface(color = MaterialTheme.colors.background) {
+        var isDragging by remember { mutableStateOf(false) }
+
+        Surface(
+            modifier = Modifier.onExternalDrag(
+                onDragStart = { isDragging = true },
+                onDragExit = { isDragging = false },
+                onDrop = { state ->
+                    val data = state.dragData
+                    if (data is DragData.FilesList) {
+                        val files = data.readFiles().map { File(URI(it)) }
+                        scope.launch { files.forEach { file -> controller.openOrtResult(file) } }
+                    }
+                    isDragging = false
+                }
+            ),
+            color = when {
+                isDragging -> MaterialTheme.colors.primaryVariant
+                else -> MaterialTheme.colors.background
+            }
+        ) {
             if (apiState == OrtApiState.READY) {
                 MainLayout(controller, ::loadResult)
             } else {
