@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
+import java.io.File
 import java.nio.file.Path
 
 import kotlinx.coroutines.CoroutineScope
@@ -79,6 +80,20 @@ class WorkbenchController {
                     newOrtModel.loadOrtResult(file)
                 }
             }
+        }
+    }
+
+    suspend fun openOrtResult(file: File) {
+        val newOrtModel = OrtModel(settings)
+        val matchingModel = ortModels.value.find { it.info.value?.filePath == file.absolutePath }
+
+        if (matchingModel != null) {
+            // If the file was already loaded do not load it again but switch the selected model.
+            _ortModel.value = matchingModel
+        } else {
+            _ortModels.value = mutex.withLock { _ortModels.value + newOrtModel }
+            _ortModel.value = newOrtModel
+            newOrtModel.loadOrtResult(file)
         }
     }
 
