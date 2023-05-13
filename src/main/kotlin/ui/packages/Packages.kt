@@ -43,7 +43,7 @@ fun Packages(viewModel: PackagesViewModel, onSelectPackage: (Identifier) -> Unit
     val stateState = viewModel.state.collectAsState()
 
     when (val state = stateState.value) {
-        is PackagesState.Loading -> CircularProgressBox()
+        is PackagesState.Loading -> CircularProgressBox(state.processedPackages, state.totalPackages, "package(s)")
 
         is PackagesState.Success -> {
             ListScreenContent(

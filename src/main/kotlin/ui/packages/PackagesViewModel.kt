@@ -38,7 +38,7 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val packages = MutableStateFlow<List<PackageInfo>?>(null)
     private val filter = MutableStateFlow(PackagesFilter())
 
-    private val _state = MutableStateFlow<PackagesState>(PackagesState.Loading)
+    private val _state = MutableStateFlow<PackagesState>(PackagesState.Loading(0, 0))
     val state: StateFlow<PackagesState> = _state
 
     init {
@@ -50,7 +50,9 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
 
                 val projectsAndPackages = (projectPackages + api.getCuratedPackages()).sortedBy { it.metadata.id }
 
-                packages.value = projectsAndPackages.map { pkg ->
+                packages.value = projectsAndPackages.mapIndexed { index, pkg ->
+                    _state.value = PackagesState.Loading(index, projectsAndPackages.size)
+
                     val references = api.getReferences(pkg.metadata.id)
                     val issues = api.getResolvedIssues().filter { it.id == pkg.metadata.id }
                     val violations = api.getViolations().filter { it.pkg == pkg.metadata.id }
@@ -81,7 +83,7 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
                         filter = filter
                     )
                 } else {
-                    PackagesState.Loading
+                    PackagesState.Loading(0, 0)
                 }
             }.collect { _state.value = it }
         }
