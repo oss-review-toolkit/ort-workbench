@@ -4,6 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
@@ -20,24 +22,28 @@ import org.ossreviewtoolkit.workbench.utils.matchValue
 class VulnerabilitiesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val defaultScope = CoroutineScope(Dispatchers.Default)
 
-    private val vulnerabilities = MutableStateFlow(emptyList<ResolvedVulnerability>())
+    private val vulnerabilities = MutableStateFlow<List<ResolvedVulnerability>?>(null)
     private val filter = MutableStateFlow(VulnerabilitiesFilter())
 
-    private val _state = MutableStateFlow(VulnerabilitiesState.INITIAL)
+    private val _state = MutableStateFlow<VulnerabilitiesState>(VulnerabilitiesState.Loading)
     val state: StateFlow<VulnerabilitiesState> = _state
 
     init {
         defaultScope.launch { ortModel.api.collect { api -> vulnerabilities.value = api.getVulnerabilities() } }
 
-        scope.launch { vulnerabilities.collect { initFilter(it) } }
+        scope.launch { vulnerabilities.collect { if (it != null) initFilter(it) } }
 
         scope.launch {
-            filter.collect { newFilter ->
-                _state.value = _state.value.copy(
-                    vulnerabilities = vulnerabilities.value.filter(newFilter::check),
-                    filter = newFilter
-                )
-            }
+            combine(filter, vulnerabilities) { filter, vulnerabilities ->
+                if (vulnerabilities != null) {
+                    VulnerabilitiesState.Success(
+                        vulnerabilities = vulnerabilities.filter(filter::check),
+                        filter = filter
+                    )
+                } else {
+                    VulnerabilitiesState.Loading
+                }
+            }.collect { _state.value = it }
         }
     }
 

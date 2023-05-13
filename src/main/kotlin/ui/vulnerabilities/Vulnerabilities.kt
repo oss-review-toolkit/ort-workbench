@@ -25,6 +25,7 @@ import org.ossreviewtoolkit.model.VulnerabilityReference
 import org.ossreviewtoolkit.model.config.VulnerabilityResolution
 import org.ossreviewtoolkit.model.config.VulnerabilityResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
+import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
@@ -37,30 +38,36 @@ import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
 
 @Composable
 fun Vulnerabilities(viewModel: VulnerabilitiesViewModel) {
-    val state by viewModel.state.collectAsState()
+    val stateState = viewModel.state.collectAsState()
 
-    ListScreenContent(
-        filterText = state.filter.text,
-        onUpdateFilterText = viewModel::updateTextFilter,
-        list = {
-            ListScreenList(
-                items = state.vulnerabilities,
-                itemsEmptyText = "No vulnerabilities found.",
-                item = { VulnerabilityCard(it) }
-            )
-        },
-        filterPanel = { showFilterPanel ->
-            VulnerabilitiesFilterPanel(
-                visible = showFilterPanel,
-                state = state,
-                onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
-                onUpdateIdentifiersFilter = viewModel::updateIdentifiersFilter,
-                onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-                onUpdateScoringSystemsFilter = viewModel::updateScoringSystemsFilter,
-                onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
+    when (val state = stateState.value) {
+        is VulnerabilitiesState.Loading -> CircularProgressBox()
+
+        is VulnerabilitiesState.Success -> {
+            ListScreenContent(
+                filterText = state.filter.text,
+                onUpdateFilterText = viewModel::updateTextFilter,
+                list = {
+                    ListScreenList(
+                        items = state.vulnerabilities,
+                        itemsEmptyText = "No vulnerabilities found.",
+                        item = { VulnerabilityCard(it) }
+                    )
+                },
+                filterPanel = { showFilterPanel ->
+                    VulnerabilitiesFilterPanel(
+                        visible = showFilterPanel,
+                        state = state,
+                        onUpdateAdvisorsFilter = viewModel::updateAdvisorsFilter,
+                        onUpdateIdentifiersFilter = viewModel::updateIdentifiersFilter,
+                        onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                        onUpdateScoringSystemsFilter = viewModel::updateScoringSystemsFilter,
+                        onUpdateSeveritiesFilter = viewModel::updateSeveritiesFilter
+                    )
+                }
             )
         }
-    )
+    }
 }
 
 @Composable
@@ -129,7 +136,7 @@ private fun VulnerabilityCardPreview() {
 @Composable
 fun VulnerabilitiesFilterPanel(
     visible: Boolean,
-    state: VulnerabilitiesState,
+    state: VulnerabilitiesState.Success,
     onUpdateAdvisorsFilter: (advisor: String?) -> Unit,
     onUpdateIdentifiersFilter: (identifier: Identifier?) -> Unit,
     onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
@@ -173,7 +180,7 @@ fun VulnerabilitiesFilterPanelPreview() {
     Preview {
         VulnerabilitiesFilterPanel(
             visible = true,
-            state = VulnerabilitiesState.INITIAL,
+            state = VulnerabilitiesState.Success(emptyList(), VulnerabilitiesFilter()),
             onUpdateAdvisorsFilter = {},
             onUpdateIdentifiersFilter = {},
             onUpdateResolutionStatusFilter = {},

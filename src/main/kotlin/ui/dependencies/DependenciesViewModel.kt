@@ -19,7 +19,7 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val defaultScope = CoroutineScope(Dispatchers.Default)
 
-    private val _state = MutableStateFlow(DependenciesState(emptyList()))
+    private val _state = MutableStateFlow<DependenciesState>(DependenciesState.Loading)
     val state: StateFlow<DependenciesState> = _state
 
     init {
@@ -30,7 +30,7 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                 // Switch back to the UI scope because DependenciesState contains mutable states which must be created
                 // in the UI scope.
                 withContext(scope.coroutineContext) {
-                    _state.value = DependenciesState(dependencyNodes)
+                    _state.value = DependenciesState.Success(dependencyNodes)
                 }
             }
         }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
@@ -24,24 +25,28 @@ import org.ossreviewtoolkit.workbench.utils.matchValue
 class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val defaultScope = CoroutineScope(Dispatchers.Default)
 
-    private val violations = MutableStateFlow(emptyList<ResolvedRuleViolation>())
+    private val violations = MutableStateFlow<List<ResolvedRuleViolation>?>(null)
     private val filter = MutableStateFlow(ViolationsFilter())
 
-    private val _state = MutableStateFlow(ViolationsState.INITIAL)
+    private val _state = MutableStateFlow<ViolationsState>(ViolationsState.Loading)
     val state: StateFlow<ViolationsState> = _state
 
     init {
         defaultScope.launch { ortModel.api.collect { violations.value = it.getViolations() } }
 
-        scope.launch { violations.collect { initFilter(it) } }
+        scope.launch { violations.collect { if (it != null) initFilter(it) } }
 
         scope.launch {
-            filter.collect { newFilter ->
-                _state.value = _state.value.copy(
-                    violations = violations.value.filter(newFilter::check),
-                    filter = newFilter
-                )
-            }
+            combine(filter, violations) { filter, violations ->
+                if (violations != null) {
+                    ViolationsState.Success(
+                        violations = violations.filter(filter::check),
+                        filter = filter
+                    )
+                } else {
+                    ViolationsState.Loading
+                }
+            }.collect { _state.value = it }
         }
     }
 

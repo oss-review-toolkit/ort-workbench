@@ -25,7 +25,6 @@ import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -64,6 +63,7 @@ import org.ossreviewtoolkit.utils.spdx.SpdxLicense
 import org.ossreviewtoolkit.utils.spdx.toExpression
 import org.ossreviewtoolkit.workbench.composables.CaptionedColumn
 import org.ossreviewtoolkit.workbench.composables.CaptionedText
+import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.ErrorCard
 import org.ossreviewtoolkit.workbench.composables.Expandable
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
@@ -79,16 +79,18 @@ import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Dependencies(viewModel: DependenciesViewModel) {
-    val state by viewModel.state.collectAsState()
+    val stateState = viewModel.state.collectAsState()
 
-    when {
-        state.error != null -> {
+    when (val state = stateState.value) {
+        is DependenciesState.Loading -> CircularProgressBox()
+
+        is DependenciesState.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                ErrorCard(state.error.orEmpty())
+                ErrorCard(state.message)
             }
         }
 
-        else -> {
+        is DependenciesState.Success -> {
             Column {
                 TitleRow(
                     search = state.search,
@@ -244,7 +246,7 @@ private fun TitleRowPreview() {
 
 @Composable
 fun DependencyTree(
-    state: DependenciesState,
+    state: DependenciesState.Success,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
