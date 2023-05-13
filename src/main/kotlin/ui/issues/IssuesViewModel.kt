@@ -1,5 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui.issues
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,6 +20,8 @@ import org.ossreviewtoolkit.workbench.utils.matchStringContains
 import org.ossreviewtoolkit.workbench.utils.matchValue
 
 class IssuesViewModel(private val ortModel: OrtModel) : ViewModel() {
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+
     private val issues = MutableStateFlow(emptyList<ResolvedIssue>())
     private val filter = MutableStateFlow(IssuesFilter())
 
@@ -25,7 +29,7 @@ class IssuesViewModel(private val ortModel: OrtModel) : ViewModel() {
     val state: StateFlow<IssuesState> = _state
 
     init {
-        scope.launch { ortModel.api.collect { issues.value = it.getResolvedIssues() } }
+        defaultScope.launch { ortModel.api.collect { issues.value = it.getResolvedIssues() } }
 
         scope.launch { issues.collect { initFilter(it) } }
 
