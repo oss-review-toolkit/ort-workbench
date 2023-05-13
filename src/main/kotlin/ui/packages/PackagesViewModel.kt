@@ -1,5 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui.packages
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -29,6 +31,8 @@ import org.ossreviewtoolkit.workbench.utils.matchViolationStatus
 import org.ossreviewtoolkit.workbench.utils.matchVulnerabilityStatus
 
 class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+
     private val packages = MutableStateFlow(emptyList<PackageInfo>())
     private val filter = MutableStateFlow(PackagesFilter())
 
@@ -36,7 +40,7 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
     val state: StateFlow<PackagesState> = _state
 
     init {
-        scope.launch {
+        defaultScope.launch {
             ortModel.api.collect { api ->
                 val projectPackages = api.getProjects().mapTo(mutableSetOf()) {
                     it.toPackage().toCuratedPackage()

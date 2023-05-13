@@ -1,5 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui.violations
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,6 +22,8 @@ import org.ossreviewtoolkit.workbench.utils.matchStringContains
 import org.ossreviewtoolkit.workbench.utils.matchValue
 
 class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+
     private val violations = MutableStateFlow(emptyList<ResolvedRuleViolation>())
     private val filter = MutableStateFlow(ViolationsFilter())
 
@@ -27,7 +31,7 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     val state: StateFlow<ViolationsState> = _state
 
     init {
-        scope.launch { ortModel.api.collect { violations.value = it.getViolations() } }
+        defaultScope.launch { ortModel.api.collect { violations.value = it.getViolations() } }
 
         scope.launch { violations.collect { initFilter(it) } }
 

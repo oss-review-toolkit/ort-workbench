@@ -1,8 +1,11 @@
 package org.ossreviewtoolkit.workbench.ui.dependencies
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 import org.ossreviewtoolkit.model.PackageLinkage
 import org.ossreviewtoolkit.model.PackageReference
@@ -14,13 +17,21 @@ import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
 
 class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
+    private val defaultScope = CoroutineScope(Dispatchers.Default)
+
     private val _state = MutableStateFlow(DependenciesState(emptyList()))
     val state: StateFlow<DependenciesState> = _state
 
     init {
-        scope.launch {
+        defaultScope.launch {
             ortModel.api.collect { api ->
-                _state.value = DependenciesState(createDependencyNodes(api))
+                val dependencyNodes = createDependencyNodes(api)
+
+                // Switch back to the UI scope because DependenciesState contains mutable states which must be created
+                // in the UI scope.
+                withContext(scope.coroutineContext) {
+                    _state.value = DependenciesState(dependencyNodes)
+                }
             }
         }
     }
