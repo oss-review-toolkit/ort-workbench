@@ -61,7 +61,14 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    val navController = NavController(MainScreen.Summary(this))
+    val navController = NavController(
+        MainScreen.Dependencies(this),
+        MainScreen.Issues(this),
+        MainScreen.Packages(this),
+        MainScreen.RuleViolations(this),
+        MainScreen.Vulnerabilities(this),
+        MainScreen.Summary(this)
+    )
 
     init {
         scope.launch {

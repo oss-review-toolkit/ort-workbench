@@ -12,7 +12,7 @@ class NavController(
     /**
      * The initial [Screen] to navigate to.
      */
-    initialScreen: Screen<*>? = null
+    vararg initialScreens: Screen<*>
 ) {
     private val backstack = ArrayDeque<BackstackEntry>()
 
@@ -24,8 +24,8 @@ class NavController(
     val backstackEntry: StateFlow<BackstackEntry?> = _backstackEntry
 
     init {
-        if (initialScreen != null) {
-            navigate(initialScreen, launchSingleTop = false)
+        initialScreens.forEach {
+            navigate(it, launchSingleTop = false)
         }
     }
 
