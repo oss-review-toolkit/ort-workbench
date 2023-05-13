@@ -1,13 +1,10 @@
 package org.ossreviewtoolkit.workbench.ui.packages
 
-data class PackagesState(
-    val packages: List<PackageInfo>,
-    val filter: PackagesFilter
-) {
-    companion object {
-        val INITIAL = PackagesState(
-            packages = emptyList(),
-            filter = PackagesFilter()
-        )
-    }
+sealed interface PackagesState {
+    object Loading : PackagesState
+
+    data class Success(
+        val packages: List<PackageInfo>,
+        val filter: PackagesFilter
+    ) : PackagesState
 }

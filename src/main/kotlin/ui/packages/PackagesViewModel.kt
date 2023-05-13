@@ -4,6 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
@@ -33,10 +35,10 @@ import org.ossreviewtoolkit.workbench.utils.matchVulnerabilityStatus
 class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val defaultScope = CoroutineScope(Dispatchers.Default)
 
-    private val packages = MutableStateFlow(emptyList<PackageInfo>())
+    private val packages = MutableStateFlow<List<PackageInfo>?>(null)
     private val filter = MutableStateFlow(PackagesFilter())
 
-    private val _state = MutableStateFlow(PackagesState.INITIAL)
+    private val _state = MutableStateFlow<PackagesState>(PackagesState.Loading)
     val state: StateFlow<PackagesState> = _state
 
     init {
@@ -69,15 +71,19 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
             }
         }
 
-        scope.launch { packages.collect { initFilter(it) } }
+        scope.launch { packages.collect { if (it != null) initFilter(it) } }
 
         scope.launch {
-            filter.collect { newFilter ->
-                _state.value = _state.value.copy(
-                    packages = packages.value.filter(newFilter::check),
-                    filter = newFilter
-                )
-            }
+            combine(filter, packages) { filter, packages ->
+                if (packages != null) {
+                    PackagesState.Success(
+                        packages = packages.filter(filter::check),
+                        filter = filter
+                    )
+                } else {
+                    PackagesState.Loading
+                }
+            }.collect { _state.value = it }
         }
     }
 

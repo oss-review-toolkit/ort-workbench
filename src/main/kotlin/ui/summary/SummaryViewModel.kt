@@ -20,7 +20,7 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val defaultScope = CoroutineScope(Dispatchers.Default)
 
-    private val _state = MutableStateFlow(SummaryState())
+    private val _state = MutableStateFlow<SummaryState>(SummaryState.Loading)
     val state: StateFlow<SummaryState> = _state
 
     init {
@@ -30,7 +30,7 @@ class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
                 ortModel.api.map { IssueStats(it) /* TODO: Take resolutions into account. */ },
                 ortModel.api.map { DependencyStats(it) /* TODO: Take resolutions into account. */ }
             ) { resultFileInfo, issueStats, dependencyStats ->
-                SummaryState(
+                SummaryState.Success(
                     resultFileInfo,
                     issueStats,
                     dependencyStats
@@ -41,12 +41,6 @@ class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
         }
     }
 }
-
-class SummaryState(
-    val resultFileInfo: ResultFileInfo = ResultFileInfo.EMPTY,
-    val issueStats: IssueStats = IssueStats.EMPTY,
-    val dependencyStats: DependencyStats = DependencyStats.EMPTY
-)
 
 private fun File?.toResultFileInfo() =
     this?.let { ResultFileInfo(it.absolutePath, it.length()) } ?: ResultFileInfo.EMPTY

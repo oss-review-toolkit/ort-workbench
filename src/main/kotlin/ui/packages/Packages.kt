@@ -29,6 +29,7 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
+import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
 import org.ossreviewtoolkit.workbench.composables.IconText
@@ -39,36 +40,42 @@ import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Packages(viewModel: PackagesViewModel, onSelectPackage: (Identifier) -> Unit) {
-    val state by viewModel.state.collectAsState()
+    val stateState = viewModel.state.collectAsState()
 
-    ListScreenContent(
-        filterText = state.filter.text,
-        onUpdateFilterText = viewModel::updateTextFilter,
-        list = {
-            ListScreenList(
-                items = state.packages,
-                itemsEmptyText = "No packages found.",
-                item = { pkg ->
-                    PackageCard(pkg, onSelectPackage = { onSelectPackage(pkg.metadata.id) })
+    when (val state = stateState.value) {
+        is PackagesState.Loading -> CircularProgressBox()
+
+        is PackagesState.Success -> {
+            ListScreenContent(
+                filterText = state.filter.text,
+                onUpdateFilterText = viewModel::updateTextFilter,
+                list = {
+                    ListScreenList(
+                        items = state.packages,
+                        itemsEmptyText = "No packages found.",
+                        item = { pkg ->
+                            PackageCard(pkg, onSelectPackage = { onSelectPackage(pkg.metadata.id) })
+                        }
+                    )
+                },
+                filterPanel = { showFilterPanel ->
+                    PackagesFilterPanel(
+                        visible = showFilterPanel,
+                        state = state,
+                        onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
+                        onUpdateIssueStatusFilter = viewModel::updateIssueStatusFilter,
+                        onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+                        onUpdateNamespaceFilter = viewModel::updateNamespaceFilter,
+                        onUpdateProjectFilter = viewModel::updateProjectFilter,
+                        onUpdateScopeFilter = viewModel::updateScopeFilter,
+                        onUpdateTypeFilter = viewModel::updateTypeFilter,
+                        onUpdateViolationStatusFilter = viewModel::updateViolationStatusFilter,
+                        onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
+                    )
                 }
             )
-        },
-        filterPanel = { showFilterPanel ->
-            PackagesFilterPanel(
-                visible = showFilterPanel,
-                state = state,
-                onUpdateExclusionStatusFilter = viewModel::updateExclusionStatusFilter,
-                onUpdateIssueStatusFilter = viewModel::updateIssueStatusFilter,
-                onUpdateLicenseFilter = viewModel::updateLicenseFilter,
-                onUpdateNamespaceFilter = viewModel::updateNamespaceFilter,
-                onUpdateProjectFilter = viewModel::updateProjectFilter,
-                onUpdateScopeFilter = viewModel::updateScopeFilter,
-                onUpdateTypeFilter = viewModel::updateTypeFilter,
-                onUpdateViolationStatusFilter = viewModel::updateViolationStatusFilter,
-                onUpdateVulnerabilityStatusFilter = viewModel::updateVulnerabilityStatusFilter
-            )
         }
-    )
+    }
 }
 
 @Composable
@@ -143,7 +150,7 @@ fun PackageCard(
 @Composable
 fun PackagesFilterPanel(
     visible: Boolean,
-    state: PackagesState,
+    state: PackagesState.Success,
     onUpdateExclusionStatusFilter: (exclusionStatus: ExclusionStatus?) -> Unit,
     onUpdateIssueStatusFilter: (issueStatus: IssueStatus?) -> Unit,
     onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,

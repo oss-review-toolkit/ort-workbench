@@ -26,6 +26,7 @@ import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.config.IssueResolution
 import org.ossreviewtoolkit.model.config.IssueResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
+import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel
@@ -39,30 +40,36 @@ import org.ossreviewtoolkit.workbench.model.Tool
 
 @Composable
 fun Issues(viewModel: IssuesViewModel) {
-    val state by viewModel.state.collectAsState()
+    val stateState = viewModel.state.collectAsState()
 
-    ListScreenContent(
-        filterText = state.filter.text,
-        onUpdateFilterText = viewModel::updateTextFilter,
-        list = {
-            ListScreenList(
-                items = state.issues,
-                itemsEmptyText = "No issues found.",
-                item = { IssueCard(it) }
-            )
-        },
-        filterPanel = { showFilterPanel ->
-            IssuesFilterPanel(
-                visible = showFilterPanel,
-                state = state,
-                onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
-                onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-                onUpdateSeverityFilter = viewModel::updateSeverityFilter,
-                onUpdateSourceFilter = viewModel::updateSourceFilter,
-                onUpdateToolFilter = viewModel::updateToolFilter
+    when (val state = stateState.value) {
+        is IssuesState.Loading -> CircularProgressBox()
+
+        is IssuesState.Success -> {
+            ListScreenContent(
+                filterText = state.filter.text,
+                onUpdateFilterText = viewModel::updateTextFilter,
+                list = {
+                    ListScreenList(
+                        items = state.issues,
+                        itemsEmptyText = "No issues found.",
+                        item = { IssueCard(it) }
+                    )
+                },
+                filterPanel = { showFilterPanel ->
+                    IssuesFilterPanel(
+                        visible = showFilterPanel,
+                        state = state,
+                        onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+                        onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                        onUpdateSeverityFilter = viewModel::updateSeverityFilter,
+                        onUpdateSourceFilter = viewModel::updateSourceFilter,
+                        onUpdateToolFilter = viewModel::updateToolFilter
+                    )
+                }
             )
         }
-    )
+    }
 }
 
 @Composable
@@ -116,7 +123,7 @@ private fun IssueCardPreview() {
 @Composable
 fun IssuesFilterPanel(
     visible: Boolean,
-    state: IssuesState,
+    state: IssuesState.Success,
     onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
     onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
     onUpdateSeverityFilter: (severity: Severity?) -> Unit,

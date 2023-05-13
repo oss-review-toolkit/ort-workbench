@@ -26,6 +26,7 @@ import org.ossreviewtoolkit.model.config.RuleViolationResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.utils.spdx.SpdxLicenseIdExpression
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
+import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.ExpandableMarkdown
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
 import org.ossreviewtoolkit.workbench.composables.FilterButton
@@ -40,31 +41,37 @@ import org.ossreviewtoolkit.workbench.model.ResolvedRuleViolation
 @Composable
 @Preview
 fun Violations(viewModel: ViolationsViewModel) {
-    val state by viewModel.state.collectAsState()
+    val stateState = viewModel.state.collectAsState()
 
-    ListScreenContent(
-        filterText = state.filter.text,
-        onUpdateFilterText = viewModel::updateTextFilter,
-        list = {
-            ListScreenList(
-                items = state.violations,
-                itemsEmptyText = "No violations found.",
-                item = { ViolationCard(it) }
-            )
-        },
-        filterPanel = { showFilterPanel ->
-            ViolationsFilterPanel(
-                visible = showFilterPanel,
-                state = state,
-                onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
-                onUpdateLicenseFilter = viewModel::updateLicenseFilter,
-                onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
-                onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-                onUpdateRuleFilter = viewModel::updateRuleFilter,
-                onUpdateSeverityFilter = viewModel::updateSeverityFilter
+    when (val state = stateState.value) {
+        is ViolationsState.Loading -> CircularProgressBox()
+
+        is ViolationsState.Success -> {
+            ListScreenContent(
+                filterText = state.filter.text,
+                onUpdateFilterText = viewModel::updateTextFilter,
+                list = {
+                    ListScreenList(
+                        items = state.violations,
+                        itemsEmptyText = "No violations found.",
+                        item = { ViolationCard(it) }
+                    )
+                },
+                filterPanel = { showFilterPanel ->
+                    ViolationsFilterPanel(
+                        visible = showFilterPanel,
+                        state = state,
+                        onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+                        onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+                        onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
+                        onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                        onUpdateRuleFilter = viewModel::updateRuleFilter,
+                        onUpdateSeverityFilter = viewModel::updateSeverityFilter
+                    )
+                }
             )
         }
-    )
+    }
 }
 
 @Composable
@@ -128,7 +135,7 @@ private fun ViolationCardPreview() {
 @Composable
 fun ViolationsFilterPanel(
     visible: Boolean,
-    state: ViolationsState,
+    state: ViolationsState.Success,
     onUpdateIdentifierFilter: (identifier: Identifier?) -> Unit,
     onUpdateLicenseFilter: (license: SpdxSingleLicenseExpression?) -> Unit,
     onUpdateLicenseSourceFilter: (licenseSource: LicenseSource?) -> Unit,

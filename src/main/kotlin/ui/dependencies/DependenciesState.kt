@@ -15,62 +15,65 @@ import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.workbench.composables.tree.TreeNode
 import org.ossreviewtoolkit.workbench.composables.tree.TreeState
 
-class DependenciesState(rootNodes: List<TreeNode<DependencyTreeItem>>) {
-    var error: String? by mutableStateOf(null)
-        private set
+sealed interface DependenciesState {
+    object Loading : DependenciesState
 
-    var search by mutableStateOf("")
-        private set
+    data class Error(val message: String) : DependenciesState
 
-    var searchCurrentHit by mutableStateOf(-1)
-        private set
+    class Success(rootNodes: List<TreeNode<DependencyTreeItem>>) : DependenciesState {
+        var search by mutableStateOf("")
+            private set
 
-    private val _searchHits = mutableStateListOf<Int>()
-    val searchHits: List<Int> = _searchHits
+        var searchCurrentHit by mutableStateOf(-1)
+            private set
 
-    val treeState: TreeState<DependencyTreeItem> = TreeState(rootNodes)
+        private val _searchHits = mutableStateListOf<Int>()
+        val searchHits: List<Int> = _searchHits
 
-    fun selectNextSearchHit() {
-        if (searchHits.isEmpty()) searchCurrentHit = -1 else searchCurrentHit++
+        val treeState: TreeState<DependencyTreeItem> = TreeState(rootNodes)
 
-        if (searchCurrentHit >= searchHits.size) searchCurrentHit = 0
+        fun selectNextSearchHit() {
+            if (searchHits.isEmpty()) searchCurrentHit = -1 else searchCurrentHit++
 
-        if (searchCurrentHit > -1) {
-            treeState.expandItem(searchHits[searchCurrentHit])
-            treeState.selectItem(searchHits[searchCurrentHit], isAutoSelected = true)
-        }
-    }
+            if (searchCurrentHit >= searchHits.size) searchCurrentHit = 0
 
-    fun selectPreviousSearchHit() {
-        if (searchHits.isEmpty()) searchCurrentHit = -1 else searchCurrentHit--
-
-        if (searchCurrentHit < 0) searchCurrentHit = searchHits.size - 1
-
-        if (searchCurrentHit > -1) {
-            treeState.expandItem(searchCurrentHit)
-            treeState.selectItem(searchHits[searchCurrentHit], isAutoSelected = true)
-        }
-    }
-
-    fun updateSearch(search: String) {
-        this.search = search
-        searchCurrentHit = 0
-        _searchHits.clear()
-
-        if (search.isNotBlank()) {
-            val trimmedSearch = search.trim()
-
-            _searchHits += treeState.items.mapIndexedNotNull { index, item ->
-                if (item.node.value.name.contains(trimmedSearch)) index else null
+            if (searchCurrentHit > -1) {
+                treeState.expandItem(searchHits[searchCurrentHit])
+                treeState.selectItem(searchHits[searchCurrentHit], isAutoSelected = true)
             }
         }
 
-        searchCurrentHit = if (_searchHits.isEmpty()) -1 else 0
+        fun selectPreviousSearchHit() {
+            if (searchHits.isEmpty()) searchCurrentHit = -1 else searchCurrentHit--
 
-        if (searchCurrentHit >= 0) {
-            val item = treeState.items[searchHits[searchCurrentHit]]
-            treeState.expandItem(item.index)
-            treeState.selectItem(item, isAutoSelected = true)
+            if (searchCurrentHit < 0) searchCurrentHit = searchHits.size - 1
+
+            if (searchCurrentHit > -1) {
+                treeState.expandItem(searchCurrentHit)
+                treeState.selectItem(searchHits[searchCurrentHit], isAutoSelected = true)
+            }
+        }
+
+        fun updateSearch(search: String) {
+            this.search = search
+            searchCurrentHit = 0
+            _searchHits.clear()
+
+            if (search.isNotBlank()) {
+                val trimmedSearch = search.trim()
+
+                _searchHits += treeState.items.mapIndexedNotNull { index, item ->
+                    if (item.node.value.name.contains(trimmedSearch)) index else null
+                }
+            }
+
+            searchCurrentHit = if (_searchHits.isEmpty()) -1 else 0
+
+            if (searchCurrentHit >= 0) {
+                val item = treeState.items[searchHits[searchCurrentHit]]
+                treeState.expandItem(item.index)
+                treeState.selectItem(item, isAutoSelected = true)
+            }
         }
     }
 }

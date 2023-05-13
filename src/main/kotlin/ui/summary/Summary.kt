@@ -12,7 +12,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -20,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.Link
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.StyledCard
@@ -30,18 +30,24 @@ private const val KIBI = 1024
 
 @Composable
 fun Summary(viewModel: SummaryViewModel, onSelectMenuItem: (MenuItem) -> Unit) {
-    val state by viewModel.state.collectAsState()
+    val stateState = viewModel.state.collectAsState()
 
-    Column(modifier = Modifier.padding(15.dp)) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(25.dp)) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                ResultFileInfoCard(state.resultFileInfo)
+    when (val state = stateState.value) {
+        is SummaryState.Loading -> CircularProgressBox()
 
-                DependencyStatsCard(state.dependencyStats) { onSelectMenuItem(MenuItem.DEPENDENCIES) }
-            }
+        is SummaryState.Success -> {
+            Column(modifier = Modifier.padding(15.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(25.dp)) {
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
+                        ResultFileInfoCard(state.resultFileInfo)
 
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                IssueStatsCard(state.issueStats) { onSelectMenuItem(MenuItem.ISSUES) }
+                        DependencyStatsCard(state.dependencyStats) { onSelectMenuItem(MenuItem.DEPENDENCIES) }
+                    }
+
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(15.dp)) {
+                        IssueStatsCard(state.issueStats) { onSelectMenuItem(MenuItem.ISSUES) }
+                    }
+                }
             }
         }
     }
