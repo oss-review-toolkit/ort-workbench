@@ -64,7 +64,10 @@ fun App(controller: WorkbenchController) {
 
     val scope = rememberCoroutineScope()
 
-    fun loadResult() = scope.launch { controller.openOrtResult() }
+    fun loadResult() = scope.launch {
+        val path = controller.openResultDialog.awaitResult()
+        if (path != null) controller.openOrtResult(path.toFile())
+    }
 
     OrtWorkbenchTheme(settings.theme) {
         var isDragging by remember { mutableStateOf(false) }
