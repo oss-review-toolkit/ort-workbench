@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
@@ -46,12 +47,17 @@ private fun LinkContent(text: String, icon: Painter?, enabled: Boolean, onClick:
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (icon != null) {
-            Icon(icon, contentDescription = "link", tint = MaterialTheme.colors.primary)
-        }
-
         CompositionLocalProvider(LocalContentAlpha provides if (enabled) ContentAlpha.high else ContentAlpha.medium) {
             Text(text)
+        }
+
+        if (icon != null) {
+            Icon(
+                icon,
+                contentDescription = "link",
+                tint = MaterialTheme.colors.primary,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }
