@@ -39,3 +39,16 @@ jobs:
         if: ${{ always() }} # Upload even if the previous step failed.
         with:
           sarif_file: build/reports/detekt/detekt.sarif
+  reuse:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Check REUSE Compliance
+        run: |
+          pip install --user reuse
+          ~/.local/bin/reuse lint
