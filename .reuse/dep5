@@ -1,0 +1,53 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ORT Workbench
+Source: https://github.com/oss-review-toolkit/ort-workbench
+
+Files: .*
+Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: *.json
+Copyright: 2022 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: *.kts
+Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: *.md
+Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: *.properties
+Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: *.yml
+Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: assets/*
+Copyright: 2022 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: gradle/*.toml
+Copyright: 2022 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: src/*
+Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+License: Apache-2.0
+
+Files: src/main/resources/material/*
+Copyright: 2016 Google LLC
+License: Apache-2.0
+
+# Third-party files
+
+Files: gradlew*
+Copyright: 2007-2023 The original author or authors <info@gradle.com>
+License: Apache-2.0
+
+Files: gradle/wrapper/*
+Copyright: 2007-2023 The original author or authors <info@gradle.com>
+License: Apache-2.0
