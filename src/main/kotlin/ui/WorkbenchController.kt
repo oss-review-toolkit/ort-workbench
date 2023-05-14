@@ -21,7 +21,6 @@ import kotlinx.coroutines.withContext
 
 import org.ossreviewtoolkit.utils.common.safeMkdirs
 import org.ossreviewtoolkit.utils.ort.ortDataDirectory
-import org.ossreviewtoolkit.workbench.model.OrtApiState
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.OrtModelInfo
 import org.ossreviewtoolkit.workbench.model.WorkbenchSettings
@@ -60,27 +59,6 @@ class WorkbenchController {
 
     init {
         scope.launch { loadSettings() }
-    }
-
-    suspend fun openOrtResult() {
-        val newOrtModel = OrtModel(settings)
-
-        if (newOrtModel.state.value !in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
-            val path = openResultDialog.awaitResult()
-            if (path != null) {
-                val file = path.toFile()
-                val matchingModel = ortModels.value.find { it.info.value?.filePath == file.absolutePath }
-
-                if (matchingModel != null) {
-                    // If the file was already loaded do not load it again but switch the selected model.
-                    _ortModel.value = matchingModel
-                } else {
-                    _ortModels.value = _ortModels.value + newOrtModel
-                    _ortModel.value = newOrtModel
-                    newOrtModel.loadOrtResult(file)
-                }
-            }
-        }
     }
 
     suspend fun openOrtResult(file: File) {
