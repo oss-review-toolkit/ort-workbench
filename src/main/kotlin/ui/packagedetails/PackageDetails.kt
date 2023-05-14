@@ -42,6 +42,7 @@ import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
+import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val TAB_METADATA = 0
@@ -159,8 +160,14 @@ private fun PackageDetailsRow(key: String, content: @Composable RowScope.() -> U
 }
 
 @Composable
-private fun PackageDetailsRow(key: String, value: String) {
-    PackageDetailsRow(key) { Text(value) }
+private fun PackageDetailsRow(key: String, value: String, url: String? = null) {
+    PackageDetailsRow(key) {
+        if (url.isNullOrEmpty()) {
+            Text(value)
+        } else {
+            WebLink(value, url)
+        }
+    }
 }
 
 @Composable
@@ -205,7 +212,7 @@ private fun PackageLicense(license: ResolvedLicenseInfo) {
 @Composable
 private fun PackageDescription(pkg: Package) {
     PackageDetailsCard("Description") {
-        PackageDetailsRow("Homepage", pkg.homepageUrl.toStringOrDash())
+        PackageDetailsRow("Homepage", pkg.homepageUrl.toStringOrDash(), url = pkg.homepageUrl)
         PackageDetailsRow("Authors", pkg.authors.joinToString().toStringOrDash())
         PackageDetailsRow("Description", pkg.description.toStringOrDash())
     }
@@ -215,7 +222,12 @@ private fun PackageDescription(pkg: Package) {
 private fun ArtifactRow(key: String, artifact: RemoteArtifact) {
     PackageDetailsRow(key) {
         Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text(artifact.url.toStringOrDash())
+            if (artifact.url.isEmpty()) {
+                Text(artifact.url.toStringOrDash())
+            } else {
+                WebLink(artifact.url, artifact.url)
+            }
+
             if (artifact.hash.value.isNotEmpty()) {
                 Text("${artifact.hash.algorithm}: ${artifact.hash.value}")
             }
@@ -235,7 +247,7 @@ private fun PackageArtifacts(pkg: Package) {
 private fun PackageRepository(pkg: Package) {
     PackageDetailsCard("Repository") {
         PackageDetailsRow("Type", pkg.vcsProcessed.type.toStringOrDash())
-        PackageDetailsRow("URL", pkg.vcsProcessed.url.toStringOrDash())
+        PackageDetailsRow("URL", pkg.vcsProcessed.url.toStringOrDash(), pkg.vcsProcessed.url)
         PackageDetailsRow("Revision", pkg.vcsProcessed.revision.toStringOrDash())
         PackageDetailsRow("Path", pkg.vcsProcessed.path.toStringOrDash())
     }
