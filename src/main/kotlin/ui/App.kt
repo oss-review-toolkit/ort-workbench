@@ -65,8 +65,14 @@ fun App(controller: WorkbenchController) {
     val scope = rememberCoroutineScope()
 
     fun loadResult() = scope.launch {
-        val path = controller.openResultDialog.awaitResult()
-        if (path != null) controller.openOrtResult(path.toFile())
+        val isNotLoadingFile = controller.ortModels.value.none {
+            it.state.value in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)
+        }
+
+        if (isNotLoadingFile) {
+            val path = controller.openResultDialog.awaitResult()
+            if (path != null) controller.openOrtResult(path.toFile())
+        }
     }
 
     OrtWorkbenchTheme(settings.theme) {
