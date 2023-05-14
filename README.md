@@ -24,7 +24,7 @@ planned features.
 
 # License
 
-Copyright (C) 2021-2022 [The ORT Workbench Contributors](https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors).
+Copyright (C) 2021-2023 [The ORT Workbench Contributors](https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors).
 
 This project is published under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0.html) license, see the
 [LICENSE](./LICENSE) file in the root of this project for license details.
