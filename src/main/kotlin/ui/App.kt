@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.model.Identifier
+import org.ossreviewtoolkit.utils.common.enumSetOf
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.FileDialog
 import org.ossreviewtoolkit.workbench.model.OrtApiState
@@ -66,7 +67,7 @@ fun App(controller: WorkbenchController) {
 
     fun loadResult() = scope.launch {
         val isNotLoadingFile = controller.ortModels.value.none {
-            it.state.value in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)
+            it.state.value in enumSetOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)
         }
 
         if (isNotLoadingFile) {
