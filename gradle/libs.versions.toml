@@ -6,7 +6,7 @@ moleculePlugin = "0.9.0"
 versionCatalogUpdatePlugin = "0.8.0"
 versionsPlugin = "0.46.0"
 
-jackson = "2.15.0"
+jackson = "2.15.1"
 kotlinxCoroutines = "1.7.1"
 log4jApi = "2.20.0"
 log4jApiKotlin = "1.2.0"
