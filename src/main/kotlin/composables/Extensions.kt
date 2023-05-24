@@ -10,3 +10,5 @@ fun Modifier.conditional(condition: Boolean, modifier: @Composable Modifier.() -
     if (condition) then(modifier(Modifier)) else this
 
 fun String.enumcase() = replace("_", " ").titlecase()
+
+fun Any?.toStringOrDash() = this?.toString()?.takeIf { it.isNotEmpty() } ?: "-"
