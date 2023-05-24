@@ -104,7 +104,7 @@ tasks.withType<KotlinCompile> {
 }
 
 detekt {
-    config = files("detekt.yml")
+    config.from(files("detekt.yml"))
     buildUponDefaultConfig = true
     basePath = rootProject.projectDir.path
     source.from(fileTree(".") { include("*.gradle.kts") })
