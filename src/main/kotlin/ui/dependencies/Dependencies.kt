@@ -73,6 +73,7 @@ import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
 import org.ossreviewtoolkit.workbench.composables.SidePanel
 import org.ossreviewtoolkit.workbench.composables.WebLink
+import org.ossreviewtoolkit.workbench.composables.toStringOrDash
 import org.ossreviewtoolkit.workbench.composables.tree.Tree
 import org.ossreviewtoolkit.workbench.composables.tree.TreeItem
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
@@ -483,7 +484,7 @@ fun IdentifierSection(pkg: Package) {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             CaptionedText("PURL", pkg.purl)
-            CaptionedText("CPE", pkg.cpe ?: "-")
+            CaptionedText("CPE", pkg.cpe.toStringOrDash())
             CaptionedColumn("PROPERTIES") {
                 Text("isMetadataOnly = ${pkg.isMetadataOnly}", style = MaterialTheme.typography.overline)
                 Text("isModified = ${pkg.isModified}", style = MaterialTheme.typography.overline)
@@ -509,7 +510,7 @@ fun LicenseSection(pkg: Package, resolvedLicense: ResolvedLicenseInfo?) {
             resolvedLicense?.effectiveLicense(LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED)
         }
 
-        CaptionedText("EFFECTIVE LICENSE", effectiveLicense?.toString() ?: "-")
+        CaptionedText("EFFECTIVE LICENSE", effectiveLicense.toStringOrDash())
     }) {
         val detectedLicense = remember(pkg.id) { resolvedLicense?.effectiveLicense(LicenseView.ONLY_DETECTED) }
 
@@ -517,9 +518,9 @@ fun LicenseSection(pkg: Package, resolvedLicense: ResolvedLicenseInfo?) {
             modifier = Modifier.padding(top = 10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            CaptionedText("DECLARED LICENSE", pkg.declaredLicensesProcessed.spdxExpression?.toString() ?: "-")
-            CaptionedText("DETECTED LICENSE", detectedLicense?.toString() ?: "-")
-            CaptionedText("CONCLUDED LICENSE", pkg.concludedLicense?.toString() ?: "-")
+            CaptionedText("DECLARED LICENSE", pkg.declaredLicensesProcessed.spdxExpression.toStringOrDash())
+            CaptionedText("DETECTED LICENSE", detectedLicense.toStringOrDash())
+            CaptionedText("CONCLUDED LICENSE", pkg.concludedLicense.toStringOrDash())
             // TODO: Add declared license mapping and unmapped licenses.
         }
     }
@@ -637,7 +638,7 @@ fun CurationSection(curations: List<PackageCurationResult>) {
                 Divider(thickness = 0.5.dp)
 
                 ProvideTextStyle(MaterialTheme.typography.overline) {
-                    Text("Comment: ${curation.curation.comment ?: "-"}")
+                    Text("Comment: ${curation.curation.comment.toStringOrDash()}")
 
                     curation.curation.purl?.let { purl ->
                         Text("PURL: ${curation.base.purl} -> $purl")
