@@ -43,6 +43,7 @@ import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
 import org.ossreviewtoolkit.workbench.composables.WebLink
+import org.ossreviewtoolkit.workbench.composables.toStringOrDash
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val TAB_METADATA = 0
@@ -271,5 +272,3 @@ private fun PackageScanResults() {
         Text("Coming soon...")
     }
 }
-
-fun Any?.toStringOrDash() = this?.toString()?.takeIf { it.isNotEmpty() } ?: "-"
