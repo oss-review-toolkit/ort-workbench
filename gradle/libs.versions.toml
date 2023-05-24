@@ -1,5 +1,5 @@
 [versions]
-detektPlugin = "1.22.0"
+detektPlugin = "1.23.0"
 composePlugin = "1.4.0"
 kotlinPlugin = "1.8.20"
 moleculePlugin = "0.9.0"
