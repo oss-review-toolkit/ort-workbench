@@ -2,7 +2,7 @@ package org.ossreviewtoolkit.workbench.lifecycle
 
 import androidx.compose.runtime.Composable
 
-import app.cash.molecule.RecompositionClock
+import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +32,7 @@ abstract class MoleculeViewModel<EVENT, MODEL> : ViewModel() {
      * A [StateFlow] that emits new [MODEL]s on updates.
      */
     val model: StateFlow<MODEL> by lazy(LazyThreadSafetyMode.NONE) {
-        moleculeScope.launchMolecule(clock = RecompositionClock.Immediate) {
+        moleculeScope.launchMolecule(mode = RecompositionMode.Immediate) {
             composeModel(events)
         }
     }
