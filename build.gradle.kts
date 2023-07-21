@@ -9,7 +9,6 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin)
-    alias(libs.plugins.molecule)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.versions)
 }
@@ -62,6 +61,7 @@ dependencies {
     implementation(libs.kotlinxCoroutinesSwing)
     implementation(libs.log4jApiToSlf4j)
     implementation(libs.logbackClassic)
+    implementation(libs.moleculeRuntime)
 
     detektPlugins(libs.detektFormatting)
     detektPlugins(libs.ortDetektRules)

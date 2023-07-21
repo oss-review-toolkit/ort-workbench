@@ -2,7 +2,6 @@
 detektPlugin = "1.23.0"
 composePlugin = "1.4.1"
 kotlinPlugin = "1.8.20"
-moleculePlugin = "0.9.0"
 versionCatalogUpdatePlugin = "0.8.1"
 versionsPlugin = "0.47.0"
 
@@ -11,6 +10,7 @@ kotlinxCoroutines = "1.7.2"
 log4jApi = "2.20.0"
 log4jApiKotlin = "1.2.0"
 logbackImpl = "1.4.8"
+moleculeRuntime = "1.1.0"
 ort = "193f850e24"
 richtext = "0.17.0"
 
@@ -18,7 +18,6 @@ richtext = "0.17.0"
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
-molecule = { id = "app.cash.molecule", version.ref = "moleculePlugin" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdatePlugin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 
@@ -30,6 +29,7 @@ kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-sw
 log4jApiKotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4jApiKotlin" }
 log4jApiToSlf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version.ref = "log4jApi" }
 logbackClassic = { module = "ch.qos.logback:logback-classic", version.ref = "logbackImpl" }
+moleculeRuntime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
 ortDetektRules = { module = "com.github.oss-review-toolkit.ort:detekt-rules", version.ref = "ort" }
 ortModel = { module = "com.github.oss-review-toolkit.ort:model", version.ref = "ort" }
 ortReporter = { module = "com.github.oss-review-toolkit.ort:reporter", version.ref = "ort" }
