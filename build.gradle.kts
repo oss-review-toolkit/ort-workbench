@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.log4jApiToSlf4j)
     implementation(libs.logbackClassic)
     implementation(libs.moleculeRuntime)
+    implementation(platform(libs.ortPackageConfigurationProviders))
 
     detektPlugins(libs.detektFormatting)
     detektPlugins(libs.ortDetektRules)
