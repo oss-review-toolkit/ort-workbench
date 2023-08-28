@@ -26,9 +26,9 @@ import org.ossreviewtoolkit.model.config.createFileArchiver
 import org.ossreviewtoolkit.model.licenses.DefaultLicenseInfoProvider
 import org.ossreviewtoolkit.model.readValue
 import org.ossreviewtoolkit.model.utils.DefaultResolutionProvider
-import org.ossreviewtoolkit.model.utils.DirectoryPackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.PackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.createLicenseInfoResolver
+import org.ossreviewtoolkit.plugins.packageconfigurationproviders.dir.DirPackageConfigurationProvider
 import org.ossreviewtoolkit.utils.ort.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_COPYRIGHT_GARBAGE_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
@@ -166,7 +166,7 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
             // TODO: Let ORT provide a default location for a package configuration file.
             val packageConfigurationsDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
             val packageConfigurationProvider = if (packageConfigurationsDir.isDirectory) {
-                DirectoryPackageConfigurationProvider(packageConfigurationsDir)
+                DirPackageConfigurationProvider(packageConfigurationsDir)
             } else {
                 PackageConfigurationProvider.EMPTY
             }
