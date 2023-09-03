@@ -3,6 +3,9 @@
 package org.ossreviewtoolkit.workbench.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.TooltipArea
+import androidx.compose.foundation.TooltipPlacement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +22,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -33,12 +37,20 @@ import androidx.compose.ui.zIndex
 
 import org.ossreviewtoolkit.utils.ort.Environment
 import org.ossreviewtoolkit.workbench.composables.Preview
+import org.ossreviewtoolkit.workbench.composables.Tooltip
 import org.ossreviewtoolkit.workbench.composables.conditional
 import org.ossreviewtoolkit.workbench.composables.enumcase
 import org.ossreviewtoolkit.workbench.model.OrtApiState
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Menu(currentItem: MenuItem?, apiState: OrtApiState, onSelectMenuItem: (MenuItem) -> Unit) {
+fun Menu(
+    currentItem: MenuItem?,
+    apiState: OrtApiState,
+    useOnlyResolvedConfiguration: Boolean,
+    onSwitchUseOnlyResolvedConfiguration: () -> Unit,
+    onSelectMenuItem: (MenuItem) -> Unit
+) {
     Surface(modifier = Modifier.fillMaxHeight().width(200.dp).zIndex(zIndex = 3f), elevation = 8.dp) {
         Column(
             modifier = Modifier.padding(vertical = 20.dp)
@@ -52,6 +64,43 @@ fun Menu(currentItem: MenuItem?, apiState: OrtApiState, onSelectMenuItem: (MenuI
                 MenuRow(MenuItem.VULNERABILITIES, currentItem, apiState) { onSelectMenuItem(MenuItem.VULNERABILITIES) }
 
                 Box(modifier = Modifier.weight(1f))
+
+                Divider()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Use only resolved configuration",
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    TooltipArea(
+                        tooltipPlacement = TooltipPlacement.ComponentRect(
+                            anchor = Alignment.TopCenter,
+                            alignment = Alignment.TopCenter
+                        ),
+                        tooltip = {
+                            Tooltip(
+                                """
+                                    Use only the resolved configuration from the ORT result and ignore the local ORT
+                                    config directory. This can be disabled to test local configuration changes, but be
+                                    aware that this can lead to inconsistent results when the ORT result was created
+                                    with different configuration.
+                                    Please note that this setting currently only affects package configurations and
+                                    resolutions.
+                                """.trimIndent()
+                            )
+                        }
+                    ) {
+                        Switch(
+                            checked = useOnlyResolvedConfiguration,
+                            onCheckedChange = { onSwitchUseOnlyResolvedConfiguration() }
+                        )
+                    }
+                }
 
                 Divider()
 
@@ -100,6 +149,6 @@ fun MenuRow(item: MenuItem, currentItem: MenuItem?, apiState: OrtApiState, onSel
 @Preview
 private fun MenuPreview() {
     Preview {
-        Menu(currentItem = MenuItem.SUMMARY, OrtApiState.READY) {}
+        Menu(currentItem = MenuItem.SUMMARY, OrtApiState.READY, true, {}, {})
     }
 }
