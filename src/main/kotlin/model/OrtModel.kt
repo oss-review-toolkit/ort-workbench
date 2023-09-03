@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -25,9 +24,10 @@ import org.ossreviewtoolkit.model.config.OrtConfiguration
 import org.ossreviewtoolkit.model.config.createFileArchiver
 import org.ossreviewtoolkit.model.licenses.DefaultLicenseInfoProvider
 import org.ossreviewtoolkit.model.readValue
+import org.ossreviewtoolkit.model.utils.CompositePackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.DefaultResolutionProvider
-import org.ossreviewtoolkit.model.utils.PackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.createLicenseInfoResolver
+import org.ossreviewtoolkit.plugins.packageconfigurationproviders.api.SimplePackageConfigurationProvider
 import org.ossreviewtoolkit.plugins.packageconfigurationproviders.dir.DirPackageConfigurationProvider
 import org.ossreviewtoolkit.utils.ort.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_COPYRIGHT_GARBAGE_FILENAME
@@ -60,6 +60,9 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+
+    private val _useOnlyResolvedConfiguration = MutableStateFlow(true)
+    val useOnlyResolvedConfiguration: StateFlow<Boolean> = _useOnlyResolvedConfiguration
 
     val navController = NavController(
         MainScreen.Dependencies(this),
@@ -139,6 +142,21 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
         }
     }
 
+    suspend fun switchUseOnlyResolvedConfiguration() {
+        _useOnlyResolvedConfiguration.value = !_useOnlyResolvedConfiguration.value
+        _ortResult.value?.let { ortResult ->
+            _state.value = OrtApiState.PROCESSING_RESULT
+            val newApi = createOrtApi(settings.value.ortConfigDir, ortResult)
+            if (newApi == null) {
+                _api.value = OrtApi.EMPTY
+                _state.value = OrtApiState.UNINITIALIZED
+            } else {
+                _api.value = newApi
+                _state.value = OrtApiState.READY
+            }
+        }
+    }
+
     private fun createOrtApi(configDirPath: String, result: OrtResult): OrtApi? =
         runCatching {
             val configDir = File(configDirPath)
@@ -163,13 +181,19 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
                 FileArchiverConfiguration().createFileArchiver()
             }
 
-            // TODO: Let ORT provide a default location for a package configuration file.
+            val resolvedPackageConfigurationProvider =
+                SimplePackageConfigurationProvider(result.resolvedConfiguration.packageConfigurations.orEmpty())
             val packageConfigurationsDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
-            val packageConfigurationProvider = if (packageConfigurationsDir.isDirectory) {
-                DirPackageConfigurationProvider(packageConfigurationsDir)
-            } else {
-                PackageConfigurationProvider.EMPTY
-            }
+
+            val packageConfigurationProvider =
+                if (useOnlyResolvedConfiguration.value || !packageConfigurationsDir.isDirectory) {
+                    resolvedPackageConfigurationProvider
+                } else {
+                    CompositePackageConfigurationProvider(
+                        resolvedPackageConfigurationProvider,
+                        DirPackageConfigurationProvider(packageConfigurationsDir)
+                    )
+                }
 
             val licenseInfoProvider = DefaultLicenseInfoProvider(result, packageConfigurationProvider)
             val licenseInfoResolver = result.createLicenseInfoResolver(
@@ -180,7 +204,10 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
             )
 
             val resolutionsFile = configDir.resolve(ORT_RESOLUTIONS_FILENAME)
-            val resolutionProvider = DefaultResolutionProvider.create(result, resolutionsFile)
+            val resolutionProvider = DefaultResolutionProvider.create(
+                result,
+                resolutionsFile.takeUnless { useOnlyResolvedConfiguration.value }
+            )
 
             OrtApi(
                 result,

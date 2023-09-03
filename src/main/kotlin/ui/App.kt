@@ -139,6 +139,7 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
     val ortModelState = controller.ortModel.collectAsState()
     val ortModel = ortModelState.value ?: return
     val apiState by ortModel.state.collectAsState()
+    val scope = rememberCoroutineScope()
 
     val navController = ortModel.navController
 
@@ -147,6 +148,7 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
             val ortModels by controller.ortModels.collectAsState()
             val ortModelInfos by combine(ortModels.map { it.info }) { it.filterNotNull() }.collectAsState(emptyList())
             val selectedOrtModelInfo by ortModel.info.collectAsState()
+            val useOnlyResolvedConfiguration by ortModel.useOnlyResolvedConfiguration.collectAsState()
 
             TopBar(
                 selectedOrtModelInfo,
@@ -162,6 +164,10 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
                 Menu(
                     currentMenuItem,
                     apiState,
+                    useOnlyResolvedConfiguration = useOnlyResolvedConfiguration,
+                    onSwitchUseOnlyResolvedConfiguration = {
+                        scope.launch { ortModel.switchUseOnlyResolvedConfiguration() }
+                    },
                     onSelectMenuItem = { selectMenuItem(controller, ortModel, navController, it) }
                 )
 
