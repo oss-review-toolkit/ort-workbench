@@ -28,7 +28,7 @@ fun Tooltip(text: String) {
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        Box(modifier = Modifier.clip(RoundedCornerShape(percent = 50)), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.clip(RoundedCornerShape(size = 8.dp)), contentAlignment = Alignment.Center) {
             Row(modifier = Modifier.background(MaterialTheme.colors.primaryVariant).padding(8.dp)) {
                 Text(text, style = MaterialTheme.typography.caption, color = MaterialTheme.colors.onPrimary)
             }
