@@ -23,7 +23,6 @@ versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin
 
 [libraries]
 detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPlugin" }
-composeMaterialIconsExtendedDesktop = { module = "org.jetbrains.compose.material:material-icons-extended-desktop", version.ref = "composePlugin" }
 jacksonModuleKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
 log4jApiKotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4jApiKotlin" }
