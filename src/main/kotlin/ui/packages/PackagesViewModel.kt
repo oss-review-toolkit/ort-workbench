@@ -90,25 +90,16 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     private fun initFilter(packages: List<PackageInfo>) {
-        filter.value = PackagesFilter(
-            text = "",
-            exclusionStatus = FilterData(ExclusionStatus.values().toList()),
-            issueStatus = FilterData(IssueStatus.values().toList()),
-            license = FilterData(
-                packages.flatMapTo(sortedSetOf(SpdxExpressionStringComparator())) {
-                    it.resolvedLicenseInfo.licenses.map { it.license }
-                }.toList()
-            ),
-            namespace = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList()),
-            project = FilterData(packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList()),
-            scope = FilterData(
-                packages.flatMapTo(sortedSetOf()) {
-                    it.references.flatMap { it.scopes.map { it.scope } }
-                }.toList()
-            ),
-            type = FilterData(packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList()),
-            violationStatus = FilterData(ViolationStatus.values().toList()),
-            vulnerabilityStatus = FilterData(VulnerabilityStatus.values().toList())
+        filter.value = filter.value.updateOptions(
+            types = packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList(),
+            namespaces = packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList(),
+            projects = packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList(),
+            scopes = packages.flatMapTo(sortedSetOf()) {
+                it.references.flatMap { it.scopes.map { it.scope } }
+            }.toList(),
+            licenses = packages.flatMapTo(sortedSetOf(SpdxExpressionStringComparator())) {
+                it.resolvedLicenseInfo.licenses.map { it.license }
+            }.toList()
         )
     }
 
@@ -200,6 +191,26 @@ data class PackagesFilter(
                 && matchViolationStatus(violationStatus.selectedItem, pkg.violations)
                 && matchVulnerabilityStatus(vulnerabilityStatus.selectedItem, pkg.vulnerabilities)
                 && matchExclusionStatus(exclusionStatus.selectedItem, pkg.isExcluded())
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun updateOptions(
+        types: List<String>,
+        namespaces: List<String>,
+        projects: List<Identifier>,
+        scopes: List<String>,
+        licenses: List<SpdxSingleLicenseExpression>
+    ) = PackagesFilter(
+        text = text,
+        type = type.updateOptions(types),
+        namespace = namespace.updateOptions(namespaces),
+        project = project.updateOptions(projects),
+        scope = scope.updateOptions(scopes),
+        license = license.updateOptions(licenses),
+        issueStatus = issueStatus.updateOptions(IssueStatus.entries),
+        violationStatus = violationStatus.updateOptions(ViolationStatus.entries),
+        vulnerabilityStatus = vulnerabilityStatus.updateOptions(VulnerabilityStatus.entries),
+        exclusionStatus = exclusionStatus.updateOptions(ExclusionStatus.entries)
+    )
 }
 
 enum class IssueStatus {

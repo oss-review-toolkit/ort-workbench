@@ -49,13 +49,9 @@ class IssuesViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     private fun initFilter(issues: List<ResolvedIssue>) {
-        filter.value = IssuesFilter(
-            text = "",
-            identifier = FilterData(issues.mapTo(sortedSetOf()) { it.id }.toList()),
-            resolutionStatus = FilterData(ResolutionStatus.values().toList()),
-            severity = FilterData(Severity.values().toList()),
-            source = FilterData(issues.mapTo(sortedSetOf()) { it.source }.toList()),
-            tool = FilterData(Tool.values().toList())
+        filter.value = filter.value.updateOptions(
+            identifiers = issues.mapTo(sortedSetOf()) { it.id }.toList(),
+            sources = issues.mapTo(sortedSetOf()) { it.source }.toList()
         )
     }
 
@@ -101,4 +97,17 @@ data class IssuesFilter(
                 && matchString(source.selectedItem, issue.source)
                 && matchStringContains(text, issue.id.toCoordinates(), issue.source, issue.message)
                 && matchValue(tool.selectedItem, issue.tool)
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun updateOptions(
+        identifiers: List<Identifier>,
+        sources: List<String>
+    ) = IssuesFilter(
+        identifier = identifier.updateOptions(identifiers),
+        resolutionStatus = resolutionStatus.updateOptions(ResolutionStatus.entries),
+        severity = severity.updateOptions(Severity.entries),
+        source = source.updateOptions(sources),
+        text = text,
+        tool = tool.updateOptions(Tool.entries)
+    )
 }

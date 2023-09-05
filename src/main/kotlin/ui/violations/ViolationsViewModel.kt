@@ -51,18 +51,12 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     private fun initFilter(violations: List<ResolvedRuleViolation>) {
-        filter.value = ViolationsFilter(
-            text = "",
-            identifier = FilterData(violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList()),
-            license = FilterData(
-                violations.mapNotNullTo(sortedSetOf(SpdxExpressionStringComparator())) {
-                    it.license
-                }.toList()
-            ),
-            licenseSource = FilterData(LicenseSource.values().toList()),
-            resolutionStatus = FilterData(ResolutionStatus.values().toList()),
-            rule = FilterData(violations.mapTo(sortedSetOf()) { it.rule }.toList()),
-            severity = FilterData(Severity.values().toList())
+        filter.value = filter.value.updateOptions(
+            identifiers = violations.mapNotNullTo(sortedSetOf()) { it.pkg }.toList(),
+            licenses = violations.mapNotNullTo(sortedSetOf(SpdxExpressionStringComparator())) {
+                it.license
+            }.toList(),
+            rules = violations.mapTo(sortedSetOf()) { it.rule }.toList()
         )
     }
 
@@ -124,4 +118,19 @@ data class ViolationsFilter(
                 violation.howToFix
             )
         )
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun updateOptions(
+        identifiers: List<Identifier>,
+        licenses: List<SpdxSingleLicenseExpression>,
+        rules: List<String>
+    ) = ViolationsFilter(
+        identifier = identifier.updateOptions(identifiers),
+        license = license.updateOptions(licenses),
+        licenseSource = licenseSource.updateOptions(LicenseSource.entries),
+        resolutionStatus = resolutionStatus.updateOptions(ResolutionStatus.entries),
+        rule = rule.updateOptions(rules),
+        severity = severity.updateOptions(Severity.entries),
+        text = text
+    )
 }
