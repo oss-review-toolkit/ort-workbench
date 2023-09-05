@@ -48,21 +48,15 @@ class VulnerabilitiesViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 
     private fun initFilter(vulnerabilities: List<ResolvedVulnerability>) {
-        filter.value = VulnerabilitiesFilter(
-            text = "",
-            advisor = FilterData(vulnerabilities.mapTo(sortedSetOf()) { it.advisor }.toList()),
-            identifier = FilterData(vulnerabilities.mapTo(sortedSetOf()) { it.pkg }.toList()),
-            resolutionStatus = FilterData(ResolutionStatus.values().toList()),
-            scoringSystem = FilterData(
-                vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
-                    vulnerability.references.mapNotNull { it.scoringSystem }
-                }.toList()
-            ),
-            severity = FilterData(
-                vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
-                    vulnerability.references.mapNotNull { it.severity }
-                }.toList()
-            )
+        filter.value = filter.value.updateOptions(
+            advisors = vulnerabilities.mapTo(sortedSetOf()) { it.advisor }.toList(),
+            identifiers = vulnerabilities.mapTo(sortedSetOf()) { it.pkg }.toList(),
+            scoringSystems = vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
+                vulnerability.references.mapNotNull { it.scoringSystem }
+            }.toList(),
+            severities = vulnerabilities.flatMapTo(sortedSetOf()) { vulnerability ->
+                vulnerability.references.mapNotNull { it.severity }
+            }.toList()
         )
     }
 
@@ -108,4 +102,19 @@ data class VulnerabilitiesFilter(
                 && matchString(scoringSystem.selectedItem, vulnerability.references.mapNotNull { it.scoringSystem })
                 && matchString(severity.selectedItem, vulnerability.references.mapNotNull { it.severity })
                 && matchStringContains(text, vulnerability.pkg.toCoordinates(), vulnerability.id, vulnerability.advisor)
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun updateOptions(
+        advisors: List<String>,
+        identifiers: List<Identifier>,
+        scoringSystems: List<String>,
+        severities: List<String>
+    ) = VulnerabilitiesFilter(
+        advisor = advisor.updateOptions(advisors),
+        identifier = identifier.updateOptions(identifiers),
+        resolutionStatus = resolutionStatus.updateOptions(ResolutionStatus.entries),
+        scoringSystem = scoringSystem.updateOptions(scoringSystems),
+        severity = severity.updateOptions(severities),
+        text = text
+    )
 }
