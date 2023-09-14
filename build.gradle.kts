@@ -19,7 +19,6 @@ version = "1.0.0"
 repositories {
     google()
     mavenCentral()
-    maven("https://jitpack.io")
 
     exclusiveContent {
         forRepository {
