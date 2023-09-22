@@ -11,7 +11,7 @@ log4jApi = "2.20.0"
 log4jApiKotlin = "1.2.0"
 logbackImpl = "1.4.11"
 moleculeRuntime = "1.2.1"
-ort = "1.0.1"
+ort = "1.1.0"
 richtext = "0.17.0"
 
 [plugins]
