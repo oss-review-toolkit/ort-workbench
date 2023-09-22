@@ -30,7 +30,12 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                 // Switch back to the UI scope because DependenciesState contains mutable states which must be created
                 // in the UI scope.
                 withContext(scope.coroutineContext) {
-                    _state.value = DependenciesState.Success(dependencyNodes)
+                    val oldState = state.value
+                    if (oldState is DependenciesState.Success) {
+                        oldState.treeState.updateNodes(dependencyNodes)
+                    } else {
+                        _state.value = DependenciesState.Success(dependencyNodes)
+                    }
                 }
             }
         }

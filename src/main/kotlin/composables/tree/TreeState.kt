@@ -4,8 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-class TreeState<VALUE>(roots: List<TreeNode<VALUE>>, startExpanded: Boolean = false) {
-    val items = buildItems(roots, startExpanded)
+class TreeState<VALUE>(private var roots: List<TreeNode<VALUE>>, startExpanded: Boolean = false) {
+    var items = buildItems(roots, startExpanded)
 
     var visibleItems by mutableStateOf(emptyList<TreeItem<VALUE>>())
         private set
@@ -111,6 +111,22 @@ class TreeState<VALUE>(roots: List<TreeNode<VALUE>>, startExpanded: Boolean = fa
             currentItem?.expanded = true
         } while (currentItem != null && currentItem.level >= 0)
 
+        updateVisibleItems()
+    }
+
+    fun updateNodes(roots: List<TreeNode<VALUE>>) {
+        this.roots = roots
+        val newItems = buildItems(roots, startExpanded = false)
+        val expandedByKey = items.toMutableList().associate { it.key to it.expanded }
+
+        newItems.forEach { newItem ->
+            if (expandedByKey[newItem.key] == true) newItem.expanded = true
+        }
+
+        items = newItems
+        selectedItem?.let { item ->
+            selectedItem = items.find { it.key == item.key }
+        }
         updateVisibleItems()
     }
 }

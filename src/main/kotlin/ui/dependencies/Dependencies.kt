@@ -506,7 +506,7 @@ fun CopyrightSection(pkg: Package, resolvedLicense: ResolvedLicenseInfo?) {
 @Composable
 fun LicenseSection(pkg: Package, resolvedLicense: ResolvedLicenseInfo?) {
     Expandable(header = {
-        val effectiveLicense = remember(pkg.id) {
+        val effectiveLicense = remember(resolvedLicense?.licenseInfo) {
             resolvedLicense?.effectiveLicense(LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED)
         }
 
