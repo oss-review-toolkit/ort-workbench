@@ -117,7 +117,7 @@ fun <VALUE> Tree(
         modifier = modifier.onKeyEvent(::handleKeyEvent),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        items(state.visibleItems.size) {
+        items(state.visibleItems.size, key = { state.visibleItems[it].key }) {
             val item = state.visibleItems[it]
             Row(
                 modifier = Modifier.padding(start = (indentation * item.level)),
@@ -158,34 +158,39 @@ fun TreePreview() {
     val roots = listOf(
         TreeNode(
             value = "Root",
+            key = "Root",
             children = listOf(
                 TreeNode(
                     value = "Child 1",
+                    key = "Child 1",
                     children = listOf(
-                        TreeNode(value = "Child 1.1"),
+                        TreeNode(value = "Child 1.1", key = "Child 1.1"),
                         TreeNode(
                             value = "Child 1.2",
+                            key = "Child 1.2",
                             children = listOf(
-                                TreeNode(value = "Child.1.2.1")
+                                TreeNode(value = "Child 1.2.1", key = "Child 1.2.1")
                             )
                         ),
-                        TreeNode(value = "Child 1.3")
+                        TreeNode(value = "Child 1.3", key = "Child 1.3")
                     )
                 ),
                 TreeNode(
                     value = "Child 2",
+                    key = "Child 2",
                     children = listOf(
-                        TreeNode(value = "Child 2.1"),
-                        TreeNode(value = "Child 2.2")
+                        TreeNode(value = "Child 2.1", key = "Child 2.1"),
+                        TreeNode(value = "Child 2.2", key = "Child 2.2")
                     )
                 )
             )
         ),
         TreeNode(
             value = "Root 2",
+            key = "Root 2",
             children = listOf(
-                TreeNode(value = "Child 1"),
-                TreeNode(value = "Child 2")
+                TreeNode(value = "Child 1", key = "Child 1"),
+                TreeNode(value = "Child 2", key = "Child 2")
             )
         )
     )
