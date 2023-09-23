@@ -118,11 +118,22 @@ class TreeState<VALUE>(roots: List<TreeNode<VALUE>>, startExpanded: Boolean = fa
 private fun <VALUE> buildItems(roots: List<TreeNode<VALUE>>, startExpanded: Boolean): List<TreeItem<VALUE>> {
     var index = 0
     return buildList {
-        fun addItem(level: Int, node: TreeNode<VALUE>) {
-            add(TreeItem(index = index, level = level, node = node, expanded = startExpanded))
+        fun addItem(level: Int, node: TreeNode<VALUE>, parentKeys: List<String> = emptyList()) {
+            val newParentKeys = parentKeys + node.key
+            val key = newParentKeys.joinToString(separator = "|")
+
+            add(
+                TreeItem(
+                    index = index,
+                    level = level,
+                    node = node,
+                    key = key,
+                    expanded = startExpanded
+                )
+            )
             index++
 
-            node.children.forEach { addItem(level = level + 1, it) }
+            node.children.forEach { addItem(level = level + 1, it, newParentKeys) }
         }
 
         roots.forEach { addItem(level = 0, node = it) }
@@ -131,6 +142,7 @@ private fun <VALUE> buildItems(roots: List<TreeNode<VALUE>>, startExpanded: Bool
 
 class TreeNode<VALUE>(
     val value: VALUE,
+    val key: String,
     val children: List<TreeNode<VALUE>> = emptyList()
 )
 
@@ -138,6 +150,7 @@ class TreeItem<VALUE>(
     val index: Int,
     val level: Int,
     val node: TreeNode<VALUE>,
+    val key: String,
     expanded: Boolean
 ) {
     var expanded by mutableStateOf(expanded)

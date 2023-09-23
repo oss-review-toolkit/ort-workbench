@@ -52,6 +52,7 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                         issues = issues,
                         resolvedLicense = resolvedLicenses.getValue(id)
                     ),
+                    key = project.id.toCoordinates(),
                     children = children
                 )
             } ?: api.getCuratedPackage(id)?.let { pkg ->
@@ -63,13 +64,15 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                         issues = issues,
                         resolvedLicense = resolvedLicenses.getValue(id)
                     ),
+                    key = id.toCoordinates(),
                     children = children
                 )
             } ?: TreeNode(
                 value = DependencyTreeError(
                     id = id,
                     message = "Could not find package or project for id '${id.toCoordinates()}'."
-                )
+                ),
+                key = id.toCoordinates()
             )
         }
 
@@ -81,6 +84,7 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                     project = project,
                     scope = this
                 ),
+                key = name,
                 children = children
             )
         }
@@ -95,6 +99,7 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                     issues = emptyList(),
                     resolvedLicense = resolvedLicenses.getValue(id)
                 ),
+                key = id.toCoordinates(),
                 children = children
             )
         }
