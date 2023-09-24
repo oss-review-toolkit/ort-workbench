@@ -1,7 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui.summary
 
 sealed interface SummaryState {
-    object Loading : SummaryState
+    data object Loading : SummaryState
 
     data class Success(
         val resultFileInfo: ResultFileInfo = ResultFileInfo.EMPTY,

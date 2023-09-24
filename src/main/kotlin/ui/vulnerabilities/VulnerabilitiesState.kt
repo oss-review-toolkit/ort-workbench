@@ -3,7 +3,7 @@ package org.ossreviewtoolkit.workbench.ui.vulnerabilities
 import org.ossreviewtoolkit.workbench.model.ResolvedVulnerability
 
 sealed interface VulnerabilitiesState {
-    object Loading : VulnerabilitiesState
+    data object Loading : VulnerabilitiesState
 
     data class Success(
         val vulnerabilities: List<ResolvedVulnerability>,
