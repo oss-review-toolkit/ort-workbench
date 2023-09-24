@@ -16,7 +16,7 @@ import org.ossreviewtoolkit.workbench.composables.tree.TreeNode
 import org.ossreviewtoolkit.workbench.composables.tree.TreeState
 
 sealed interface DependenciesState {
-    object Loading : DependenciesState
+    data object Loading : DependenciesState
 
     data class Error(val message: String) : DependenciesState
 
