@@ -5,6 +5,7 @@ kotlinPlugin = "1.9.10"
 versionCatalogUpdatePlugin = "0.8.1"
 versionsPlugin = "0.48.0"
 
+dataTableMaterial = "0.5.1"
 jackson = "2.15.2"
 kotlinxCoroutines = "1.7.3"
 log4jApi = "2.20.0"
@@ -22,6 +23,7 @@ versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 
 [libraries]
+dataTableMaterial = { module = "com.seanproctor:data-table-material", version.ref = "dataTableMaterial" }
 detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPlugin" }
 jacksonModuleKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }

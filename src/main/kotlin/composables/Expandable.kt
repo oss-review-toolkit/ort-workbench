@@ -19,8 +19,12 @@ import androidx.compose.ui.res.painterResource
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
-fun Expandable(header: @Composable ColumnScope.(Boolean) -> Unit, expandedContent: @Composable () -> Unit) {
-    val expanded = remember { MutableTransitionState(false) }
+fun Expandable(
+    header: @Composable ColumnScope.(Boolean) -> Unit,
+    startExpanded: Boolean = false,
+    expandedContent: @Composable () -> Unit
+) {
+    val expanded = remember { MutableTransitionState(startExpanded) }
 
     Row {
         Column(modifier = Modifier.weight(1f).align(Alignment.Bottom).animateContentSize()) {

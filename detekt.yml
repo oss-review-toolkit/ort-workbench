@@ -38,7 +38,7 @@ style:
     active: false
   MagicNumber:
     active: true
-    ignoreAnnotated: ['Preview']
+    ignoreAnnotated: ['Composable', 'Preview']
   UnusedPrivateMember:
     active: true
     ignoreAnnotated: ['Preview']
