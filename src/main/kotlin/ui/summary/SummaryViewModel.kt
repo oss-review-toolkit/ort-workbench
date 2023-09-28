@@ -1,21 +1,24 @@
 package org.ossreviewtoolkit.workbench.ui.summary
 
 import java.io.File
+import java.time.Duration
+import java.time.Instant
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-import org.ossreviewtoolkit.model.Issue
-import org.ossreviewtoolkit.model.Severity
+import org.ossreviewtoolkit.model.config.RepositoryConfiguration
+import org.ossreviewtoolkit.model.yamlMapper
 import org.ossreviewtoolkit.reporter.IssueStatistics
+import org.ossreviewtoolkit.utils.ort.Environment
 import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.OrtApi
 import org.ossreviewtoolkit.workbench.model.OrtModel
+import org.ossreviewtoolkit.workbench.utils.removeYamlPrefix
 
 class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val defaultScope = CoroutineScope(Dispatchers.Default)
@@ -25,15 +28,13 @@ class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
 
     init {
         defaultScope.launch {
-            combine(
-                ortModel.ortResultFile.map { it.toResultFileInfo() },
-                ortModel.api.map { IssueStats(it) /* TODO: Take resolutions into account. */ },
-                ortModel.api.map { DependencyStats(it) /* TODO: Take resolutions into account. */ }
-            ) { resultFileInfo, issueStats, dependencyStats ->
+            combine(ortModel.ortResultFile, ortModel.api) { resultFile, api ->
                 SummaryState.Success(
-                    resultFileInfo,
-                    issueStats,
-                    dependencyStats
+                    resultFileInfo = createResultFileInfo(resultFile, api),
+                    analyzerInfo = createAnalyzerInfo(api),
+                    advisorInfo = createAdvisorInfo(api),
+                    scannerInfo = createScannerInfo(api),
+                    evaluatorInfo = createEvaluatorInfo(api)
                 )
             }.collect {
                 _state.value = it
@@ -42,69 +43,89 @@ class SummaryViewModel(private val ortModel: OrtModel) : ViewModel() {
     }
 }
 
-private fun File?.toResultFileInfo() =
-    this?.let { ResultFileInfo(it.absolutePath, it.length()) } ?: ResultFileInfo.EMPTY
+private fun createResultFileInfo(file: File?, api: OrtApi): ResultFileInfo =
+    file?.let {
+        ResultFileInfo(
+            absolutePath = it.absolutePath,
+            size = it.length(),
+            timestamp = Instant.ofEpochMilli(it.lastModified()),
+            vcs = api.getRepository().vcs,
+            nestedRepositories = api.getRepository().nestedRepositories,
+            repositoryConfigurationStats = api.getRepository().config.toStats()
+        )
+    } ?: ResultFileInfo.EMPTY
 
-data class ResultFileInfo(
-    val absolutePath: String,
-    val size: Long
-) {
-    companion object {
-        val EMPTY = ResultFileInfo("", 0L)
-    }
-}
-
-data class IssueStats(
-    val totalIssues: IssueStatistics,
-    val analyzerIssues: IssueStatistics,
-    val advisorIssues: IssueStatistics,
-    val scannerIssues: IssueStatistics
-) {
-    companion object {
-        val EMPTY = IssueStats(EMPTY_STATS, EMPTY_STATS, EMPTY_STATS, EMPTY_STATS)
-    }
-
-    constructor(api: OrtApi) : this(
-        totalIssues = api.getIssues().values.flatten().toStats(),
-        analyzerIssues = api.getAnalyzerIssues().values.flatten().toStats(),
-        advisorIssues = api.getAdvisorIssues().values.flatten().toStats(),
-        scannerIssues = api.getScannerIssues().values.flatten().toStats()
+private fun RepositoryConfiguration.toStats() =
+    RepositoryConfigurationStats(
+        pathExcludeCount = excludes.paths.size,
+        scopeExcludeCount = excludes.scopes.size,
+        issueResolutionCount = resolutions.issues.size,
+        vulnerabilityResolutionCount = resolutions.vulnerabilities.size,
+        ruleViolationResolutionCount = resolutions.ruleViolations.size,
+        packageCurationCount = curations.packages.size,
+        licenseFindingCurationCount = curations.licenseFindings.size,
+        packageConfigurationCount = packageConfigurations.size,
+        licenseChoiceCount = licenseChoices.packageLicenseChoices.size + licenseChoices.repositoryLicenseChoices.size
     )
-}
 
-val EMPTY_STATS = IssueStatistics(0, 0, 0, 0)
+private fun createAnalyzerInfo(api: OrtApi): AnalyzerInfo =
+    api.getAnalyzerRun()?.let { analyzerRun ->
+        AnalyzerInfo(
+            startTime = analyzerRun.startTime,
+            duration = Duration.between(analyzerRun.startTime, analyzerRun.endTime),
+            issueStats = api.getAnalyzerIssueStats(),
+            serializedConfig = yamlMapper.writeValueAsString(analyzerRun.config).removeYamlPrefix(),
+            environment = analyzerRun.environment.toMap(),
+            environmentVariables = analyzerRun.environment.variables,
+            toolVersions = analyzerRun.environment.toolVersions,
+            projectStats = api.getProjectStats()
+        )
+    } ?: AnalyzerInfo.EMPTY
 
-private fun Collection<Issue>.toStats(): IssueStatistics {
-    val grouped = groupBy { it.severity }
-
-    return IssueStatistics(
-        errors = grouped[Severity.ERROR]?.size ?: 0,
-        warnings = grouped[Severity.WARNING]?.size ?: 0,
-        hints = grouped[Severity.HINT]?.size ?: 0,
-        severe = 0 // TODO: Calculate the number of severe issues.
-    )
-}
-
-data class DependencyStats(
-    val projectsTotal: Int,
-    val projectsByPackageManager: Map<String, Int>,
-    val dependenciesTotal: Int,
-    val dependenciesByPackageManager: Map<String, Int>
-) {
-    companion object {
-        val EMPTY = DependencyStats(
-            projectsTotal = 0,
-            projectsByPackageManager = emptyMap(),
-            dependenciesTotal = 0,
-            dependenciesByPackageManager = emptyMap()
+private fun createAdvisorInfo(api: OrtApi): AdvisorInfo? =
+    api.getAdvisorRun()?.let { advisorRun ->
+        AdvisorInfo(
+            startTime = advisorRun.startTime,
+            duration = Duration.between(advisorRun.startTime, advisorRun.endTime),
+            issueStats = api.getAdvisorIssueStats(),
+            serializedConfig = yamlMapper.writeValueAsString(advisorRun.config).removeYamlPrefix(),
+            environment = advisorRun.environment.toMap(),
+            environmentVariables = advisorRun.environment.variables,
+            toolVersions = advisorRun.environment.toolVersions,
+            advisorStats = api.getAdvisorStats()
         )
     }
 
-    constructor(api: OrtApi) : this(
-        projectsTotal = api.getProjects().size,
-        projectsByPackageManager = api.getProjects().groupBy { it.id.type }.mapValues { it.value.size },
-        dependenciesTotal = api.getCuratedPackages().size,
-        dependenciesByPackageManager = api.getProjects().groupBy { it.id.type }
-            .mapValues { it.value.flatMapTo(mutableSetOf()) { project -> api.getProjectDependencies(project.id) }.size }
-    )
-}
+private fun createScannerInfo(api: OrtApi): ScannerInfo? =
+    api.getScannerRun()?.let { scannerRun ->
+        ScannerInfo(
+            startTime = scannerRun.startTime,
+            duration = Duration.between(scannerRun.startTime, scannerRun.endTime),
+            issueStats = api.getScannerIssueStats(),
+            serializedConfig = yamlMapper.writeValueAsString(scannerRun.config).removeYamlPrefix(),
+            environment = scannerRun.environment.toMap(),
+            environmentVariables = scannerRun.environment.variables,
+            toolVersions = scannerRun.environment.toolVersions,
+            scannerStats = api.getScannerStats()
+        )
+    }
+
+private fun createEvaluatorInfo(api: OrtApi): EvaluatorInfo? =
+    api.getEvaluatorRun()?.let { evaluatorRun ->
+        EvaluatorInfo(
+            startTime = evaluatorRun.startTime,
+            duration = Duration.between(evaluatorRun.startTime, evaluatorRun.endTime),
+            issueStats = api.getRuleViolationStats(),
+            evaluatorStats = api.getEvaluatorStats()
+        )
+    }
+
+private fun Environment.toMap() = mapOf(
+    "ORT version" to ortVersion,
+    "Java version" to javaVersion,
+    "OS" to os,
+    "Processors" to processors.toString(),
+    "Max memory" to maxMemory.toString()
+)
+
+val EMPTY_STATS = IssueStatistics(0, 0, 0, 0)

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -31,7 +32,7 @@ fun StyledCard(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    titleIcon?.run { Icon(titleIcon, contentDescription = title) }
+                    titleIcon?.run { Icon(titleIcon, contentDescription = title, modifier = Modifier.size(24.dp)) }
                     Text(title, style = MaterialTheme.typography.h4)
                 }
             }

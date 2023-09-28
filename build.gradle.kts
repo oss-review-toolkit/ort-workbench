@@ -45,6 +45,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(libs.bundles.ort)
     implementation(libs.bundles.richtext)
+    implementation(libs.dataTableMaterial)
     implementation(libs.jacksonModuleKotlin)
     implementation(libs.kotlinxCoroutinesSwing)
     implementation(libs.log4jApiToSlf4j)

@@ -7,6 +7,7 @@ enum class MaterialIcon(val resource: String) {
     ASSESSMENT("material/assessment.svg"),
     BOOKMARK_BORDER("material/bookmark_border.svg"),
     BUG_REPORT("material/bug_report.svg"),
+    CALENDAR_MONTH("material/calendar_month.svg"),
     CHEVRON_RIGHT("material/chevron_right.svg"),
     CLOSE("material/close.svg"),
     ERROR("material/error.svg"),
@@ -23,5 +24,6 @@ enum class MaterialIcon(val resource: String) {
     REMOVE("material/remove.svg"),
     SEARCH("material/search.svg"),
     SETTINGS("material/settings.svg"),
+    TIMELAPSE("material/timelapse.svg"),
     WARNING("material/warning.svg")
 }
