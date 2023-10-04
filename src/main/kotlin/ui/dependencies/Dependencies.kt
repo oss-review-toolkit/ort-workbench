@@ -586,7 +586,7 @@ fun PackageProvenanceSection(pkg: Package) {
 @Composable
 fun ProjectProvenanceSection(project: Project) {
     Expandable(header = { expanded ->
-        RepositoryColumn(project.vcs, expanded)
+        RepositoryColumn(project.vcsProcessed, expanded)
     }) {}
 }
 
