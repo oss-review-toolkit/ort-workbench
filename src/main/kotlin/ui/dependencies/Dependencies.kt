@@ -281,7 +281,7 @@ fun ProjectDetails(item: DependencyTreeProject) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.padding(15.dp)) {
-            Text(text = "${item.project.id.name} ${item.project.id.version}", style = MaterialTheme.typography.h4)
+            Text(text = "Project: ${item.project.id.toCoordinates()}", style = MaterialTheme.typography.h4)
 
             Column(modifier = Modifier.verticalScroll(scrollState).padding(top = 15.dp)) {
                 CaptionedText("DEFINITION FILE", item.project.definitionFilePath)
