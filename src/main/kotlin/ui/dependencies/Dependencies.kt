@@ -288,10 +288,6 @@ fun ProjectDetails(item: DependencyTreeProject) {
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                IdentifierSection(pkg)
-
-                Divider(modifier = Modifier.padding(vertical = 10.dp))
-
                 CopyrightSection(pkg, item.resolvedLicense)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
