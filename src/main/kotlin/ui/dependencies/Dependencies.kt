@@ -288,6 +288,10 @@ fun ProjectDetails(item: DependencyTreeProject) {
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
+                CaptionedText("LINKAGE", item.linkage.name)
+
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
+
                 CopyrightSection(pkg, item.resolvedLicense)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
