@@ -3,7 +3,7 @@ detektPlugin = "1.23.1"
 composePlugin = "1.5.3"
 kotlinPlugin = "1.9.10"
 versionCatalogUpdatePlugin = "0.8.1"
-versionsPlugin = "0.48.0"
+versionsPlugin = "0.49.0"
 
 dataTableMaterial = "0.5.1"
 jackson = "2.15.2"
