@@ -1,7 +1,8 @@
 package org.ossreviewtoolkit.workbench.ui.summary
 
-import java.time.Duration
 import java.time.Instant
+
+import kotlin.time.Duration
 
 import org.ossreviewtoolkit.model.VcsInfo
 import org.ossreviewtoolkit.reporter.IssueStatistics

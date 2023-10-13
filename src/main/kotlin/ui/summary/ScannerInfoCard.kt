@@ -6,8 +6,9 @@ import androidx.compose.runtime.Composable
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.RichText
 
-import java.time.Duration
 import java.time.Instant
+
+import kotlin.time.Duration.Companion.minutes
 
 import org.ossreviewtoolkit.model.ScannerDetails
 import org.ossreviewtoolkit.reporter.IssueStatistics
@@ -47,7 +48,7 @@ private fun ScannerInfoCardPreview() {
         ScannerInfoCard(
             ScannerInfo(
                 startTime = Instant.now(),
-                duration = Duration.ofMinutes(1000L),
+                duration = 1000.minutes,
                 issueStats = IssueStatistics(0, 1, 2, 3),
                 serializedConfig = "create_missing_archives: false\nskip_concluded: false",
                 environment = mapOf(

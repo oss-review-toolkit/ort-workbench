@@ -6,8 +6,9 @@ import androidx.compose.runtime.Composable
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.RichText
 
-import java.time.Duration
 import java.time.Instant
+
+import kotlin.time.Duration.Companion.minutes
 
 import org.ossreviewtoolkit.reporter.IssueStatistics
 import org.ossreviewtoolkit.workbench.composables.Preview
@@ -46,7 +47,7 @@ private fun AdvisorInfoCardPreview() {
         AdvisorInfoCard(
             AdvisorInfo(
                 startTime = Instant.now(),
-                duration = Duration.ofMinutes(1000L),
+                duration = 1000.minutes,
                 issueStats = IssueStatistics(0, 1, 2, 3),
                 serializedConfig = "allow_dynamic_versions: false\nskip_excluded: false",
                 environment = mapOf(
