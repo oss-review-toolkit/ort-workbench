@@ -6,8 +6,9 @@ import androidx.compose.runtime.Composable
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.RichText
 
-import java.time.Duration
 import java.time.Instant
+
+import kotlin.time.Duration.Companion.minutes
 
 import org.ossreviewtoolkit.model.LicenseSource
 import org.ossreviewtoolkit.reporter.IssueStatistics
@@ -49,7 +50,7 @@ private fun EvaluatorInfoCardPreview() {
         EvaluatorInfoCard(
             EvaluatorInfo(
                 startTime = Instant.now(),
-                duration = Duration.ofMinutes(1000L),
+                duration = 1000.minutes,
                 issueStats = IssueStatistics(0, 1, 2, 3),
                 evaluatorStats = EvaluatorStats(
                     ruleViolationCount = 1,

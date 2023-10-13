@@ -4,6 +4,8 @@ import java.io.File
 import java.time.Duration
 import java.time.Instant
 
+import kotlin.time.toKotlinDuration
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +74,7 @@ private fun createAnalyzerInfo(api: OrtApi): AnalyzerInfo =
     api.getAnalyzerRun()?.let { analyzerRun ->
         AnalyzerInfo(
             startTime = analyzerRun.startTime,
-            duration = Duration.between(analyzerRun.startTime, analyzerRun.endTime),
+            duration = Duration.between(analyzerRun.startTime, analyzerRun.endTime).toKotlinDuration(),
             issueStats = api.getAnalyzerIssueStats(),
             serializedConfig = yamlMapper.writeValueAsString(analyzerRun.config).removeYamlPrefix(),
             environment = analyzerRun.environment.toMap(),
@@ -86,7 +88,7 @@ private fun createAdvisorInfo(api: OrtApi): AdvisorInfo? =
     api.getAdvisorRun()?.let { advisorRun ->
         AdvisorInfo(
             startTime = advisorRun.startTime,
-            duration = Duration.between(advisorRun.startTime, advisorRun.endTime),
+            duration = Duration.between(advisorRun.startTime, advisorRun.endTime).toKotlinDuration(),
             issueStats = api.getAdvisorIssueStats(),
             serializedConfig = yamlMapper.writeValueAsString(advisorRun.config).removeYamlPrefix(),
             environment = advisorRun.environment.toMap(),
@@ -100,7 +102,7 @@ private fun createScannerInfo(api: OrtApi): ScannerInfo? =
     api.getScannerRun()?.let { scannerRun ->
         ScannerInfo(
             startTime = scannerRun.startTime,
-            duration = Duration.between(scannerRun.startTime, scannerRun.endTime),
+            duration = Duration.between(scannerRun.startTime, scannerRun.endTime).toKotlinDuration(),
             issueStats = api.getScannerIssueStats(),
             serializedConfig = yamlMapper.writeValueAsString(scannerRun.config).removeYamlPrefix(),
             environment = scannerRun.environment.toMap(),
@@ -114,7 +116,7 @@ private fun createEvaluatorInfo(api: OrtApi): EvaluatorInfo? =
     api.getEvaluatorRun()?.let { evaluatorRun ->
         EvaluatorInfo(
             startTime = evaluatorRun.startTime,
-            duration = Duration.between(evaluatorRun.startTime, evaluatorRun.endTime),
+            duration = Duration.between(evaluatorRun.startTime, evaluatorRun.endTime).toKotlinDuration(),
             issueStats = api.getRuleViolationStats(),
             evaluatorStats = api.getEvaluatorStats()
         )

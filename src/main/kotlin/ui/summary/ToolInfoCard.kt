@@ -76,9 +76,7 @@ fun ToolInfoCard(
                         contentDescription = "Duration"
                     )
 
-                    val formattedDuration = remember(info.duration) {
-                        info.duration.run { "%dh %02dm %02ds".format(toHours(), toMinutesPart(), toSecondsPart()) }
-                    }
+                    val formattedDuration = remember(info.duration) { info.duration.toString() }
                     Text(formattedDuration)
                 }
             }
