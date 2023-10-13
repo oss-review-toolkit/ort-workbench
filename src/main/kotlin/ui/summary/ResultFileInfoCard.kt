@@ -32,6 +32,7 @@ import org.ossreviewtoolkit.workbench.composables.rememberFormattedDatetime
 import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val KIBI = 1024
+private const val MEBI = KIBI * KIBI
 
 @Composable
 fun ResultFileInfoCard(info: ResultFileInfo) {
@@ -47,7 +48,7 @@ fun ResultFileInfoCard(info: ResultFileInfo) {
                     headers = "Property" to "Value",
                     data = mapOf(
                         "Path" to info.absolutePath,
-                        "Size" to "${info.size / KIBI} kb",
+                        "Size" to "%.2f MiB".format(info.size.toFloat() / MEBI),
                         "Last modified" to rememberFormattedDatetime(info.timestamp)
                     )
                 )
