@@ -29,11 +29,14 @@ fun ScannerInfoCard(info: ScannerInfo?, startExpanded: Boolean = false) {
             startExpanded = startExpanded
         ) {
             info.scannerStats.scannerWrapperStats.forEach { (scanner, stats) ->
-                val markdown = """
-                    * Scanned ${stats.scannedPackageCount} package(s) with ${scanner.name} ${scanner.version}.
-                      Detected ${stats.detectedLicenseCount} licenses in ${stats.scannedSourceArtifactCount} source
-                      artifacts and ${stats.scannedRepositoryCount} source code repositories.
-                """.trimIndent()
+                val markdown = with(stats) {
+                    """
+                        * Scanned $scannedPackageCount package(s) with ${scanner.name} ${scanner.version}.
+                          Detected $detectedLicenseCount licenses and $detectedCopyrightCount copyrights in
+                          $scannedSourceArtifactCount source artifacts and $scannedRepositoryCount source code
+                          repositories.
+                    """.trimIndent()
+                }
 
                 RichText { Markdown(markdown) }
             }
@@ -66,9 +69,9 @@ private fun ScannerInfoCardPreview() {
                 scannerStats = ScannerStats(
                     scannerWrapperStats = mapOf(
                         ScannerDetails(name = "ScanCode", version = "32.0.6", configuration = "") to
-                                ScannerWrapperStats(1, 2, 3, 4),
+                                ScannerWrapperStats(1, 2, 3, 4, 5),
                         ScannerDetails(name = "ScanCode", version = "32.0.7", configuration = "") to
-                                ScannerWrapperStats(5, 6, 7, 8)
+                                ScannerWrapperStats(6, 7, 8, 9, 10)
                     )
                 )
             ),
