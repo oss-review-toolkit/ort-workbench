@@ -196,7 +196,9 @@ class OrtApi(
                         scannedSourceArtifactCount = scanResults.count { it.provenance is ArtifactProvenance },
                         scannedRepositoryCount = scanResults.count { it.provenance is RepositoryProvenance },
                         detectedLicenseCount = scanResults.flatMap { it.summary.licenseFindings }
-                            .mapTo(mutableSetOf()) { it.license }.size
+                            .mapTo(mutableSetOf()) { it.license }.size,
+                        detectedCopyrightCount = scanResults.flatMap { it.summary.copyrightFindings }
+                            .mapTo(mutableSetOf()) { it.statement }.size
                     )
                 }
             )
@@ -245,7 +247,8 @@ data class ScannerWrapperStats(
     val scannedPackageCount: Int,
     val scannedSourceArtifactCount: Int,
     val scannedRepositoryCount: Int,
-    val detectedLicenseCount: Int
+    val detectedLicenseCount: Int,
+    val detectedCopyrightCount: Int
 )
 
 data class EvaluatorStats(
