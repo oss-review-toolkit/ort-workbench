@@ -23,7 +23,7 @@ fun Datetime(instant: Instant, formatStyle: FormatStyle = FormatStyle.MEDIUM) {
  */
 @Composable
 fun rememberFormattedDatetime(instant: Instant, formatStyle: FormatStyle = FormatStyle.MEDIUM): String {
-    val formatter = remember(formatStyle) { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM) }
+    val formatter = remember(formatStyle) { DateTimeFormatter.ofLocalizedDateTime(formatStyle) }
     return remember(instant) {
         val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
         formatter.format(localDateTime)
