@@ -49,7 +49,7 @@ fun ResultFileInfoCard(info: ResultFileInfo) {
                     data = mapOf(
                         "Path" to info.absolutePath,
                         "Size" to "%.2f MiB".format(info.size.toFloat() / MEBI),
-                        "Last modified" to rememberFormattedDatetime(info.timestamp)
+                        "Modified" to rememberFormattedDatetime(info.timestamp)
                     )
                 )
             }
