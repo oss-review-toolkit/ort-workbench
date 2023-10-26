@@ -14,7 +14,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-import org.apache.logging.log4j.kotlin.Logging
+import org.apache.logging.log4j.kotlin.logger
 
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.config.CopyrightGarbage
@@ -38,8 +38,6 @@ import org.ossreviewtoolkit.workbench.navigation.NavController
 import org.ossreviewtoolkit.workbench.ui.MainScreen
 
 class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
-    companion object : Logging
-
     private val mutex = Mutex()
 
     private val scope = CoroutineScope(Dispatchers.Default)
