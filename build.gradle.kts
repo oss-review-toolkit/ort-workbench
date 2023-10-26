@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.dataTableMaterial)
     implementation(libs.jacksonModuleKotlin)
     implementation(libs.kotlinxCoroutinesSwing)
+    implementation(libs.log4jApiKotlin)
     implementation(libs.log4jApiToSlf4j)
     implementation(libs.logbackClassic)
     implementation(libs.moleculeRuntime)
