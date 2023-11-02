@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import java.net.URI
 
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.model.VulnerabilityReference
 import org.ossreviewtoolkit.model.config.VulnerabilityResolution
 import org.ossreviewtoolkit.model.config.VulnerabilityResolutionReason
+import org.ossreviewtoolkit.model.vulnerabilities.VulnerabilityReference
 import org.ossreviewtoolkit.utils.common.titlecase
 import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.ExpandableText
