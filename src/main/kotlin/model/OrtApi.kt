@@ -268,7 +268,7 @@ private fun Map<Identifier, List<AdvisorResult>>.toDecoratedVulnerabilities(reso
             result.vulnerabilities.map { vulnerability ->
                 ResolvedVulnerability(
                     pkg,
-                    resolutionProvider.getVulnerabilityResolutionsFor(vulnerability),
+                    resolutionProvider.getResolutionsFor(vulnerability),
                     result.advisor.name,
                     vulnerability
                 )
@@ -279,7 +279,7 @@ private fun Map<Identifier, List<AdvisorResult>>.toDecoratedVulnerabilities(reso
 private fun Map<Identifier, Set<Issue>>.toIssues(tool: Tool, resolutionProvider: ResolutionProvider) =
     flatMap { (id, issues) ->
         issues.map { issue ->
-            ResolvedIssue(id, tool, resolutionProvider.getIssueResolutionsFor(issue), issue)
+            ResolvedIssue(id, tool, resolutionProvider.getResolutionsFor(issue), issue)
         }
     }
 
@@ -306,4 +306,4 @@ private fun List<RuleViolation>.toRuleViolationStatistics(severityThreshold: Sev
 }
 
 private fun List<RuleViolation>.toViolations(resolutionProvider: ResolutionProvider) =
-    map { violation -> ResolvedRuleViolation(resolutionProvider.getRuleViolationResolutionsFor(violation), violation) }
+    map { violation -> ResolvedRuleViolation(resolutionProvider.getResolutionsFor(violation), violation) }
