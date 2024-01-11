@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.CodeBlockStyle
-import com.halilibo.richtext.ui.RichText
 import com.halilibo.richtext.ui.RichTextStyle
+import com.halilibo.richtext.ui.material.RichText
 
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.reporter.IssueStatistics
