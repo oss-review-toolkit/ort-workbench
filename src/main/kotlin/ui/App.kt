@@ -28,8 +28,6 @@ import androidx.compose.ui.onExternalDrag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
-import com.halilibo.richtext.ui.material.SetupMaterialRichText
-
 import java.io.File
 import java.net.URI
 
@@ -192,26 +190,24 @@ private fun Content(
     onSelectPackage: (Identifier) -> Unit,
     onBack: () -> Unit
 ) {
-    SetupMaterialRichText {
-        if (backstackEntry.screen !is MainScreen<*>) {
-            // TODO: Show error.
-            return@SetupMaterialRichText
-        }
+    if (backstackEntry.screen !is MainScreen<*>) {
+        // TODO: Show error.
+        return
+    }
 
-        when (backstackEntry.screen) {
-            is MainScreen.Summary -> Summary(backstackEntry.viewModel())
-            is MainScreen.Packages -> Packages(backstackEntry.viewModel(), onSelectPackage)
-            is MainScreen.Dependencies -> Dependencies(backstackEntry.viewModel())
-            is MainScreen.Issues -> Issues(backstackEntry.viewModel())
-            is MainScreen.RuleViolations -> Violations(backstackEntry.viewModel())
-            is MainScreen.Vulnerabilities -> Vulnerabilities(backstackEntry.viewModel())
-            is MainScreen.Settings -> Settings(backstackEntry.viewModel())
+    when (backstackEntry.screen) {
+        is MainScreen.Summary -> Summary(backstackEntry.viewModel())
+        is MainScreen.Packages -> Packages(backstackEntry.viewModel(), onSelectPackage)
+        is MainScreen.Dependencies -> Dependencies(backstackEntry.viewModel())
+        is MainScreen.Issues -> Issues(backstackEntry.viewModel())
+        is MainScreen.RuleViolations -> Violations(backstackEntry.viewModel())
+        is MainScreen.Vulnerabilities -> Vulnerabilities(backstackEntry.viewModel())
+        is MainScreen.Settings -> Settings(backstackEntry.viewModel())
 
-            is MainScreen.PackageDetails -> {
-                val viewModel = backstackEntry.viewModel<PackageDetailsViewModel>()
-                val state by viewModel.model.collectAsState()
-                PackageDetails(state, onBack)
-            }
+        is MainScreen.PackageDetails -> {
+            val viewModel = backstackEntry.viewModel<PackageDetailsViewModel>()
+            val state by viewModel.model.collectAsState()
+            PackageDetails(state, onBack)
         }
     }
 }
