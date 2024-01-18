@@ -193,9 +193,8 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
                     )
                 }
 
-            val licenseInfoProvider = DefaultLicenseInfoProvider(result, packageConfigurationProvider)
+            val licenseInfoProvider = DefaultLicenseInfoProvider(result)
             val licenseInfoResolver = result.createLicenseInfoResolver(
-                packageConfigurationProvider,
                 copyrightGarbage,
                 config.addAuthorsToCopyrights,
                 fileArchiver
