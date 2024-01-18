@@ -50,7 +50,7 @@ class OrtApi(
             val config = OrtConfiguration()
             val fileArchiver = config.scanner.archive.createFileArchiver()
             val packageConfigurationProvider = PackageConfigurationProvider.EMPTY
-            val licenseInfoProvider = DefaultLicenseInfoProvider(result, packageConfigurationProvider)
+            val licenseInfoProvider = DefaultLicenseInfoProvider(result)
 
             OrtApi(
                 result,
@@ -59,7 +59,6 @@ class OrtApi(
                 fileArchiver,
                 licenseInfoProvider,
                 result.createLicenseInfoResolver(
-                    packageConfigurationProvider,
                     copyrightGarbage,
                     config.addAuthorsToCopyrights,
                     fileArchiver
