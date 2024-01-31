@@ -1,5 +1,5 @@
 [versions]
-detektPlugin = "1.23.4"
+detektPlugin = "1.23.5"
 composePlugin = "1.5.11"
 kotlinPlugin = "1.9.20"
 versionsPlugin = "0.51.0"
