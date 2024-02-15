@@ -6,7 +6,7 @@ versionsPlugin = "0.51.0"
 
 dataTableMaterial = "0.5.1"
 jackson = "2.16.1"
-kotlinxCoroutines = "1.7.3"
+kotlinxCoroutines = "1.8.0"
 log4jApi = "2.22.1"
 log4jApiKotlin = "1.4.0"
 logbackImpl = "1.4.14"
