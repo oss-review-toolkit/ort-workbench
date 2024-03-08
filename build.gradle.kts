@@ -3,6 +3,8 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.gitlab.arturbosch.detekt.Detekt
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -82,9 +84,9 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        apiVersion = "1.8"
-        jvmTarget = "17"
+    compilerOptions {
+        apiVersion = KotlinVersion.KOTLIN_1_8
+        jvmTarget = JvmTarget.JVM_17
     }
 }
 
