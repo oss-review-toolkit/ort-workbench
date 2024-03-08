@@ -89,6 +89,7 @@ tasks.withType<KotlinCompile> {
     )
 
     compilerOptions {
+        allWarningsAsErrors = true
         apiVersion = KotlinVersion.KOTLIN_1_8
         freeCompilerArgs.addAll(customCompilerArgs)
         jvmTarget = JvmTarget.JVM_17
