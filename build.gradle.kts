@@ -84,8 +84,13 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks.withType<KotlinCompile> {
+    val customCompilerArgs = listOf(
+        "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi"
+    )
+
     compilerOptions {
         apiVersion = KotlinVersion.KOTLIN_1_8
+        freeCompilerArgs.addAll(customCompilerArgs)
         jvmTarget = JvmTarget.JVM_17
     }
 }
