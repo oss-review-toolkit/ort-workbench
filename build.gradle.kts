@@ -57,7 +57,7 @@ dependencies {
     detektPlugins(libs.ortDetektRules)
 }
 
-tasks.named<DependencyUpdatesTask>("dependencyUpdates").configure {
+tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
     gradleReleaseChannel = "current"
     outputFormatter = "json"
 
