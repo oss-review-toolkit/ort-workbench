@@ -165,7 +165,7 @@ class OrtApi(
     fun getResolvedIssues(): List<ResolvedIssue> =
         result.analyzer?.result?.getAllIssues().orEmpty().toIssues(Tool.ANALYZER, resolutionProvider) +
                 result.advisor?.results?.getIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
-                result.scanner?.getIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
+                result.scanner?.getAllIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
 
     fun getResolvedLicense(id: Identifier): ResolvedLicenseInfo = licenseInfoResolver.resolveLicenseInfo(id)
 
@@ -173,7 +173,7 @@ class OrtApi(
 
     fun getRuleViolationStats() = getRuleViolations().toRuleViolationStatistics(config.severeRuleViolationThreshold)
 
-    fun getScannerIssues(): Map<Identifier, Set<Issue>> = result.scanner?.getIssues().orEmpty()
+    fun getScannerIssues(): Map<Identifier, Set<Issue>> = result.scanner?.getAllIssues().orEmpty()
 
     fun getScannerIssueStats(): IssueStatistics =
         getScannerIssues().values.flatten().toIssueStatistics(config.severeIssueThreshold)
