@@ -3,39 +3,43 @@ Upstream-Name: ORT Workbench
 Source: https://github.com/oss-review-toolkit/ort-workbench
 
 Files: .*
-Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2021 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: *.json
-Copyright: 2022 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2022 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: *.kts
-Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2021 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: *.md
-Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2021 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: *.properties
-Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2021 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: *.yml
-Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2021 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: assets/*
-Copyright: 2022 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2022 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: gradle/*.toml
-Copyright: 2022 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2022 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
+License: Apache-2.0
+
+Files: NOTICE
+Copyright: 2022 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: src/*
-Copyright: 2021 The ORT Workbench Contributors (see <https://github.com/oss-review-toolkit/ort-workbench/graphs/contributors>)
+Copyright: 2021 The ORT Workbench Project Authors (see <https://github.com/oss-review-toolkit/ort-workbench/blob/main/NOTICE>)
 License: Apache-2.0
 
 Files: src/main/resources/material/*
