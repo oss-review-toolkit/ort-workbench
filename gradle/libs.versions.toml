@@ -1,7 +1,7 @@
 [versions]
 detektPlugin = "1.23.6"
 composePlugin = "1.6.10"
-kotlinPlugin = "1.9.20"
+kotlinPlugin = "2.0.0"
 versionsPlugin = "0.51.0"
 
 dataTableMaterial = "0.5.1"
@@ -17,6 +17,7 @@ richtext = "0.20.0"
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinPlugin" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 
