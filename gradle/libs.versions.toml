@@ -5,6 +5,7 @@ kotlinPlugin = "2.0.0"
 versionsPlugin = "0.51.0"
 
 dataTableMaterial = "0.5.1"
+fileKit = "0.7.0"
 jackson = "2.17.2"
 kotlinxCoroutines = "1.8.1"
 log4jApi = "2.23.1"
@@ -24,6 +25,7 @@ versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin
 [libraries]
 dataTableMaterial = { module = "com.seanproctor:data-table-material", version.ref = "dataTableMaterial" }
 detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPlugin" }
+fileKit = { module = "io.github.vinceglb:filekit-core", version.ref = "fileKit" }
 jacksonModuleKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
 log4jApiKotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4jApiKotlin" }

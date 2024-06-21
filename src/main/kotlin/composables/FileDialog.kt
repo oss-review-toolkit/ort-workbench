@@ -1,13 +1,14 @@
 package org.ossreviewtoolkit.workbench.composables
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.awt.ComposeWindow
-import androidx.compose.ui.window.AwtWindow
 
-import java.awt.FileDialog
-import java.io.File
-import java.io.FilenameFilter
+import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.core.PickerMode
+import io.github.vinceglb.filekit.core.PickerType
+
 import java.nio.file.Path
+
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun FileDialog(
@@ -15,24 +16,11 @@ fun FileDialog(
     isLoad: Boolean,
     fileExtensionFilter: List<String> = emptyList(),
     onResult: (result: Path?) -> Unit
-) = AwtWindow(
-    create = {
-        object : FileDialog(ComposeWindow(), title, if (isLoad) LOAD else SAVE) {
-            override fun setVisible(value: Boolean) {
-                super.setVisible(value)
+) {
+    require(isLoad)
 
-                if (value && directory != null && file != null) {
-                    onResult(File(directory).resolve(file).toPath())
-                }
-            }
-        }.apply {
-            this.title = title
+    val fileType = PickerType.File(fileExtensionFilter)
+    val pickedFile = runBlocking { FileKit.pickFile(fileType, PickerMode.Single, title) }
 
-            if (fileExtensionFilter.isNotEmpty()) {
-                file = fileExtensionFilter.joinToString(";") { "*.$it" }
-                filenameFilter = FilenameFilter { _, name -> name.substringAfterLast(".") in fileExtensionFilter }
-            }
-        }
-    },
-    dispose = FileDialog::dispose
-)
+    pickedFile?.run { onResult(file.toPath()) }
+}
