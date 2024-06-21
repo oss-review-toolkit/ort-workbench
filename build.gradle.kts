@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.bundles.ort)
     implementation(libs.bundles.richtext)
     implementation(libs.dataTableMaterial)
+    implementation(libs.fileKit)
     implementation(libs.jacksonModuleKotlin)
     implementation(libs.kotlinxCoroutinesSwing)
     implementation(libs.log4jApiKotlin)

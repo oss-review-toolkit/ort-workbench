@@ -3,6 +3,10 @@ package org.ossreviewtoolkit.workbench.composables
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.window.AwtWindow
+import io.github.vinceglb.filekit.core.FileKit
+import io.github.vinceglb.filekit.core.PickerMode
+import io.github.vinceglb.filekit.core.PickerType
+import kotlinx.coroutines.runBlocking
 
 import java.awt.FileDialog
 import java.io.File
@@ -15,7 +19,14 @@ fun FileDialog(
     isLoad: Boolean,
     fileExtensionFilter: List<String> = emptyList(),
     onResult: (result: Path?) -> Unit
-) = AwtWindow(
+) {
+    require(isLoad)
+
+    val fileType = PickerType.File(fileExtensionFilter)
+    val pickedFile = runBlocking { FileKit.pickFile(fileType, PickerMode.Single, title) }
+    pickedFile?.run { onResult(file.toPath()) }
+}
+/* = AwtWindow(
     create = {
         object : FileDialog(ComposeWindow(), title, if (isLoad) LOAD else SAVE) {
             override fun setVisible(value: Boolean) {
@@ -35,4 +46,4 @@ fun FileDialog(
         }
     },
     dispose = FileDialog::dispose
-)
+)*/
