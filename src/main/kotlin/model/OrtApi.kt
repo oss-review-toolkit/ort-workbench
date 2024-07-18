@@ -69,7 +69,7 @@ class OrtApi(
         }
     }
 
-    fun getAdvisorIssues(): Map<Identifier, Set<Issue>> = result.advisor?.results?.getIssues().orEmpty()
+    fun getAdvisorIssues(): Map<Identifier, Set<Issue>> = result.advisor?.getIssues().orEmpty()
 
     fun getAdvisorIssueStats(): IssueStatistics =
         getAdvisorIssues().values.flatten().toIssueStatistics(config.severeIssueThreshold)
@@ -83,11 +83,11 @@ class OrtApi(
 
     fun getAdvisorStats(): AdvisorStats =
         result.advisor?.let { advisorRun ->
-            val providers = advisorRun.results.advisorResults.values.flatten().map { it.advisor.name }
+            val providers = advisorRun.results.values.flatten().map { it.advisor.name }
 
             AdvisorStats(
                 adviceProviderStats = providers.associateWith { provider ->
-                    val resultsForProvider = advisorRun.results.advisorResults
+                    val resultsForProvider = advisorRun.results
                         .filter { (_, results) -> results.any { it.advisor.name == provider } }
                         .mapValues { (_, results) -> results.single { it.advisor.name == provider } }
 
@@ -164,7 +164,7 @@ class OrtApi(
 
     fun getResolvedIssues(): List<ResolvedIssue> =
         result.analyzer?.result?.getAllIssues().orEmpty().toIssues(Tool.ANALYZER, resolutionProvider) +
-                result.advisor?.results?.getIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
+                result.advisor?.getIssues().orEmpty().toIssues(Tool.ADVISOR, resolutionProvider) +
                 result.scanner?.getAllIssues().orEmpty().toIssues(Tool.SCANNER, resolutionProvider)
 
     fun getResolvedLicense(id: Identifier): ResolvedLicenseInfo = licenseInfoResolver.resolveLicenseInfo(id)
