@@ -24,9 +24,9 @@ import org.ossreviewtoolkit.model.config.OrtConfiguration
 import org.ossreviewtoolkit.model.config.createFileArchiver
 import org.ossreviewtoolkit.model.licenses.DefaultLicenseInfoProvider
 import org.ossreviewtoolkit.model.readValue
-import org.ossreviewtoolkit.model.utils.CompositePackageConfigurationProvider
 import org.ossreviewtoolkit.model.utils.DefaultResolutionProvider
 import org.ossreviewtoolkit.model.utils.createLicenseInfoResolver
+import org.ossreviewtoolkit.plugins.packageconfigurationproviders.api.CompositePackageConfigurationProvider
 import org.ossreviewtoolkit.plugins.packageconfigurationproviders.api.SimplePackageConfigurationProvider
 import org.ossreviewtoolkit.plugins.packageconfigurationproviders.dir.DirPackageConfigurationProvider
 import org.ossreviewtoolkit.utils.ort.ORT_CONFIG_FILENAME
@@ -179,8 +179,9 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
                 FileArchiverConfiguration().createFileArchiver()
             }
 
-            val resolvedPackageConfigurationProvider =
-                SimplePackageConfigurationProvider(result.resolvedConfiguration.packageConfigurations.orEmpty())
+            val resolvedPackageConfigurationProvider = SimplePackageConfigurationProvider(
+                configurations = result.resolvedConfiguration.packageConfigurations.orEmpty()
+            )
             val packageConfigurationsDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
 
             val packageConfigurationProvider =
