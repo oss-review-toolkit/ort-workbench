@@ -123,7 +123,9 @@ private fun VulnerabilityCardPreview() {
             VulnerabilityReference(
                 URI("http://example.com"),
                 scoringSystem = "scosy",
-                severity = "severe"
+                severity = "severe",
+                score = 42.0f,
+                vector = "vector"
             )
         )
     )
