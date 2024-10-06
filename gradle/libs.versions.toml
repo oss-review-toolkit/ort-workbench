@@ -5,7 +5,7 @@ kotlinPlugin = "2.0.20"
 versionsPlugin = "0.51.0"
 
 dataTableMaterial = "0.8.1"
-fileKit = "0.8.4"
+fileKit = "0.8.5"
 jackson = "2.18.0"
 kotlinxCoroutines = "1.9.0"
 log4jApi = "2.24.1"
