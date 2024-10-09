@@ -1,6 +1,6 @@
 [versions]
 detektPlugin = "1.23.7"
-composePlugin = "1.6.11"
+composePlugin = "1.7.0+build1877-release-1.7"
 kotlinPlugin = "2.0.20"
 versionsPlugin = "0.51.0"
 
