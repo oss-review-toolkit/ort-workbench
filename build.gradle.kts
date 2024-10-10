@@ -7,6 +7,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val javaLanguageVersion: String by project
+
 plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.compose.compiler)
@@ -77,9 +79,14 @@ tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaLanguageVersion)
+        vendor = JvmVendorSpec.ADOPTIUM
+    }
 }
+
+val maxKotlinJvmTarget = runCatching { JvmTarget.fromTarget(javaLanguageVersion) }
+    .getOrDefault(enumValues<JvmTarget>().max())
 
 tasks.withType<KotlinCompile> {
     val customCompilerArgs = listOf(
@@ -90,7 +97,7 @@ tasks.withType<KotlinCompile> {
         allWarningsAsErrors = true
         apiVersion = KotlinVersion.KOTLIN_1_8
         freeCompilerArgs.addAll(customCompilerArgs)
-        jvmTarget = JvmTarget.JVM_17
+        jvmTarget = maxKotlinJvmTarget
     }
 }
 
@@ -102,6 +109,8 @@ detekt {
 }
 
 tasks.withType<Detekt>().configureEach {
+    jvmTarget = maxKotlinJvmTarget.target
+
     reports {
         xml.required.set(false)
         html.required.set(false)
