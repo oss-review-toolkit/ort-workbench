@@ -19,7 +19,7 @@ jobs:
         with:
           configFile: .commitlintrc.yml
   detekt:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
