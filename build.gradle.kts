@@ -81,10 +81,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-tasks.withType<Jar>().configureEach {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 tasks.withType<KotlinCompile> {
     val customCompilerArgs = listOf(
         "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi"
