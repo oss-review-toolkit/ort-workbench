@@ -112,10 +112,10 @@ tasks.withType<Detekt>().configureEach {
     jvmTarget = maxKotlinJvmTarget.target
 
     reports {
-        xml.required.set(false)
-        html.required.set(false)
-        txt.required.set(false)
-        sarif.required.set(true)
+        xml.required = false
+        html.required = false
+        txt.required = false
+        sarif.required = true
     }
 }
 
@@ -136,16 +136,16 @@ compose {
                 val iconsRoot = project.file("src/main/resources/app-icon")
 
                 macOS {
-                    iconFile.set(iconsRoot.resolve("icon.icns"))
+                    iconFile = iconsRoot.resolve("icon.icns")
                     jvmArgs("-Dapple.awt.application.appearance=system")
                 }
 
                 windows {
-                    iconFile.set(iconsRoot.resolve("icon.ico"))
+                    iconFile = iconsRoot.resolve("icon.ico")
                 }
 
                 linux {
-                    iconFile.set(iconsRoot.resolve("icon.png"))
+                    iconFile = iconsRoot.resolve("icon.png")
                 }
             }
         }
