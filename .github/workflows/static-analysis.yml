@@ -25,10 +25,10 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
       - name: Run Detekt
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: --stacktrace detekt
+        run: ./gradlew --stacktrace detekt
       - name: Upload SARIF File
         uses: github/codeql-action/upload-sarif@v3
         if: ${{ always() }} # Upload even if the previous step failed.
