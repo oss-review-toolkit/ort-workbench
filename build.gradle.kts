@@ -4,7 +4,6 @@ import io.gitlab.arturbosch.detekt.Detekt
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val javaLanguageVersion: String by project
@@ -95,7 +94,6 @@ tasks.withType<KotlinCompile> {
 
     compilerOptions {
         allWarningsAsErrors = true
-        apiVersion = KotlinVersion.KOTLIN_1_8
         freeCompilerArgs.addAll(customCompilerArgs)
         jvmTarget = maxKotlinJvmTarget
     }
