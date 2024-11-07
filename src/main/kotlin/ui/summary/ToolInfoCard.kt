@@ -16,17 +16,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.CodeBlockStyle
 import com.halilibo.richtext.ui.RichTextStyle
 import com.halilibo.richtext.ui.material.RichText
+
+import org.jetbrains.compose.resources.painterResource
 
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.reporter.IssueStatistics
@@ -35,7 +39,6 @@ import org.ossreviewtoolkit.workbench.composables.Expandable
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
 import org.ossreviewtoolkit.workbench.composables.StyledCard
 import org.ossreviewtoolkit.workbench.composables.TwoColumnTable
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 import org.ossreviewtoolkit.workbench.utils.OrtIcon
 
 private val whiteCodeBlockRichTextStyle = RichTextStyle(codeBlockStyle = CodeBlockStyle(modifier = Modifier))
@@ -60,7 +63,7 @@ fun ToolInfoCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
-                        painter = painterResource(MaterialIcon.CALENDAR_MONTH.resource),
+                        painter = rememberVectorPainter(Icons.Default.CalendarMonth),
                         contentDescription = "Start time"
                     )
 
@@ -72,7 +75,7 @@ fun ToolInfoCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Icon(
-                        painter = painterResource(MaterialIcon.TIMELAPSE.resource),
+                        painter = rememberVectorPainter(Icons.Default.Timelapse),
                         contentDescription = "Duration"
                     )
 

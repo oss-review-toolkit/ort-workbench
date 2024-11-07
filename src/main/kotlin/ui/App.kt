@@ -1,6 +1,8 @@
 package org.ossreviewtoolkit.workbench.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,17 +21,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.DragData
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.onExternalDrag
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.DragAndDropTransferAction
+import androidx.compose.ui.draganddrop.awtTransferable
 import androidx.compose.ui.unit.dp
 
+import java.awt.datatransfer.DataFlavor
 import java.io.File
-import java.net.URI
 
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+
+import org.jetbrains.compose.resources.imageResource
 
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.utils.common.enumSetOf
@@ -41,6 +47,9 @@ import org.ossreviewtoolkit.workbench.navigation.BackstackEntry
 import org.ossreviewtoolkit.workbench.navigation.NavController
 import org.ossreviewtoolkit.workbench.navigation.NavHost
 import org.ossreviewtoolkit.workbench.navigation.viewModel
+import org.ossreviewtoolkit.workbench.ort_workbench.generated.resources.Res
+import org.ossreviewtoolkit.workbench.ort_workbench.generated.resources.ort_black
+import org.ossreviewtoolkit.workbench.ort_workbench.generated.resources.ort_white
 import org.ossreviewtoolkit.workbench.theme.OrtWorkbenchTheme
 import org.ossreviewtoolkit.workbench.ui.dependencies.Dependencies
 import org.ossreviewtoolkit.workbench.ui.issues.Issues
@@ -52,6 +61,7 @@ import org.ossreviewtoolkit.workbench.ui.summary.Summary
 import org.ossreviewtoolkit.workbench.ui.violations.Violations
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun App(controller: WorkbenchController) {
     val settings by controller.settings.collectAsState()
@@ -74,18 +84,37 @@ fun App(controller: WorkbenchController) {
     OrtWorkbenchTheme(settings.theme) {
         var isDragging by remember { mutableStateOf(false) }
 
-        Surface(
-            modifier = Modifier.onExternalDrag(
-                onDragStart = { isDragging = true },
-                onDragExit = { isDragging = false },
-                onDrop = { state ->
-                    val data = state.dragData
-                    if (data is DragData.FilesList) {
-                        val files = data.readFiles().map { File(URI(it)) }
-                        scope.launch { files.forEach { file -> controller.openOrtResult(file) } }
-                    }
+        val dragAndDropTarget = remember {
+            object : DragAndDropTarget {
+                override fun onStarted(event: DragAndDropEvent) {
+                    isDragging = true
+                }
+
+                override fun onEnded(event: DragAndDropEvent) {
                     isDragging = false
                 }
+
+                override fun onDrop(event: DragAndDropEvent): Boolean {
+                    with(event.awtTransferable) {
+                        if (!isDataFlavorSupported(DataFlavor.javaFileListFlavor)) return false
+
+                        @Suppress("UNCHECKED_CAST")
+                        val files = getTransferData(DataFlavor.javaFileListFlavor) as List<File>
+
+                        runBlocking {
+                            files.forEach { file -> controller.openOrtResult(file) }
+                        }
+
+                        return true
+                    }
+                }
+            }
+        }
+
+        Surface(
+            modifier = Modifier.dragAndDropTarget(
+                shouldStartDragAndDrop = { it.action == DragAndDropTransferAction.Copy },
+                target = dragAndDropTarget
             ),
             color = when {
                 isDragging -> MaterialTheme.colors.primaryVariant
@@ -221,9 +250,9 @@ private fun LoadResult(controller: WorkbenchController, onLoadResult: () -> Unit
         verticalArrangement = Arrangement.spacedBy(25.dp, alignment = Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val image = if (MaterialTheme.colors.isLight) "ort-black.png" else "ort-white.png"
+        val resource = if (MaterialTheme.colors.isLight) Res.drawable.ort_black else Res.drawable.ort_white
 
-        Image(painter = painterResource(image), contentDescription = "OSS Review Toolkit")
+        Image(imageResource(resource), contentDescription = "OSS Review Toolkit")
 
         if (apiState in listOf(OrtApiState.LOADING_RESULT, OrtApiState.PROCESSING_RESULT)) {
             CircularProgressIndicator()

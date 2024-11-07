@@ -19,6 +19,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -28,16 +30,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
+import org.jetbrains.compose.resources.imageResource
+
 import org.ossreviewtoolkit.workbench.composables.conditional
 import org.ossreviewtoolkit.workbench.model.OrtModelInfo
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
+import org.ossreviewtoolkit.workbench.ort_workbench.generated.resources.Res
+import org.ossreviewtoolkit.workbench.ort_workbench.generated.resources.ort_white
 
 @Composable
 fun TopBar(
@@ -49,7 +53,7 @@ fun TopBar(
 ) {
     TopAppBar(modifier = Modifier.zIndex(zIndex = 5f), backgroundColor = MaterialTheme.colors.primaryVariant) {
         Image(
-            painter = painterResource("ort-white.png"),
+            imageResource(Res.drawable.ort_white),
             contentDescription = "OSS Review Toolkit",
             contentScale = ContentScale.FillHeight,
             modifier = Modifier.padding(vertical = 10.dp).width(200.dp)
@@ -82,8 +86,8 @@ fun OrtModelSelector(
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onPrimary) {
                 Text(selectedOrtModel?.name ?: "")
 
-                val resource = (if (expanded) MaterialIcon.EXPAND_LESS else MaterialIcon.EXPAND_MORE).resource
-                Icon(painterResource(resource), if (expanded) "expand" else "collapse")
+                val image = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore
+                Icon(image, if (expanded) "expand" else "collapse")
             }
         }
 
@@ -119,7 +123,7 @@ fun OrtModelSelector(
 
                         IconButton(onClick = { onCloseModel(modelInfo) }) {
                             Icon(
-                                painterResource(MaterialIcon.CLOSE.resource),
+                                Icons.Default.Close,
                                 contentDescription = "close",
                                 modifier = Modifier.size(16.dp)
                             )

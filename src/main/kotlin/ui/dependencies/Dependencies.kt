@@ -21,6 +21,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -33,7 +35,6 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -73,7 +74,6 @@ import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.composables.toStringOrDash
 import org.ossreviewtoolkit.workbench.composables.tree.Tree
 import org.ossreviewtoolkit.workbench.composables.tree.TreeItem
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Dependencies(viewModel: DependenciesViewModel) {
@@ -205,7 +205,7 @@ private fun Search(
         FilterTextField(
             filterText = search,
             label = "Search",
-            icon = MaterialIcon.SEARCH,
+            image = Icons.Default.Search,
             modifier = Modifier.onKeyEvent(::handleSearchKeyEvent),
             onSearchChange
         )
@@ -220,13 +220,13 @@ private fun Search(
             Text("${searchCurrentHit + 1} / $searchTotalHits", modifier = Modifier.padding(start = 10.dp))
 
             Icon(
-                painterResource(MaterialIcon.EXPAND_LESS.resource),
+                imageVector = Icons.Default.ExpandLess,
                 contentDescription = "previous",
                 modifier = Modifier.clickable { onSelectPreviousSearchHit() }
             )
 
             Icon(
-                painterResource(MaterialIcon.EXPAND_MORE.resource),
+                imageVector = Icons.Default.ExpandMore,
                 contentDescription = "next",
                 modifier = Modifier.clickable { onSelectNextSearchHit() }
             )

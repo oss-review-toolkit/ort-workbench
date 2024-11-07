@@ -1,13 +1,15 @@
 package org.ossreviewtoolkit.workbench.ui
 
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.graphics.vector.ImageVector
 
-enum class MenuItem(val icon: MaterialIcon) {
-    SUMMARY(MaterialIcon.ASSESSMENT),
-    PACKAGES(MaterialIcon.INVENTORY),
-    DEPENDENCIES(MaterialIcon.ACCOUNT_TREE),
-    ISSUES(MaterialIcon.BUG_REPORT),
-    RULE_VIOLATIONS(MaterialIcon.GAVEL),
-    VULNERABILITIES(MaterialIcon.LOCK_OPEN),
-    SETTINGS(MaterialIcon.SETTINGS)
+enum class MenuItem(val icon: ImageVector) {
+    SUMMARY(Icons.Default.Assessment),
+    PACKAGES(Icons.Default.Inventory),
+    DEPENDENCIES(Icons.Default.AccountTree),
+    ISSUES(Icons.Default.BugReport),
+    RULE_VIOLATIONS(Icons.Default.Gavel),
+    VULNERABILITIES(Icons.Default.LockOpen),
+    SETTINGS(Icons.Default.Settings)
 }

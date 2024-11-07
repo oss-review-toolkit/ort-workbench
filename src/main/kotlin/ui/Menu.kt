@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -131,7 +130,7 @@ fun MenuRow(item: MenuItem, currentItem: MenuItem?, apiState: OrtApiState, onSel
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(painterResource(item.icon.resource), item.name)
+            Icon(item.icon, item.name)
 
             Text(
                 text = item.name.enumcase(),

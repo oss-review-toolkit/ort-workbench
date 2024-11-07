@@ -12,23 +12,25 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 import org.ossreviewtoolkit.workbench.composables.Preview
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun <VALUE> Tree(
@@ -37,8 +39,8 @@ fun <VALUE> Tree(
     startExpanded: Boolean = false,
     listState: LazyListState = rememberLazyListState(),
     indentation: Dp = 5.dp,
-    expandIcon: MaterialIcon = MaterialIcon.CHEVRON_RIGHT,
-    expandedIcon: MaterialIcon = MaterialIcon.EXPAND_MORE,
+    expandIcon: ImageVector = Icons.Default.ChevronRight,
+    expandedIcon: ImageVector = Icons.Default.ExpandMore,
     iconSize: Dp = 12.dp,
     itemContent: @Composable (item: TreeItem<VALUE>, isSelected: Boolean) -> Unit = { item, isSelected ->
         DefaultItemContent(item, isSelected)
@@ -62,8 +64,8 @@ fun <VALUE> Tree(
     state: TreeState<VALUE>,
     listState: LazyListState = rememberLazyListState(),
     indentation: Dp = 5.dp,
-    expandIcon: MaterialIcon = MaterialIcon.CHEVRON_RIGHT,
-    expandedIcon: MaterialIcon = MaterialIcon.EXPAND_MORE,
+    expandIcon: ImageVector = Icons.Default.ChevronRight,
+    expandedIcon: ImageVector = Icons.Default.ExpandMore,
     iconSize: Dp = 12.dp,
     itemContent: @Composable (item: TreeItem<VALUE>, isSelected: Boolean) -> Unit = { item, isSelected ->
         DefaultItemContent(item, isSelected)
@@ -127,7 +129,7 @@ fun <VALUE> Tree(
 
                 if (icon != null) {
                     Icon(
-                        painter = painterResource(icon.resource),
+                        painter = rememberVectorPainter(icon),
                         contentDescription = null,
                         modifier = Modifier.size(iconSize).clickable { state.toggleExpanded(item) }
                     )

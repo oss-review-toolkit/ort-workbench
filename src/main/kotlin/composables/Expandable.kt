@@ -10,13 +10,12 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Expandable(
@@ -35,8 +34,8 @@ fun Expandable(
             onClick = { expanded.targetState = !expanded.currentState },
             modifier = Modifier.align(Alignment.Top)
         ) {
-            val resource = (if (expanded.currentState) MaterialIcon.EXPAND_LESS else MaterialIcon.EXPAND_MORE).resource
-            Icon(painterResource(resource), "expand")
+            val image = if (expanded.currentState) Icons.Default.ExpandLess else Icons.Default.ExpandMore
+            Icon(image, "expand")
         }
     }
 

@@ -45,7 +45,9 @@ repositories {
 }
 
 dependencies {
+    implementation(compose.components.resources)
     implementation(compose.desktop.currentOs)
+    implementation(compose.materialIconsExtended)
     implementation(libs.bundles.ort)
     implementation(libs.bundles.richtext)
     implementation(libs.dataTableMaterial)
