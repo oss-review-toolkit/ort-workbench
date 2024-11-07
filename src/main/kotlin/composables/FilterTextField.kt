@@ -9,6 +9,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,20 +18,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun FilterTextField(
     filterText: String,
     label: String = "Filter",
-    icon: MaterialIcon = MaterialIcon.FILTER,
+    image: ImageVector = Icons.Default.Filter,
     modifier: Modifier = Modifier,
     onFilterChange: (String) -> Unit
 ) {
-    val filterIcon = painterResource(icon.resource)
     var localFilterText by remember(filterText) { mutableStateOf(filterText) }
 
     TextField(
@@ -40,7 +39,7 @@ fun FilterTextField(
         },
         placeholder = { Text(label) },
         singleLine = true,
-        leadingIcon = { Icon(filterIcon, label) },
+        leadingIcon = { Icon(image, label) },
         shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.textFieldColors(
             focusedIndicatorColor = Color.Transparent,

@@ -23,6 +23,8 @@ formatting:
     active: false
   MaximumLineLength:
     active: false
+  NoWildcardImports:
+    active: false
 
 naming:
   FunctionNaming:
@@ -42,6 +44,11 @@ style:
   UnusedPrivateMember:
     active: true
     ignoreAnnotated: ['Preview']
+  WildcardImport:
+    excludeImports:
+      - 'androidx.compose.material.icons.automirrored.filled.*'
+      - 'androidx.compose.material.icons.filled.*'
+      - 'org.ossreviewtoolkit.workbench.ort_workbench.generated.resources.*'
 
 ORT:
   OrtImportOrder:

@@ -3,7 +3,8 @@ package org.ossreviewtoolkit.workbench.ui.summary
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.painterResource
+
+import org.jetbrains.compose.resources.painterResource
 
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.StyledCard

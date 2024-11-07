@@ -1,8 +1,12 @@
 package org.ossreviewtoolkit.workbench.utils
 
-enum class OrtIcon(val resource: String) {
-    ADVISOR("advisor.svg"),
-    ANALYZER("analyzer.svg"),
-    EVALUATOR("evaluator.svg"),
-    SCANNER("scanner.svg")
+import org.jetbrains.compose.resources.DrawableResource
+
+import org.ossreviewtoolkit.workbench.ort_workbench.generated.resources.*
+
+enum class OrtIcon(val resource: DrawableResource) {
+    ADVISOR(Res.drawable.advisor),
+    ANALYZER(Res.drawable.analyzer),
+    EVALUATOR(Res.drawable.evaluator),
+    SCANNER(Res.drawable.scanner)
 }

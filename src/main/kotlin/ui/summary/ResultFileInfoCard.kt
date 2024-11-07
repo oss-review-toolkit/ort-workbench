@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 
 import com.halilibo.richtext.markdown.Markdown
@@ -29,7 +31,6 @@ import org.ossreviewtoolkit.workbench.composables.SingleLineText
 import org.ossreviewtoolkit.workbench.composables.StyledCard
 import org.ossreviewtoolkit.workbench.composables.TwoColumnTable
 import org.ossreviewtoolkit.workbench.composables.rememberFormattedDatetime
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val KIBI = 1024
 private const val MEBI = KIBI * KIBI
@@ -37,7 +38,7 @@ private const val MEBI = KIBI * KIBI
 @Composable
 fun ResultFileInfoCard(info: ResultFileInfo) {
     StyledCard(
-        titleIcon = painterResource(MaterialIcon.FILE_PRESENT.resource),
+        titleIcon = rememberVectorPainter(Icons.Default.FilePresent),
         title = "ORT Result File"
     ) {
         Row(modifier = Modifier.padding(vertical = 15.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {

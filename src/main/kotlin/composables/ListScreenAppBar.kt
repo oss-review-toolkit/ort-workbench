@@ -6,12 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun ListScreenAppBar(
@@ -27,7 +26,7 @@ fun ListScreenAppBar(
 
                 IconButton(onClick = onToggleFilter) {
                     Icon(
-                        painterResource(MaterialIcon.FILTER_LIST.resource),
+                        Icons.Default.FilterList,
                         contentDescription = "Filter",
                         modifier = Modifier.size(32.dp)
                     )

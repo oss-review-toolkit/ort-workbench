@@ -15,13 +15,14 @@ import androidx.compose.material.Divider
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -36,7 +37,6 @@ import org.ossreviewtoolkit.workbench.composables.IconText
 import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 @Composable
 fun Packages(viewModel: PackagesViewModel, onSelectPackage: (Identifier) -> Unit) {
@@ -127,9 +127,9 @@ fun PackageCard(
 
                         // TODO: Add links to other view, pre-filtered by this package.
                         // TODO: Take resolutions into account.
-                        IconText(painterResource(MaterialIcon.BUG_REPORT.resource), issues.toString())
-                        IconText(painterResource(MaterialIcon.GAVEL.resource), ruleViolations.toString())
-                        IconText(painterResource(MaterialIcon.LOCK_OPEN.resource), vulnerabilities.toString())
+                        IconText(rememberVectorPainter(Icons.Default.BugReport), issues.toString())
+                        IconText(rememberVectorPainter(Icons.Default.Gavel), ruleViolations.toString())
+                        IconText(rememberVectorPainter(Icons.Default.LockOpen), vulnerabilities.toString())
 
                         TextButton(
                             onClick = onSelectPackage,

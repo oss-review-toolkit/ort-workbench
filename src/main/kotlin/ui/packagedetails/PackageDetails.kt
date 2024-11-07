@@ -24,6 +24,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -44,7 +45,6 @@ import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.workbench.composables.ScreenAppBar
 import org.ossreviewtoolkit.workbench.composables.WebLink
 import org.ossreviewtoolkit.workbench.composables.toStringOrDash
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 
 private const val TAB_METADATA = 0
 private const val TAB_SCAN_RESULTS = 1
@@ -62,7 +62,7 @@ fun PackageDetails(state: PackageDetailsState, onBack: () -> Unit) {
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(
-                        painterResource(MaterialIcon.ARROW_BACK.resource),
+                        Icons.AutoMirrored.Default.ArrowBack,
                         contentDescription = "Back",
                         modifier = Modifier.size(32.dp)
                     )

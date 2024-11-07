@@ -13,17 +13,18 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 
 import java.io.File
 
-import org.ossreviewtoolkit.workbench.utils.MaterialIcon
 import org.ossreviewtoolkit.workbench.utils.browseDirectory
 import org.ossreviewtoolkit.workbench.utils.editFile
 import org.ossreviewtoolkit.workbench.utils.openUrlInBrowser
@@ -75,21 +76,21 @@ private fun LinkPreview() {
 
 @Composable
 fun BrowseDirectoryLink(text: String, file: File) {
-    Link(text, tooltip = file.path, icon = painterResource(MaterialIcon.OPEN_IN_NEW.resource)) {
+    Link(text, tooltip = file.path, icon = rememberVectorPainter(Icons.AutoMirrored.Default.OpenInNew)) {
         browseDirectory(file)
     }
 }
 
 @Composable
 fun EditFileLink(text: String, file: File) {
-    Link(text, tooltip = file.path, icon = painterResource(MaterialIcon.OPEN_IN_NEW.resource)) {
+    Link(text, tooltip = file.path, icon = rememberVectorPainter(Icons.AutoMirrored.Default.OpenInNew)) {
         editFile(file)
     }
 }
 
 @Composable
 fun WebLink(text: String, url: String) {
-    Link(text, tooltip = url, icon = painterResource(MaterialIcon.OPEN_IN_NEW.resource)) {
+    Link(text, tooltip = url, icon = rememberVectorPainter(Icons.AutoMirrored.Default.OpenInNew)) {
         openUrlInBrowser(url)
     }
 }
