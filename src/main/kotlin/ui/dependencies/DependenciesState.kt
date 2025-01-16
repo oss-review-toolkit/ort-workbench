@@ -97,7 +97,7 @@ class DependencyTreeScope(val project: Project, val scope: Scope) : DependencyTr
 
 class DependencyTreePackage(
     val id: Identifier,
-    val pkg: CuratedPackage?,
+    val pkg: CuratedPackage,
     val linkage: PackageLinkage,
     val issues: List<Issue>,
     val resolvedLicense: ResolvedLicenseInfo?
