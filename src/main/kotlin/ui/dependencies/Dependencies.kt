@@ -43,6 +43,7 @@ import org.ossreviewtoolkit.model.Hash
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.Package
+import org.ossreviewtoolkit.model.PackageCurationData
 import org.ossreviewtoolkit.model.PackageLinkage
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.RemoteArtifact
@@ -379,7 +380,7 @@ fun PackageDetails(item: DependencyTreePackage) {
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                CurationSection(item.curatedPackage)
+                CurationSection(item.uncuratedPackage, item.curatedPackage.curations)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
@@ -455,6 +456,7 @@ private fun PackageDetailsPreview() {
         PackageDetails(
             DependencyTreePackage(
                 id = pkg.metadata.id,
+                uncuratedPackage = pkg.metadata,
                 curatedPackage = pkg,
                 linkage = PackageLinkage.STATIC,
                 issues = listOf(issue),
@@ -613,9 +615,10 @@ fun RepositoryColumn(vcs: VcsInfo, expanded: Boolean) {
 }
 
 @Composable
-fun CurationSection(curatedPackage: CuratedPackage) {
+fun CurationSection(uncuratedPackage: Package, curations: List<PackageCurationData>) {
     Expandable(header = {
-        val noOrSize = if (curatedPackage.curations.isEmpty()) "No" else curatedPackage.curations.size
+        val noOrSize = if (curations.isEmpty()) "No" else curations.size
+
         CaptionedText(
             caption = "CURATIONS",
             text = "$noOrSize curation(s) were applied to this package."
@@ -625,56 +628,58 @@ fun CurationSection(curatedPackage: CuratedPackage) {
             modifier = Modifier.padding(top = 5.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            curatedPackage.curations.forEach { curation ->
+            curations.fold(uncuratedPackage.toCuratedPackage()) { base, curation ->
                 Divider(thickness = 0.5.dp)
 
                 ProvideTextStyle(MaterialTheme.typography.overline) {
                     Text("Comment: ${curation.comment.toStringOrDash()}")
 
                     curation.purl?.let { purl ->
-                        Text("PURL: ${curatedPackage.metadata.purl} -> $purl")
+                        Text("PURL: ${base.metadata.purl} -> $purl")
                     }
 
                     curation.cpe?.let { cpe ->
-                        Text("CPE: ${curatedPackage.metadata.cpe} -> $cpe")
+                        Text("CPE: ${base.metadata.cpe} -> $cpe")
                     }
 
                     curation.authors?.let { authors ->
-                        Text("Authors: ${curatedPackage.metadata.authors} -> $authors")
+                        Text("Authors: ${base.metadata.authors} -> $authors")
                     }
 
                     curation.concludedLicense?.let { concludedLicense ->
-                        Text("Concluded license: ${curatedPackage.metadata.concludedLicense} -> $concludedLicense")
+                        Text("Concluded license: ${base.metadata.concludedLicense} -> $concludedLicense")
                     }
 
                     curation.description?.let { description ->
-                        Text("Description: ${curatedPackage.metadata.description} -> $description")
+                        Text("Description: ${base.metadata.description} -> $description")
                     }
 
                     curation.homepageUrl?.let { homepageUrl ->
-                        Text("Homepage: ${curatedPackage.metadata.homepageUrl} -> $homepageUrl")
+                        Text("Homepage: ${base.metadata.homepageUrl} -> $homepageUrl")
                     }
 
                     curation.binaryArtifact?.let { binaryArtifact ->
-                        Text("Binary artifact: ${curatedPackage.metadata.binaryArtifact} -> $binaryArtifact")
+                        Text("Binary artifact: ${base.metadata.binaryArtifact} -> $binaryArtifact")
                     }
 
                     curation.vcs?.let { vcs ->
-                        Text("VCS: ${curatedPackage.metadata.vcs} -> $vcs")
+                        Text("VCS: ${base.metadata.vcs} -> $vcs")
                     }
 
                     curation.isMetadataOnly?.let { isMetadataOnly ->
-                        Text("Is metadata only: ${curatedPackage.metadata.isMetadataOnly} -> $isMetadataOnly")
+                        Text("Is metadata only: ${base.metadata.isMetadataOnly} -> $isMetadataOnly")
                     }
 
                     curation.isModified?.let { isModified ->
-                        Text("Is modified: ${curatedPackage.metadata.isModified} -> $isModified")
+                        Text("Is modified: ${base.metadata.isModified} -> $isModified")
                     }
 
                     if (curation.declaredLicenseMapping.isNotEmpty()) {
                         Text("Declared license mapping: ${curation.declaredLicenseMapping}")
                     }
                 }
+
+                curation.apply(base)
             }
         }
     }

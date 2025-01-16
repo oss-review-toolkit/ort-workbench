@@ -10,6 +10,7 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Issue
 import org.ossreviewtoolkit.model.LicenseSource
 import org.ossreviewtoolkit.model.OrtResult
+import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.Repository
 import org.ossreviewtoolkit.model.RepositoryProvenance
@@ -108,6 +109,8 @@ class OrtApi(
     fun getCuratedPackages(): Set<CuratedPackage> = result.getPackages()
 
     fun getCuratedPackageOrProject(id: Identifier): CuratedPackage? = result.getPackageOrProject(id)
+
+    fun getUncuratedPackageOrProject(id: Identifier): Package? = result.getUncuratedPackageOrProject(id)
 
     fun getEvaluatorRun(): EvaluatorRun? = result.evaluator
 
