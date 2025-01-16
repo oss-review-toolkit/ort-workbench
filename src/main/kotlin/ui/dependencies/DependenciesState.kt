@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Issue
+import org.ossreviewtoolkit.model.Package
 import org.ossreviewtoolkit.model.PackageLinkage
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.Scope
@@ -97,6 +98,7 @@ class DependencyTreeScope(val project: Project, val scope: Scope) : DependencyTr
 
 class DependencyTreePackage(
     val id: Identifier,
+    val uncuratedPackage: Package,
     val curatedPackage: CuratedPackage,
     val linkage: PackageLinkage,
     val issues: List<Issue>,

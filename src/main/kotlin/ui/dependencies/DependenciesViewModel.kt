@@ -60,11 +60,16 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                     key = project.id.toCoordinates(),
                     children = children
                 )
-            } ?: api.getCuratedPackage(id)?.let { pkg ->
+            } ?: api.getCuratedPackage(id)?.let { curatedPackage ->
+                val uncuratedPackage = checkNotNull(api.getUncuratedPackageOrProject(id)) {
+                    "There must be an uncurated package if there is a curated one."
+                }
+
                 TreeNode(
                     value = DependencyTreePackage(
                         id = id,
-                        curatedPackage = pkg,
+                        uncuratedPackage = uncuratedPackage,
+                        curatedPackage = curatedPackage,
                         linkage = linkage,
                         issues = issues,
                         resolvedLicense = resolvedLicenses.getValue(id)
