@@ -64,7 +64,7 @@ class DependenciesViewModel(private val ortModel: OrtModel) : ViewModel() {
                 TreeNode(
                     value = DependencyTreePackage(
                         id = id,
-                        pkg = pkg,
+                        curatedPackage = pkg,
                         linkage = linkage,
                         issues = issues,
                         resolvedLicense = resolvedLicenses.getValue(id)

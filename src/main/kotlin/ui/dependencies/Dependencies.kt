@@ -359,27 +359,27 @@ fun PackageDetails(item: DependencyTreePackage) {
             Text(text = "${item.id.name} ${item.id.version}", style = MaterialTheme.typography.h4)
 
             Column(modifier = Modifier.verticalScroll(scrollState).padding(top = 15.dp)) {
-                IdentifierSection(item.pkg.metadata)
+                IdentifierSection(item.curatedPackage.metadata)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                CopyrightSection(item.pkg.metadata, item.resolvedLicense)
+                CopyrightSection(item.curatedPackage.metadata, item.resolvedLicense)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                LicenseSection(item.pkg.metadata, item.resolvedLicense)
+                LicenseSection(item.curatedPackage.metadata, item.resolvedLicense)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                DescriptionSection(item.pkg.metadata.description)
+                DescriptionSection(item.curatedPackage.metadata.description)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                PackageProvenanceSection(item.pkg.metadata)
+                PackageProvenanceSection(item.curatedPackage.metadata)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                CurationSection(item.pkg)
+                CurationSection(item.curatedPackage)
 
                 Divider(modifier = Modifier.padding(vertical = 10.dp))
 
@@ -390,7 +390,7 @@ fun PackageDetails(item: DependencyTreePackage) {
                 // TODO: Add vulnerability section.
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val homepageUrl = item.pkg?.metadata?.homepageUrl.orEmpty()
+                    val homepageUrl = item.curatedPackage?.metadata?.homepageUrl.orEmpty()
                     if (homepageUrl.isNotBlank()) {
                         WebLink("Homepage", homepageUrl)
                     }
@@ -455,7 +455,7 @@ private fun PackageDetailsPreview() {
         PackageDetails(
             DependencyTreePackage(
                 id = pkg.metadata.id,
-                pkg = pkg,
+                curatedPackage = pkg,
                 linkage = PackageLinkage.STATIC,
                 issues = listOf(issue),
                 resolvedLicense = resolvedLicense
