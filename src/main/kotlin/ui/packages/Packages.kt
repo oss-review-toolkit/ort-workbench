@@ -54,7 +54,7 @@ fun Packages(viewModel: PackagesViewModel, onSelectPackage: (Identifier) -> Unit
                         items = state.packages,
                         itemsEmptyText = "No packages found.",
                         item = { pkg ->
-                            PackageCard(pkg, onSelectPackage = { onSelectPackage(pkg.metadata.id) })
+                            PackageCard(pkg, onSelectPackage = { onSelectPackage(pkg.curatedPackage.metadata.id) })
                         }
                     )
                 },
@@ -81,8 +81,8 @@ fun Packages(viewModel: PackagesViewModel, onSelectPackage: (Identifier) -> Unit
 @Composable
 fun PackageCard(pkg: PackageInfo, onSelectPackage: () -> Unit) {
     PackageCard(
-        id = pkg.metadata.id,
-        description = pkg.metadata.description,
+        id = pkg.curatedPackage.metadata.id,
+        description = pkg.curatedPackage.metadata.description,
         license = pkg.resolvedLicenseInfo.effectiveLicense(LicenseView.CONCLUDED_OR_DECLARED_AND_DETECTED).toString(),
         issues = pkg.issues.size,
         vulnerabilities = pkg.vulnerabilities.size,
