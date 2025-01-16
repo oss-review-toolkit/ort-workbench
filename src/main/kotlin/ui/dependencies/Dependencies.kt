@@ -359,35 +359,29 @@ fun PackageDetails(item: DependencyTreePackage) {
             Text(text = "${item.id.name} ${item.id.version}", style = MaterialTheme.typography.h4)
 
             Column(modifier = Modifier.verticalScroll(scrollState).padding(top = 15.dp)) {
-                if (item.pkg == null) {
-                    Text("No package information found.")
+                IdentifierSection(item.pkg.metadata)
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
-                } else {
-                    IdentifierSection(item.pkg.metadata)
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                CopyrightSection(item.pkg.metadata, item.resolvedLicense)
 
-                    CopyrightSection(item.pkg.metadata, item.resolvedLicense)
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                LicenseSection(item.pkg.metadata, item.resolvedLicense)
 
-                    LicenseSection(item.pkg.metadata, item.resolvedLicense)
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                DescriptionSection(item.pkg.metadata.description)
 
-                    DescriptionSection(item.pkg.metadata.description)
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                PackageProvenanceSection(item.pkg.metadata)
 
-                    PackageProvenanceSection(item.pkg.metadata)
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
 
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
+                CurationSection(item.pkg)
 
-                    CurationSection(item.pkg)
-
-                    Divider(modifier = Modifier.padding(vertical = 10.dp))
-                }
+                Divider(modifier = Modifier.padding(vertical = 10.dp))
 
                 IssuesSection(item.issues)
 
