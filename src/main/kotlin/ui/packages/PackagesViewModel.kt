@@ -4,13 +4,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Identifier
-import org.ossreviewtoolkit.model.Package
-import org.ossreviewtoolkit.model.PackageCurationResult
 import org.ossreviewtoolkit.model.Provenance
 import org.ossreviewtoolkit.model.ScanResult
 import org.ossreviewtoolkit.model.ScannerDetails
@@ -60,8 +58,7 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
                     val scanResultInfos = api.getScanResults(pkg.metadata.id).map { it.toInfo() }
 
                     PackageInfo(
-                        metadata = pkg.metadata,
-                        curations = pkg.curations,
+                        curatedPackage = pkg,
                         resolvedLicenseInfo = api.getResolvedLicense(pkg.metadata.id),
                         references = references,
                         issues = issues,
@@ -91,8 +88,8 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
 
     private fun initFilter(packages: List<PackageInfo>) {
         filter.value = filter.value.updateOptions(
-            types = packages.mapTo(sortedSetOf()) { it.metadata.id.type }.toList(),
-            namespaces = packages.mapTo(sortedSetOf()) { it.metadata.id.namespace }.toList(),
+            types = packages.mapTo(sortedSetOf()) { it.curatedPackage.metadata.id.type }.toList(),
+            namespaces = packages.mapTo(sortedSetOf()) { it.curatedPackage.metadata.id.namespace }.toList(),
             projects = packages.flatMapTo(sortedSetOf()) { it.references.map { it.project } }.toList(),
             scopes = packages.flatMapTo(sortedSetOf()) {
                 it.references.flatMap { it.scopes.map { it.scope } }
@@ -151,8 +148,7 @@ class PackagesViewModel(private val ortModel: OrtModel) : ViewModel() {
 }
 
 data class PackageInfo(
-    val metadata: Package,
-    val curations: List<PackageCurationResult>,
+    val curatedPackage: CuratedPackage,
     val resolvedLicenseInfo: ResolvedLicenseInfo,
     val references: List<DependencyReference>,
     val issues: List<ResolvedIssue>,
@@ -181,9 +177,9 @@ data class PackagesFilter(
     val exclusionStatus: FilterData<ExclusionStatus> = FilterData()
 ) {
     fun check(pkg: PackageInfo) =
-        matchStringContains(text, pkg.metadata.id.toCoordinates())
-                && matchString(type.selectedItem, pkg.metadata.id.type)
-                && matchString(namespace.selectedItem, pkg.metadata.id.namespace)
+        matchStringContains(text, pkg.curatedPackage.metadata.id.toCoordinates())
+                && matchString(type.selectedItem, pkg.curatedPackage.metadata.id.type)
+                && matchString(namespace.selectedItem, pkg.curatedPackage.metadata.id.namespace)
                 && matchAnyValue(project.selectedItem, pkg.references.map { it.project })
                 && matchString(scope.selectedItem, pkg.references.flatMap { it.scopes.map { it.scope } })
                 && matchAnyValue(license.selectedItem, pkg.resolvedLicenseInfo.licenses.map { it.license })

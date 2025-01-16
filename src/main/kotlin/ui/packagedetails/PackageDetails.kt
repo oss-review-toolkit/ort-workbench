@@ -36,8 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.Package
-import org.ossreviewtoolkit.model.PackageCurationResult
 import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.RemoteArtifact
 import org.ossreviewtoolkit.model.licenses.LicenseView
@@ -123,7 +123,7 @@ private fun PackageMetadata(packageInfo: PackageInfo) {
                     PackageDescription(packageInfo.pkg.metadata)
                     PackageArtifacts(packageInfo.pkg.metadata)
                     PackageRepository(packageInfo.pkg.metadata)
-                    PackageCurations(packageInfo.pkg.curations)
+                    PackageCurations(packageInfo.pkg)
                 }
             }
         }
@@ -255,9 +255,9 @@ private fun PackageRepository(pkg: Package) {
 }
 
 @Composable
-private fun PackageCurations(curations: List<PackageCurationResult>) {
+private fun PackageCurations(curationedPackage: CuratedPackage) {
     PackageDetailsCard("Package Curations") {
-        if (curations.isEmpty()) {
+        if (curationedPackage.curations.isEmpty()) {
             Text("No package curations were applied.")
         } else {
             // TODO: Show package curations.
