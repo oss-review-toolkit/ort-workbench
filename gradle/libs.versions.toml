@@ -2,7 +2,7 @@
 detektPlugin = "1.23.7"
 composePlugin = "1.7.1"
 kotlinPlugin = "2.1.0"
-versionsPlugin = "0.51.0"
+versionsPlugin = "0.52.0"
 
 dataTableMaterial = "0.8.1"
 fileKit = "0.8.8"
