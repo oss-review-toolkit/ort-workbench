@@ -12,7 +12,7 @@ log4jApi = "2.24.3"
 log4jApiKotlin = "1.5.0"
 logbackImpl = "1.5.17"
 moleculeRuntime = "2.0.0"
-ort = "53.0.0"
+ort = "54.0.0"
 richtext = "0.20.0"
 
 [plugins]
@@ -32,6 +32,7 @@ log4jApiKotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version
 log4jApiToSlf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version.ref = "log4jApi" }
 logbackClassic = { module = "ch.qos.logback:logback-classic", version.ref = "logbackImpl" }
 moleculeRuntime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
+ortAnalyzer = { module = "org.ossreviewtoolkit:analyzer", version.ref = "ort" }
 ortDetektRules = { module = "org.ossreviewtoolkit:detekt-rules", version.ref = "ort" }
 ortModel = { module = "org.ossreviewtoolkit:model", version.ref = "ort" }
 ortPackageConfigurationProviders = { module = "org.ossreviewtoolkit.plugins:package-configuration-providers", version.ref = "ort" }
@@ -40,5 +41,5 @@ richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonma
 richtextUiMaterial = { module = "com.halilibo.compose-richtext:richtext-ui-material", version.ref = "richtext" }
 
 [bundles]
-ort = ["ortModel", "ortReporter"]
+ort = ["ortAnalyzer", "ortModel", "ortReporter"]
 richtext = ["richtextCommonmark", "richtextUiMaterial"]
