@@ -11,7 +11,7 @@ kotlinxCoroutines = "1.10.2"
 log4jApi = "2.24.3"
 log4jApiKotlin = "1.5.0"
 logbackImpl = "1.5.18"
-moleculeRuntime = "2.0.0"
+moleculeRuntime = "2.1.0"
 ort = "55.3.0"
 richtext = "0.20.0"
 
