@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 
-import org.ossreviewtoolkit.utils.ort.Environment
+import org.ossreviewtoolkit.utils.ort.ORT_VERSION
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.Tooltip
 import org.ossreviewtoolkit.workbench.composables.conditional
@@ -105,7 +105,7 @@ fun Menu(
                 Divider()
 
                 Text(
-                    "ORT version ${Environment.ORT_VERSION}",
+                    "ORT version $ORT_VERSION",
                     modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.caption
