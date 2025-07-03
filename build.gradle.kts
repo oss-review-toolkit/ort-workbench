@@ -48,7 +48,6 @@ dependencies {
     implementation(compose.components.resources)
     implementation(compose.desktop.currentOs)
     implementation(compose.materialIconsExtended)
-    implementation(libs.bundles.ort)
     implementation(libs.bundles.richtext)
     implementation(libs.dataTableMaterial)
     implementation(libs.fileKit)
@@ -58,10 +57,13 @@ dependencies {
     implementation(libs.log4jApiToSlf4j)
     implementation(libs.logbackClassic)
     implementation(libs.moleculeRuntime)
-    implementation(platform(libs.ortPackageConfigurationProviders))
+    implementation(ortLibs.analyzer)
+    implementation(ortLibs.model)
+    implementation(ortLibs.reporter)
+    implementation(platform(ortLibs.ortPlugins.packageConfigurationProviders))
 
     detektPlugins(libs.detektFormatting)
-    detektPlugins(libs.ortDetektRules)
+    detektPlugins(ortLibs.detektRules)
 }
 
 tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
