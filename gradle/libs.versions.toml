@@ -5,7 +5,7 @@ kotlinPlugin = "2.2.0"
 versionsPlugin = "0.52.0"
 
 dataTableMaterial = "0.8.1"
-fileKit = "0.8.8"
+fileKit = "0.10.0"
 jackson = "2.19.2"
 kotlinxCoroutines = "1.10.2"
 log4jApi = "2.25.1"
@@ -24,7 +24,8 @@ versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin
 [libraries]
 dataTableMaterial = { module = "com.seanproctor:data-table-material", version.ref = "dataTableMaterial" }
 detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPlugin" }
-fileKit = { module = "io.github.vinceglb:filekit-core", version.ref = "fileKit" }
+fileKitCore = { module = "io.github.vinceglb:filekit-core", version.ref = "fileKit" }
+fileKitDialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "fileKit" }
 jacksonModuleKotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 kotlinxCoroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
 log4jApiKotlin = { module = "org.apache.logging.log4j:log4j-api-kotlin", version.ref = "log4jApiKotlin" }
@@ -35,4 +36,5 @@ richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonma
 richtextUiMaterial = { module = "com.halilibo.compose-richtext:richtext-ui-material", version.ref = "richtext" }
 
 [bundles]
+fileKit = ["fileKitCore", "fileKitDialogs"]
 richtext = ["richtextCommonmark", "richtextUiMaterial"]
