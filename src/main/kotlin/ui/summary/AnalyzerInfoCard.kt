@@ -53,9 +53,6 @@ private fun AnalyzerInfoCardPreview() {
                     "TERM" to "xterm",
                     "JAVA_HOME" to "C:/Program Files/Eclipse Adoptium/jdk-17.0.5.8-hotspot/"
                 ),
-                toolVersions = mapOf(
-                    "NPM" to "9.4.0"
-                ),
                 projectStats = ProjectStats(
                     packageManagerStats = mapOf(
                         "Gradle" to PackageManagerStats(1, 2),

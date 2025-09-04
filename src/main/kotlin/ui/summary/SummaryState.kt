@@ -59,7 +59,6 @@ interface ToolInfo {
     val serializedConfig: String?
     val environment: Map<String, String>?
     val environmentVariables: Map<String, String>?
-    val toolVersions: Map<String, String>?
 }
 
 data class AnalyzerInfo(
@@ -69,7 +68,6 @@ data class AnalyzerInfo(
     override val serializedConfig: String,
     override val environment: Map<String, String>,
     override val environmentVariables: Map<String, String>,
-    override val toolVersions: Map<String, String>,
     val projectStats: ProjectStats
 ) : ToolInfo {
     companion object {
@@ -80,8 +78,7 @@ data class AnalyzerInfo(
             issueStats = EMPTY_STATS,
             serializedConfig = "",
             environment = emptyMap(),
-            environmentVariables = emptyMap(),
-            toolVersions = emptyMap()
+            environmentVariables = emptyMap()
         )
     }
 }
@@ -93,7 +90,6 @@ data class AdvisorInfo(
     override val serializedConfig: String,
     override val environment: Map<String, String>,
     override val environmentVariables: Map<String, String>,
-    override val toolVersions: Map<String, String>,
     val advisorStats: AdvisorStats
 ) : ToolInfo
 
@@ -104,7 +100,6 @@ data class ScannerInfo(
     override val serializedConfig: String,
     override val environment: Map<String, String>,
     override val environmentVariables: Map<String, String>,
-    override val toolVersions: Map<String, String>,
     val scannerStats: ScannerStats
 ) : ToolInfo
 
@@ -115,6 +110,5 @@ data class EvaluatorInfo(
     override val serializedConfig: String? = null,
     override val environment: Map<String, String>? = null,
     override val environmentVariables: Map<String, String>? = null,
-    override val toolVersions: Map<String, String>? = null,
     val evaluatorStats: EvaluatorStats
 ) : ToolInfo

@@ -59,9 +59,6 @@ private fun AdvisorInfoCardPreview() {
                     "TERM" to "xterm",
                     "JAVA_HOME" to "C:/Program Files/Eclipse Adoptium/jdk-17.0.5.8-hotspot/"
                 ),
-                toolVersions = mapOf(
-                    "NPM" to "9.4.0"
-                ),
                 advisorStats = AdvisorStats(
                     adviceProviderStats = mapOf(
                         "OSV" to AdviceProviderStats(1, 2, 3),

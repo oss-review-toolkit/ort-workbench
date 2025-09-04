@@ -63,9 +63,6 @@ private fun ScannerInfoCardPreview() {
                     "TERM" to "xterm",
                     "JAVA_HOME" to "C:/Program Files/Eclipse Adoptium/jdk-17.0.5.8-hotspot/"
                 ),
-                toolVersions = mapOf(
-                    "NPM" to "9.4.0"
-                ),
                 scannerStats = ScannerStats(
                     scannerWrapperStats = mapOf(
                         ScannerDetails(name = "ScanCode", version = "32.0.6", configuration = "") to
