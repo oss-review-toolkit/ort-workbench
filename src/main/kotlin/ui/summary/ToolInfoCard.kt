@@ -135,7 +135,7 @@ fun ToolInfoCard(
             }
         }
 
-        if (info.environment == null && info.environmentVariables == null && info.toolVersions == null) {
+        if (info.environment == null && info.environmentVariables == null) {
             IssueRow(info.issueStats)
         } else {
             Expandable(
@@ -156,14 +156,6 @@ fun ToolInfoCard(
                             Text("Environment Variables", style = MaterialTheme.typography.h6)
 
                             TwoColumnTable(headers = "Variable" to "Value", data = environmentVariables)
-                        }
-                    }
-
-                    info.toolVersions?.let { toolVersions ->
-                        Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Tool Versions", style = MaterialTheme.typography.h6)
-
-                            TwoColumnTable(headers = "Tool" to "Version", data = toolVersions)
                         }
                     }
                 }

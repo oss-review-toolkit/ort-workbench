@@ -79,7 +79,6 @@ private fun createAnalyzerInfo(api: OrtApi): AnalyzerInfo =
             serializedConfig = yamlMapper.writeValueAsString(analyzerRun.config).removeYamlPrefix(),
             environment = analyzerRun.environment.toMap(),
             environmentVariables = analyzerRun.environment.variables,
-            toolVersions = analyzerRun.environment.toolVersions,
             projectStats = api.getProjectStats()
         )
     } ?: AnalyzerInfo.EMPTY
@@ -93,7 +92,6 @@ private fun createAdvisorInfo(api: OrtApi): AdvisorInfo? =
             serializedConfig = yamlMapper.writeValueAsString(advisorRun.config).removeYamlPrefix(),
             environment = advisorRun.environment.toMap(),
             environmentVariables = advisorRun.environment.variables,
-            toolVersions = advisorRun.environment.toolVersions,
             advisorStats = api.getAdvisorStats()
         )
     }
@@ -107,7 +105,6 @@ private fun createScannerInfo(api: OrtApi): ScannerInfo? =
             serializedConfig = yamlMapper.writeValueAsString(scannerRun.config).removeYamlPrefix(),
             environment = scannerRun.environment.toMap(),
             environmentVariables = scannerRun.environment.variables,
-            toolVersions = scannerRun.environment.toolVersions,
             scannerStats = api.getScannerStats()
         )
     }
