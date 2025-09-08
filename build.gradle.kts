@@ -1,5 +1,3 @@
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-
 import io.gitlab.arturbosch.detekt.Detekt
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
@@ -13,7 +11,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin)
-    alias(libs.plugins.versions)
 }
 
 group = "org.ossreviewtoolkit.workbench"
@@ -64,21 +61,6 @@ dependencies {
 
     detektPlugins(libs.detektFormatting)
     detektPlugins(ortLibs.detektRules)
-}
-
-tasks.named<DependencyUpdatesTask>("dependencyUpdates") {
-    gradleReleaseChannel = "current"
-    outputFormatter = "json"
-
-    val nonFinalQualifiers = listOf(
-        "alpha", "b", "beta", "cr", "dev", "ea", "eap", "m", "milestone", "pr", "preview", "rc", "\\d{14}"
-    ).joinToString("|", "(", ")")
-
-    val nonFinalQualifiersRegex = Regex(".*[.-]$nonFinalQualifiers[.\\d-+]*", RegexOption.IGNORE_CASE)
-
-    rejectVersionIf {
-        candidate.version.matches(nonFinalQualifiersRegex)
-    }
 }
 
 java {

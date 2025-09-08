@@ -2,7 +2,6 @@
 detektPlugin = "1.23.8"
 composePlugin = "1.8.2"
 kotlinPlugin = "2.2.10"
-versionsPlugin = "0.52.0"
 
 dataTableMaterial = "0.8.1"
 fileKit = "0.10.0"
@@ -19,7 +18,6 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detektPlugin" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinPlugin" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
-versions = { id = "com.github.ben-manes.versions", version.ref = "versionsPlugin" }
 
 [libraries]
 dataTableMaterial = { module = "com.seanproctor:data-table-material", version.ref = "dataTableMaterial" }
