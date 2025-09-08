@@ -15,6 +15,7 @@ plugins {
 rootProject.name = "ort-workbench"
 
 dependencyResolutionManagement {
+    @Suppress("UnstableApiUsage")
     repositories {
         mavenCentral()
     }
