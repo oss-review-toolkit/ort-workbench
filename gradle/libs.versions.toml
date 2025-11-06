@@ -1,6 +1,6 @@
 [versions]
 detektPlugin = "1.23.8"
-composePlugin = "1.9.2"
+composePlugin = "1.9.3"
 kotlinPlugin = "2.2.21"
 
 dataTableMaterial = "0.8.1"
