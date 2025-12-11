@@ -103,7 +103,7 @@ data class ViolationsFilter(
     fun check(violation: ResolvedRuleViolation) =
         matchValue(identifier.selectedItem, violation.pkg)
                 && matchValue(license.selectedItem, violation.license)
-                && matchValue(licenseSource.selectedItem, violation.licenseSource)
+                && matchValue(licenseSource.selectedItem, violation.licenseSources)
                 && matchResolutionStatus(resolutionStatus.selectedItem, violation.resolutions)
                 && matchString(rule.selectedItem, violation.rule)
                 && matchValue(severity.selectedItem, violation.severity)
@@ -113,10 +113,9 @@ data class ViolationsFilter(
                 violation.pkg?.toCoordinates(),
                 violation.rule,
                 violation.license?.toString(),
-                violation.licenseSource?.name,
                 violation.message,
                 violation.howToFix
-            )
+            ) + violation.licenseSources.map { it.name }
         )
 
     @OptIn(ExperimentalStdlibApi::class)
