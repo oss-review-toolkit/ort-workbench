@@ -12,7 +12,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -84,7 +83,7 @@ fun ViolationCard(violation: ResolvedRuleViolation) {
                 violation.pkg?.let { Text(it.toCoordinates()) }
                 Box(modifier = Modifier.weight(1f))
                 violation.license?.let { Text(it.toString()) }
-                violation.licenseSource?.let { Text("Source: ${it.name}") }
+                Text("Sources: ${violation.licenseSources.joinToString { it.name }}")
             }
 
             if (violation.resolutions.isNotEmpty()) Divider()
@@ -108,7 +107,7 @@ private fun ViolationCardPreview() {
         pkg = Identifier("Maven:com.example:package:1.0.0-beta"),
         rule = "RULE_NAME",
         license = SpdxLicenseIdExpression("Apache-2.0"),
-        licenseSource = LicenseSource.DECLARED,
+        licenseSources = setOf(LicenseSource.DECLARED),
         severity = Severity.WARNING,
         message = "Some long message. ".repeat(20),
         howToFix = """

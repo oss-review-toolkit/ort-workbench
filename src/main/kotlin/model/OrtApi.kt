@@ -118,8 +118,12 @@ class OrtApi(
         result.evaluator?.let { evaluatorRun ->
             EvaluatorStats(
                 ruleViolationCount = evaluatorRun.violations.size,
-                ruleViolationCountByLicenseSource = evaluatorRun.violations.groupBy { it.licenseSource }.entries
-                    .mapNotNull { (key, value) -> key?.let { key to value.size } }.toMap(),
+                ruleViolationCountByLicenseSource = evaluatorRun.violations.groupBy {
+                    // TODO: Handle multiple license sources here.
+                    it.licenseSources.singleOrNull()
+                }.entries.mapNotNull { (key, value) ->
+                    key?.let { key to value.size }
+                }.toMap(),
                 packageWithRuleViolationCount = evaluatorRun.violations.mapNotNullTo(mutableSetOf()) { it.pkg }.size,
                 ruleThatTriggeredViolationCount = evaluatorRun.violations.mapTo(mutableSetOf()) { it.rule }.size
             )
