@@ -391,7 +391,7 @@ fun PackageDetails(item: DependencyTreePackage) {
                 // TODO: Add vulnerability section.
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val homepageUrl = item.curatedPackage?.metadata?.homepageUrl.orEmpty()
+                    val homepageUrl = item.curatedPackage.metadata.homepageUrl
                     if (homepageUrl.isNotBlank()) {
                         WebLink("Homepage", homepageUrl)
                     }
