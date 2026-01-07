@@ -9,7 +9,7 @@ jackson = "2.20.1"
 kotlinxCoroutines = "1.10.2"
 log4jApi = "2.25.3"
 log4jApiKotlin = "1.5.0"
-logbackImpl = "1.5.23"
+logbackImpl = "1.5.24"
 moleculeRuntime = "2.2.0"
 richtext = "0.20.0"
 
