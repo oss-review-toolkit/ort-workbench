@@ -1,6 +1,6 @@
 [versions]
 detektPlugin = "1.23.8"
-composePlugin = "1.9.3"
+composePlugin = "1.10.0"
 kotlinPlugin = "2.3.0"
 
 dataTableMaterial = "0.8.1"
@@ -10,6 +10,7 @@ kotlinxCoroutines = "1.10.2"
 log4jApi = "2.25.3"
 log4jApiKotlin = "1.5.0"
 logbackImpl = "1.5.24"
+materialIcons = "1.7.3"
 moleculeRuntime = "2.2.0"
 richtext = "0.20.0"
 
@@ -20,6 +21,8 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinPlugin" }
 
 [libraries]
+composeComponentsResources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composePlugin" }
+composeMaterialIconsExtended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIcons" }
 dataTableMaterial = { module = "com.seanproctor:data-table-material", version.ref = "dataTableMaterial" }
 detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detektPlugin" }
 fileKitCore = { module = "io.github.vinceglb:filekit-core", version.ref = "fileKit" }
@@ -34,5 +37,6 @@ richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonma
 richtextUiMaterial = { module = "com.halilibo.compose-richtext:richtext-ui-material", version.ref = "richtext" }
 
 [bundles]
+compose = ["composeComponentsResources", "composeMaterialIconsExtended"]
 fileKit = ["fileKitCore", "fileKitDialogs"]
 richtext = ["richtextCommonmark", "richtextUiMaterial"]
