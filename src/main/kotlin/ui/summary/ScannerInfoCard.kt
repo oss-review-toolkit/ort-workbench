@@ -1,7 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui.summary
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.material.RichText

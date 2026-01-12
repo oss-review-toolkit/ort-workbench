@@ -42,9 +42,8 @@ repositories {
 }
 
 dependencies {
-    implementation(compose.components.resources)
+    implementation(libs.bundles.compose)
     implementation(compose.desktop.currentOs)
-    implementation(compose.materialIconsExtended)
     implementation(libs.bundles.fileKit)
     implementation(libs.bundles.richtext)
     implementation(libs.dataTableMaterial)
@@ -117,7 +116,7 @@ compose {
                 packageName = "ort-workbench"
                 packageVersion = "1.0.0"
 
-                val iconsRoot = project.file("src/main/resources/app-icon")
+                val iconsRoot = project.file("src/main/composeResources")
 
                 macOS {
                     iconFile = iconsRoot.resolve("icon.icns")
