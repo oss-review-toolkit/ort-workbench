@@ -42,8 +42,8 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.bundles.compose)
     implementation(compose.desktop.currentOs)
+    implementation(libs.bundles.compose)
     implementation(libs.bundles.fileKit)
     implementation(libs.bundles.richtext)
     implementation(libs.dataTableMaterial)
