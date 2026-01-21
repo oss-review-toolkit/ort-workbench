@@ -20,7 +20,7 @@ fun main() {
     val workbenchController = WorkbenchController()
 
     // See https://github.com/JetBrains/compose-multiplatform/issues/2369.
-    val iconBytes = URI.create(Res.getUri("drawable/icon.png")).toURL().readBytes()
+    val iconBytes = URI.create(Res.getUri("drawable/app-icon.png")).toURL().readBytes()
     val icon = BitmapPainter(iconBytes.decodeToImageBitmap())
 
     singleWindowApplication(

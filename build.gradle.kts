@@ -119,16 +119,16 @@ compose {
                 val iconsRoot = project.file("src/main/composeResources")
 
                 macOS {
-                    iconFile = iconsRoot.resolve("icon.icns")
+                    iconFile = iconsRoot.resolve("app-icon.icns")
                     jvmArgs("-Dapple.awt.application.appearance=system")
                 }
 
                 windows {
-                    iconFile = iconsRoot.resolve("icon.ico")
+                    iconFile = iconsRoot.resolve("app-icon.ico")
                 }
 
                 linux {
-                    iconFile = iconsRoot.resolve("icon.png")
+                    iconFile = iconsRoot.resolve("app-icon.png")
                 }
             }
         }
