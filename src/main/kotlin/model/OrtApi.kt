@@ -82,25 +82,24 @@ class OrtApi(
     fun getAnalyzerIssueStats(): IssueStatistics =
         getAnalyzerIssues().values.flatten().toIssueStatistics(config.severeIssueThreshold)
 
-    fun getAdvisorStats(): AdvisorStats =
-        result.advisor?.let { advisorRun ->
-            val providers = advisorRun.results.values.flatten().map { it.advisor.name }
+    fun getAdvisorStats(): AdvisorStats = result.advisor?.let { advisorRun ->
+        val providers = advisorRun.results.values.flatten().map { it.advisor.name }
 
-            AdvisorStats(
-                adviceProviderStats = providers.associateWith { provider ->
-                    val resultsForProvider = advisorRun.results
-                        .filter { (_, results) -> results.any { it.advisor.name == provider } }
-                        .mapValues { (_, results) -> results.single { it.advisor.name == provider } }
+        AdvisorStats(
+            adviceProviderStats = providers.associateWith { provider ->
+                val resultsForProvider = advisorRun.results
+                    .filter { (_, results) -> results.any { it.advisor.name == provider } }
+                    .mapValues { (_, results) -> results.single { it.advisor.name == provider } }
 
-                    AdviceProviderStats(
-                        requestedPackageCount = resultsForProvider.size,
-                        packageWithVulnerabilityCount = resultsForProvider.values
-                            .count { it.vulnerabilities.isNotEmpty() },
-                        totalVulnerabilityCount = resultsForProvider.values.sumOf { it.vulnerabilities.size }
-                    )
-                }
-            )
-        } ?: AdvisorStats(emptyMap())
+                AdviceProviderStats(
+                    requestedPackageCount = resultsForProvider.size,
+                    packageWithVulnerabilityCount = resultsForProvider.values
+                        .count { it.vulnerabilities.isNotEmpty() },
+                    totalVulnerabilityCount = resultsForProvider.values.sumOf { it.vulnerabilities.size }
+                )
+            }
+        )
+    } ?: AdvisorStats(emptyMap())
 
     fun getAnalyzerRun(): AnalyzerRun? = result.analyzer
 
@@ -114,20 +113,19 @@ class OrtApi(
 
     fun getEvaluatorRun(): EvaluatorRun? = result.evaluator
 
-    fun getEvaluatorStats(): EvaluatorStats =
-        result.evaluator?.let { evaluatorRun ->
-            EvaluatorStats(
-                ruleViolationCount = evaluatorRun.violations.size,
-                ruleViolationCountByLicenseSource = evaluatorRun.violations.groupBy {
-                    // TODO: Handle multiple license sources here.
-                    it.licenseSources.singleOrNull()
-                }.entries.mapNotNull { (key, value) ->
-                    key?.let { key to value.size }
-                }.toMap(),
-                packageWithRuleViolationCount = evaluatorRun.violations.mapNotNullTo(mutableSetOf()) { it.pkg }.size,
-                ruleThatTriggeredViolationCount = evaluatorRun.violations.mapTo(mutableSetOf()) { it.rule }.size
-            )
-        } ?: EvaluatorStats.EMPTY
+    fun getEvaluatorStats(): EvaluatorStats = result.evaluator?.let { evaluatorRun ->
+        EvaluatorStats(
+            ruleViolationCount = evaluatorRun.violations.size,
+            ruleViolationCountByLicenseSource = evaluatorRun.violations.groupBy {
+                // TODO: Handle multiple license sources here.
+                it.licenseSources.singleOrNull()
+            }.entries.mapNotNull { (key, value) ->
+                key?.let { key to value.size }
+            }.toMap(),
+            packageWithRuleViolationCount = evaluatorRun.violations.mapNotNullTo(mutableSetOf()) { it.pkg }.size,
+            ruleThatTriggeredViolationCount = evaluatorRun.violations.mapTo(mutableSetOf()) { it.rule }.size
+        )
+    } ?: EvaluatorStats.EMPTY
 
     fun getIssues(): Map<Identifier, Set<Issue>> = result.getIssues()
 
@@ -187,28 +185,27 @@ class OrtApi(
 
     fun getScannerRun(): ScannerRun? = result.scanner
 
-    fun getScannerStats(): ScannerStats =
-        result.scanner?.let { scannerRun ->
-            val scannerWrappers = scannerRun.scanResults.map { it.scanner }
+    fun getScannerStats(): ScannerStats = result.scanner?.let { scannerRun ->
+        val scannerWrappers = scannerRun.scanResults.map { it.scanner }
 
-            ScannerStats(
-                scannerWrapperStats = scannerWrappers.associateWith { details ->
-                    val scanResults = scannerRun.scanResults.filter { it.scanner == details }
+        ScannerStats(
+            scannerWrapperStats = scannerWrappers.associateWith { details ->
+                val scanResults = scannerRun.scanResults.filter { it.scanner == details }
 
-                    ScannerWrapperStats(
-                        scannedPackageCount = scannerRun.getAllScanResults().filter { (_, scanResults) ->
-                            scanResults.any { it.scanner == details }
-                        }.size,
-                        scannedSourceArtifactCount = scanResults.count { it.provenance is ArtifactProvenance },
-                        scannedRepositoryCount = scanResults.count { it.provenance is RepositoryProvenance },
-                        detectedLicenseCount = scanResults.flatMap { it.summary.licenseFindings }
-                            .mapTo(mutableSetOf()) { it.license }.size,
-                        detectedCopyrightCount = scanResults.flatMap { it.summary.copyrightFindings }
-                            .mapTo(mutableSetOf()) { it.statement }.size
-                    )
-                }
-            )
-        } ?: ScannerStats.EMPTY
+                ScannerWrapperStats(
+                    scannedPackageCount = scannerRun.getAllScanResults().filter { (_, scanResults) ->
+                        scanResults.any { it.scanner == details }
+                    }.size,
+                    scannedSourceArtifactCount = scanResults.count { it.provenance is ArtifactProvenance },
+                    scannedRepositoryCount = scanResults.count { it.provenance is RepositoryProvenance },
+                    detectedLicenseCount = scanResults.flatMap { it.summary.licenseFindings }
+                        .mapTo(mutableSetOf()) { it.license }.size,
+                    detectedCopyrightCount = scanResults.flatMap { it.summary.copyrightFindings }
+                        .mapTo(mutableSetOf()) { it.statement }.size
+                )
+            }
+        )
+    } ?: ScannerStats.EMPTY
 
     fun getScanResults(id: Identifier): List<ScanResult> = result.getScanResultsForId(id)
 
@@ -228,7 +225,7 @@ data class ProjectStats(
 
 data class PackageManagerStats(
     val projectCount: Int,
-    val dependencyCount: Int,
+    val dependencyCount: Int
 )
 
 data class AdvisorStats(

@@ -19,11 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun StyledCard(
-    titleIcon: Painter? = null,
-    title: String,
-    content: @Composable (ColumnScope.() -> Unit)
-) {
+fun StyledCard(titleIcon: Painter? = null, title: String, content: @Composable (ColumnScope.() -> Unit)) =
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column {
             Surface(color = MaterialTheme.colors.primaryVariant, modifier = Modifier.fillMaxWidth()) {
@@ -42,4 +38,3 @@ fun StyledCard(
             }
         }
     }
-}

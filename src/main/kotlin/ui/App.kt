@@ -211,11 +211,7 @@ fun MainLayout(controller: WorkbenchController, onLoadResult: () -> Unit) {
 }
 
 @Composable
-private fun Content(
-    backstackEntry: BackstackEntry,
-    onSelectPackage: (Identifier) -> Unit,
-    onBack: () -> Unit
-) {
+private fun Content(backstackEntry: BackstackEntry, onSelectPackage: (Identifier) -> Unit, onBack: () -> Unit) {
     if (backstackEntry.screen !is MainScreen<*>) {
         // TODO: Show error.
         return

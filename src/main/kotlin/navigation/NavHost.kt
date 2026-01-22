@@ -5,10 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
 @Composable
-fun NavHost(
-    navigationController: NavController,
-    content: @Composable (backstackEntry: BackstackEntry) -> Unit
-) {
+fun NavHost(navigationController: NavController, content: @Composable (backstackEntry: BackstackEntry) -> Unit) {
     val backstackEntry by navigationController.backstackEntry.collectAsState()
 
     backstackEntry?.let { content(it) }

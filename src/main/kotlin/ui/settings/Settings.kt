@@ -132,15 +132,13 @@ fun ConfigFilesSettings(viewModel: SettingsViewModel) {
 }
 
 enum class OptionState {
-    ERROR, DISABLED, SUCCESS
+    ERROR,
+    DISABLED,
+    SUCCESS
 }
 
 @Composable
-fun OptionCard(
-    config: OrtConfigFileInfo,
-    state: OptionState,
-    selector: @Composable ColumnScope.() -> Unit = {}
-) {
+fun OptionCard(config: OrtConfigFileInfo, state: OptionState, selector: @Composable ColumnScope.() -> Unit = {}) {
     val alpha = if (state == OptionState.DISABLED) LocalContentAlpha.current / 2f else LocalContentAlpha.current
 
     CompositionLocalProvider(LocalContentAlpha provides alpha) {

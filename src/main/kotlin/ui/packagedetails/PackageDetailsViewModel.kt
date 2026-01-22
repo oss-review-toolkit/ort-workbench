@@ -13,18 +13,12 @@ import org.ossreviewtoolkit.workbench.model.OrtModel
 
 class PackageDetailsViewModel(private val ortModel: OrtModel, private val pkgId: Identifier) :
     MoleculeViewModel<Unit, PackageDetailsState>() {
-
     @Composable
-    override fun composeModel(events: Flow<Unit>): PackageDetailsState {
-        return PackageDetailsPresenter(ortModel, pkgId)
-    }
+    override fun composeModel(events: Flow<Unit>): PackageDetailsState = PackageDetailsPresenter(ortModel, pkgId)
 }
 
 @Composable
-fun PackageDetailsPresenter(
-    ortModel: OrtModel,
-    pkgId: Identifier
-): PackageDetailsState {
+fun PackageDetailsPresenter(ortModel: OrtModel, pkgId: Identifier): PackageDetailsState {
     val api by ortModel.api.collectAsState()
     val packageInfo = remember(pkgId) {
         val pkg = api.getCuratedPackageOrProject(pkgId)

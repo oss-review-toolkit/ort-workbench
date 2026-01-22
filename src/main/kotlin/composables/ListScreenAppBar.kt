@@ -13,11 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ListScreenAppBar(
-    filterText: String,
-    onUpdateFilterText: (text: String) -> Unit,
-    onToggleFilter: () -> Unit
-) {
+fun ListScreenAppBar(filterText: String, onUpdateFilterText: (text: String) -> Unit, onToggleFilter: () -> Unit) =
     ScreenAppBar(
         title = {},
         actions = {
@@ -34,4 +30,3 @@ fun ListScreenAppBar(
             }
         }
     )
-}

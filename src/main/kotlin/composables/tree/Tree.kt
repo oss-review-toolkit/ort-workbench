@@ -71,36 +71,35 @@ fun <VALUE> Tree(
         DefaultItemContent(item, isSelected)
     }
 ) {
-    fun handleKeyEvent(event: KeyEvent) =
-        when (event.type) {
-            KeyEventType.KeyUp -> {
-                when (event.key) {
-                    Key.DirectionDown -> {
-                        state.selectNextItem()
-                        true
-                    }
-
-                    Key.DirectionUp -> {
-                        state.selectPreviousItem()
-                        true
-                    }
-
-                    Key.DirectionLeft -> {
-                        state.collapseSelectedItem()
-                        true
-                    }
-
-                    Key.DirectionRight -> {
-                        state.expandSelectedItem()
-                        true
-                    }
-
-                    else -> false
+    fun handleKeyEvent(event: KeyEvent) = when (event.type) {
+        KeyEventType.KeyUp -> {
+            when (event.key) {
+                Key.DirectionDown -> {
+                    state.selectNextItem()
+                    true
                 }
-            }
 
-            else -> false
+                Key.DirectionUp -> {
+                    state.selectPreviousItem()
+                    true
+                }
+
+                Key.DirectionLeft -> {
+                    state.collapseSelectedItem()
+                    true
+                }
+
+                Key.DirectionRight -> {
+                    state.expandSelectedItem()
+                    true
+                }
+
+                else -> false
+            }
         }
+
+        else -> false
+    }
 
     if (state.isItemAutoSelected) {
         val selectedItemIndex = state.visibleItems.indexOf(state.selectedItem)

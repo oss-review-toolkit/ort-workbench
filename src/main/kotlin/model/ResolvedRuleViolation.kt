@@ -15,7 +15,7 @@ data class ResolvedRuleViolation(
     val severity: Severity,
     val message: String,
     val howToFix: String,
-    val resolutions: List<RuleViolationResolution>,
+    val resolutions: List<RuleViolationResolution>
 ) {
     constructor(
         resolutions: List<RuleViolationResolution>,

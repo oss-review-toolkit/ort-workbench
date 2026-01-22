@@ -143,7 +143,7 @@ fun VulnerabilitiesFilterPanel(
     onUpdateIdentifiersFilter: (identifier: Identifier?) -> Unit,
     onUpdateResolutionStatusFilter: (status: ResolutionStatus?) -> Unit,
     onUpdateScoringSystemsFilter: (scoringSystem: String?) -> Unit,
-    onUpdateSeveritiesFilter: (severity: String?) -> Unit,
+    onUpdateSeveritiesFilter: (severity: String?) -> Unit
 ) {
     FilterPanel(visible = visible) {
         FilterButton(data = state.filter.advisor, label = "Advisor", onFilterChange = onUpdateAdvisorsFilter)

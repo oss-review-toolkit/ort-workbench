@@ -16,11 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 private const val ICON_SCALE = 0.6f
 
 @Composable
-fun IconText(
-    icon: Painter,
-    text: String,
-    contentDescription: String? = null
-) {
+fun IconText(icon: Painter, text: String, contentDescription: String? = null) =
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             painter = icon,
@@ -29,7 +25,6 @@ fun IconText(
         )
         Text(text)
     }
-}
 
 @Composable
 @Preview

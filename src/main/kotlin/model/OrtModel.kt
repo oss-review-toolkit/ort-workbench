@@ -49,6 +49,7 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
     private val _ortResultFile: MutableStateFlow<File?> = MutableStateFlow(null)
     val ortResultFile: StateFlow<File?> = _ortResultFile
 
+    @Suppress("BackingPropertyNaming")
     private val _ortResult = MutableStateFlow<OrtResult?>(null)
 
     private val _info = MutableStateFlow<OrtModelInfo?>(null)
@@ -156,73 +157,72 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
         }
     }
 
-    private fun createOrtApi(configDirPath: String, result: OrtResult): OrtApi? =
-        runCatching {
-            val configDir = File(configDirPath)
+    private fun createOrtApi(configDirPath: String, result: OrtResult): OrtApi? = runCatching {
+        val configDir = File(configDirPath)
 
-            val ortConfigFile = configDir.resolve(ORT_CONFIG_FILENAME)
-            val config = ortConfigFile.takeIf { it.isFile }?.let { OrtConfiguration.load(file = it) }
-                ?: OrtConfiguration()
+        val ortConfigFile = configDir.resolve(ORT_CONFIG_FILENAME)
+        val config = ortConfigFile.takeIf { it.isFile }?.let { OrtConfiguration.load(file = it) }
+            ?: OrtConfiguration()
 
-            LicenseFilePatterns.configure(config.licenseFilePatterns)
+        LicenseFilePatterns.configure(config.licenseFilePatterns)
 
-            val copyrightGarbage =
-                configDir.resolve(ORT_COPYRIGHT_GARBAGE_FILENAME).takeIf { it.isFile }?.readValue()
-                    ?: CopyrightGarbage()
+        val copyrightGarbage =
+            configDir.resolve(ORT_COPYRIGHT_GARBAGE_FILENAME).takeIf { it.isFile }?.readValue()
+                ?: CopyrightGarbage()
 
-            val fileArchiver = runCatching {
-                config.scanner.archive.createFileArchiver()
-            }.getOrElse {
-                logger.warn {
-                    "Failed to create the configured scanner file archiver, falling back to the default one."
-                }
-
-                FileArchiverConfiguration().createFileArchiver()
+        val fileArchiver = runCatching {
+            config.scanner.archive.createFileArchiver()
+        }.getOrElse {
+            logger.warn {
+                "Failed to create the configured scanner file archiver, falling back to the default one."
             }
 
-            val resolvedPackageConfigurationProvider = SimplePackageConfigurationProvider(
-                configurations = result.resolvedConfiguration.packageConfigurations.orEmpty()
-            )
-            val packageConfigurationsDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
+            FileArchiverConfiguration().createFileArchiver()
+        }
 
-            val packageConfigurationProvider =
-                if (useOnlyResolvedConfiguration.value || !packageConfigurationsDir.isDirectory) {
-                    resolvedPackageConfigurationProvider
-                } else {
-                    CompositePackageConfigurationProvider(
-                        resolvedPackageConfigurationProvider,
-                        DirPackageConfigurationProvider(packageConfigurationsDir)
-                    )
-                }
+        val resolvedPackageConfigurationProvider = SimplePackageConfigurationProvider(
+            configurations = result.resolvedConfiguration.packageConfigurations.orEmpty()
+        )
+        val packageConfigurationsDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
 
-            val licenseInfoProvider = DefaultLicenseInfoProvider(result)
-            val licenseInfoResolver = result.createLicenseInfoResolver(
-                copyrightGarbage,
-                config.addAuthorsToCopyrights,
-                fileArchiver
-            )
+        val packageConfigurationProvider =
+            if (useOnlyResolvedConfiguration.value || !packageConfigurationsDir.isDirectory) {
+                resolvedPackageConfigurationProvider
+            } else {
+                CompositePackageConfigurationProvider(
+                    resolvedPackageConfigurationProvider,
+                    DirPackageConfigurationProvider(packageConfigurationsDir)
+                )
+            }
 
-            val resolutionsFile = configDir.resolve(ORT_RESOLUTIONS_FILENAME)
-            val resolutionProvider = DefaultResolutionProvider.create(
-                result,
-                resolutionsFile.takeUnless { useOnlyResolvedConfiguration.value }
-            )
+        val licenseInfoProvider = DefaultLicenseInfoProvider(result)
+        val licenseInfoResolver = result.createLicenseInfoResolver(
+            copyrightGarbage,
+            config.addAuthorsToCopyrights,
+            fileArchiver
+        )
 
-            OrtApi(
-                result,
-                config,
-                copyrightGarbage,
-                fileArchiver,
-                licenseInfoProvider,
-                licenseInfoResolver,
-                packageConfigurationProvider,
-                resolutionProvider
-            )
-        }.onFailure {
-            // TODO: Provide more context where exactly the error occurred, e.g. which config file failed to parse.
-            _error.value = "Could not process ORT result: ${it.message}"
-            LicenseFilePatterns.configure(LicenseFilePatterns.DEFAULT)
-        }.getOrNull()
+        val resolutionsFile = configDir.resolve(ORT_RESOLUTIONS_FILENAME)
+        val resolutionProvider = DefaultResolutionProvider.create(
+            result,
+            resolutionsFile.takeUnless { useOnlyResolvedConfiguration.value }
+        )
+
+        OrtApi(
+            result,
+            config,
+            copyrightGarbage,
+            fileArchiver,
+            licenseInfoProvider,
+            licenseInfoResolver,
+            packageConfigurationProvider,
+            resolutionProvider
+        )
+    }.onFailure {
+        // TODO: Provide more context where exactly the error occurred, e.g. which config file failed to parse.
+        _error.value = "Could not process ORT result: ${it.message}"
+        LicenseFilePatterns.configure(LicenseFilePatterns.DEFAULT)
+    }.getOrNull()
 }
 
 data class WorkbenchSettings(
@@ -245,5 +245,7 @@ enum class OrtApiState {
 }
 
 enum class WorkbenchTheme {
-    AUTO, LIGHT, DARK
+    AUTO,
+    LIGHT,
+    DARK
 }
