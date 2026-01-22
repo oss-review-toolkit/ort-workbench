@@ -1,18 +1,16 @@
 complexity:
   CyclomaticComplexMethod:
-    threshold: 20
+    allowedComplexity: 20
   LongMethod:
-    active: true
-    threshold: 80
+    allowedLines: 80
   LongParameterList:
-    active: true
-    functionThreshold: 15
-    constructorThreshold: 11
+    allowedConstructorParameters: 11
+    allowedFunctionParameters: 15
     ignoreDefaultParameters: true
   TooManyFunctions:
     active: false
 
-formatting:
+ktlint:
   ChainWrapping:
     active: false
   CommentWrapping:
@@ -41,7 +39,7 @@ style:
   MagicNumber:
     active: true
     ignoreAnnotated: ['Composable', 'Preview']
-  UnusedPrivateMember:
+  UnusedPrivateFunction:
     active: true
     ignoreAnnotated: ['Preview']
   WildcardImport:
