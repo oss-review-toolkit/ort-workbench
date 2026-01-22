@@ -95,13 +95,12 @@ data class VulnerabilitiesFilter(
     val severity: FilterData<String> = FilterData(),
     val text: String = ""
 ) {
-    fun check(vulnerability: ResolvedVulnerability) =
-        matchString(advisor.selectedItem, vulnerability.advisor)
-                && matchValue(identifier.selectedItem, vulnerability.pkg)
-                && matchResolutionStatus(resolutionStatus.selectedItem, vulnerability.resolutions)
-                && matchString(scoringSystem.selectedItem, vulnerability.references.mapNotNull { it.scoringSystem })
-                && matchString(severity.selectedItem, vulnerability.references.mapNotNull { it.severity })
-                && matchStringContains(text, vulnerability.pkg.toCoordinates(), vulnerability.id, vulnerability.advisor)
+    fun check(vulnerability: ResolvedVulnerability) = matchString(advisor.selectedItem, vulnerability.advisor)
+        && matchValue(identifier.selectedItem, vulnerability.pkg)
+        && matchResolutionStatus(resolutionStatus.selectedItem, vulnerability.resolutions)
+        && matchString(scoringSystem.selectedItem, vulnerability.references.mapNotNull { it.scoringSystem })
+        && matchString(severity.selectedItem, vulnerability.references.mapNotNull { it.severity })
+        && matchStringContains(text, vulnerability.pkg.toCoordinates(), vulnerability.id, vulnerability.advisor)
 
     @OptIn(ExperimentalStdlibApi::class)
     fun updateOptions(

@@ -164,42 +164,41 @@ private fun Search(
     onSelectNextSearchHit: () -> Unit,
     onSelectPreviousSearchHit: () -> Unit
 ) {
-    fun handleSearchKeyEvent(event: KeyEvent) =
-        when (event.type) {
-            KeyEventType.KeyDown -> {
-                when (event.key) {
-                    Key.Enter -> {
-                        onSelectNextSearchHit()
-                        true
-                    }
-
-                    else -> false
+    fun handleSearchKeyEvent(event: KeyEvent) = when (event.type) {
+        KeyEventType.KeyDown -> {
+            when (event.key) {
+                Key.Enter -> {
+                    onSelectNextSearchHit()
+                    true
                 }
+
+                else -> false
             }
-
-            KeyEventType.KeyUp -> {
-                when (event.key) {
-                    Key.DirectionDown -> {
-                        onSelectNextSearchHit()
-                        true
-                    }
-
-                    Key.DirectionUp -> {
-                        onSelectPreviousSearchHit()
-                        true
-                    }
-
-                    Key.Escape -> {
-                        onSearchChange("")
-                        true
-                    }
-
-                    else -> false
-                }
-            }
-
-            else -> false
         }
+
+        KeyEventType.KeyUp -> {
+            when (event.key) {
+                Key.DirectionDown -> {
+                    onSelectNextSearchHit()
+                    true
+                }
+
+                Key.DirectionUp -> {
+                    onSelectPreviousSearchHit()
+                    true
+                }
+
+                Key.Escape -> {
+                    onSearchChange("")
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        else -> false
+    }
 
     Box(modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp)) {
         FilterTextField(
@@ -243,9 +242,7 @@ private fun TitleRowPreview() {
 }
 
 @Composable
-fun DependencyTree(
-    state: DependenciesState.Success,
-) {
+fun DependencyTree(state: DependenciesState.Success) {
     Box(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
 

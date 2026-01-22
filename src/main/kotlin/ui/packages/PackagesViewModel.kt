@@ -176,17 +176,16 @@ data class PackagesFilter(
     val vulnerabilityStatus: FilterData<VulnerabilityStatus> = FilterData(),
     val exclusionStatus: FilterData<ExclusionStatus> = FilterData()
 ) {
-    fun check(pkg: PackageInfo) =
-        matchStringContains(text, pkg.curatedPackage.metadata.id.toCoordinates())
-                && matchString(type.selectedItem, pkg.curatedPackage.metadata.id.type)
-                && matchString(namespace.selectedItem, pkg.curatedPackage.metadata.id.namespace)
-                && matchAnyValue(project.selectedItem, pkg.references.map { it.project })
-                && matchString(scope.selectedItem, pkg.references.flatMap { it.scopes.map { it.scope } })
-                && matchAnyValue(license.selectedItem, pkg.resolvedLicenseInfo.licenses.map { it.license })
-                && matchIssueStatus(issueStatus.selectedItem, pkg.issues)
-                && matchViolationStatus(violationStatus.selectedItem, pkg.violations)
-                && matchVulnerabilityStatus(vulnerabilityStatus.selectedItem, pkg.vulnerabilities)
-                && matchExclusionStatus(exclusionStatus.selectedItem, pkg.isExcluded())
+    fun check(pkg: PackageInfo) = matchStringContains(text, pkg.curatedPackage.metadata.id.toCoordinates())
+        && matchString(type.selectedItem, pkg.curatedPackage.metadata.id.type)
+        && matchString(namespace.selectedItem, pkg.curatedPackage.metadata.id.namespace)
+        && matchAnyValue(project.selectedItem, pkg.references.map { it.project })
+        && matchString(scope.selectedItem, pkg.references.flatMap { it.scopes.map { it.scope } })
+        && matchAnyValue(license.selectedItem, pkg.resolvedLicenseInfo.licenses.map { it.license })
+        && matchIssueStatus(issueStatus.selectedItem, pkg.issues)
+        && matchViolationStatus(violationStatus.selectedItem, pkg.violations)
+        && matchVulnerabilityStatus(vulnerabilityStatus.selectedItem, pkg.vulnerabilities)
+        && matchExclusionStatus(exclusionStatus.selectedItem, pkg.isExcluded())
 
     @OptIn(ExperimentalStdlibApi::class)
     fun updateOptions(

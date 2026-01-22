@@ -100,14 +100,13 @@ data class ViolationsFilter(
     val severity: FilterData<Severity> = FilterData(),
     val text: String = ""
 ) {
-    fun check(violation: ResolvedRuleViolation) =
-        matchValue(identifier.selectedItem, violation.pkg)
-                && matchValue(license.selectedItem, violation.license)
-                && matchValue(licenseSource.selectedItem, violation.licenseSources)
-                && matchResolutionStatus(resolutionStatus.selectedItem, violation.resolutions)
-                && matchString(rule.selectedItem, violation.rule)
-                && matchValue(severity.selectedItem, violation.severity)
-                && matchStringContains(
+    fun check(violation: ResolvedRuleViolation) = matchValue(identifier.selectedItem, violation.pkg)
+        && matchValue(license.selectedItem, violation.license)
+        && matchValue(licenseSource.selectedItem, violation.licenseSources)
+        && matchResolutionStatus(resolutionStatus.selectedItem, violation.resolutions)
+        && matchString(rule.selectedItem, violation.rule)
+        && matchValue(severity.selectedItem, violation.severity)
+        && matchStringContains(
             text,
             listOfNotNull(
                 violation.pkg?.toCoordinates(),
@@ -119,17 +118,14 @@ data class ViolationsFilter(
         )
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun updateOptions(
-        identifiers: List<Identifier>,
-        licenses: List<SpdxSingleLicenseExpression>,
-        rules: List<String>
-    ) = ViolationsFilter(
-        identifier = identifier.updateOptions(identifiers),
-        license = license.updateOptions(licenses),
-        licenseSource = licenseSource.updateOptions(LicenseSource.entries),
-        resolutionStatus = resolutionStatus.updateOptions(ResolutionStatus.entries),
-        rule = rule.updateOptions(rules),
-        severity = severity.updateOptions(Severity.entries),
-        text = text
-    )
+    fun updateOptions(identifiers: List<Identifier>, licenses: List<SpdxSingleLicenseExpression>, rules: List<String>) =
+        ViolationsFilter(
+            identifier = identifier.updateOptions(identifiers),
+            license = license.updateOptions(licenses),
+            licenseSource = licenseSource.updateOptions(LicenseSource.entries),
+            resolutionStatus = resolutionStatus.updateOptions(ResolutionStatus.entries),
+            rule = rule.updateOptions(rules),
+            severity = severity.updateOptions(Severity.entries),
+            text = text
+        )
 }

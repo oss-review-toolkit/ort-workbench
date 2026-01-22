@@ -72,7 +72,7 @@ fun ToolInfoCard(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
                         painter = rememberVectorPainter(Icons.Default.Timelapse),

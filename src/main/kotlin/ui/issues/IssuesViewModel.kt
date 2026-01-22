@@ -90,19 +90,15 @@ data class IssuesFilter(
     val text: String = "",
     val tool: FilterData<Tool> = FilterData()
 ) {
-    fun check(issue: ResolvedIssue) =
-        matchValue(identifier.selectedItem, issue.id)
-                && matchResolutionStatus(resolutionStatus.selectedItem, issue.resolutions)
-                && matchValue(severity.selectedItem, issue.severity)
-                && matchString(source.selectedItem, issue.source)
-                && matchStringContains(text, issue.id.toCoordinates(), issue.source, issue.message)
-                && matchValue(tool.selectedItem, issue.tool)
+    fun check(issue: ResolvedIssue) = matchValue(identifier.selectedItem, issue.id)
+        && matchResolutionStatus(resolutionStatus.selectedItem, issue.resolutions)
+        && matchValue(severity.selectedItem, issue.severity)
+        && matchString(source.selectedItem, issue.source)
+        && matchStringContains(text, issue.id.toCoordinates(), issue.source, issue.message)
+        && matchValue(tool.selectedItem, issue.tool)
 
     @OptIn(ExperimentalStdlibApi::class)
-    fun updateOptions(
-        identifiers: List<Identifier>,
-        sources: List<String>
-    ) = IssuesFilter(
+    fun updateOptions(identifiers: List<Identifier>, sources: List<String>) = IssuesFilter(
         identifier = identifier.updateOptions(identifiers),
         resolutionStatus = resolutionStatus.updateOptions(ResolutionStatus.entries),
         severity = severity.updateOptions(Severity.entries),

@@ -196,7 +196,7 @@ data class FileInfo(
     val file: File,
     val type: FileType,
     val exists: Boolean,
-    val errorMessage: String?,
+    val errorMessage: String?
 )
 
 enum class FileType { DIRECTORY, FILE }

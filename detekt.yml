@@ -11,7 +11,11 @@ complexity:
     active: false
 
 ktlint:
+  ChainMethodContinuation:
+    active: false
   ChainWrapping:
+    active: false
+  ClassSignature:
     active: false
   CommentWrapping:
     active: false
@@ -21,8 +25,18 @@ ktlint:
     active: false
   MaximumLineLength:
     active: false
+  NoBlankLineInList:
+    active: false
   NoWildcardImports:
     active: false
+  StringTemplateIndent:
+    active: false
+  TrailingCommaOnCallSite:
+    active: true
+    useTrailingCommaOnCallSite: false
+  TrailingCommaOnDeclarationSite:
+    active: true
+    useTrailingCommaOnDeclarationSite: false
 
 naming:
   FunctionNaming:

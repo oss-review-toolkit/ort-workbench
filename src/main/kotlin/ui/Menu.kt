@@ -128,7 +128,7 @@ fun MenuRow(item: MenuItem, currentItem: MenuItem?, apiState: OrtApiState, onSel
                 .fillMaxWidth()
                 .padding(vertical = 8.dp, horizontal = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(item.icon, item.name)
 
