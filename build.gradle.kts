@@ -1,4 +1,4 @@
-import io.gitlab.arturbosch.detekt.Detekt
+import dev.detekt.gradle.Detekt
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -87,7 +87,7 @@ tasks.withType<KotlinCompile> {
 detekt {
     config.from(files("detekt.yml"))
     buildUponDefaultConfig = true
-    basePath = rootProject.projectDir.path
+    basePath = rootDir
     source.from(fileTree(".") { include("*.gradle.kts") })
 }
 
@@ -95,9 +95,6 @@ tasks.withType<Detekt>().configureEach {
     jvmTarget = maxKotlinJvmTarget.target
 
     reports {
-        xml.required = false
-        html.required = false
-        txt.required = false
         sarif.required = true
     }
 }
