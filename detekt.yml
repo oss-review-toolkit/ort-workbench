@@ -11,6 +11,8 @@ complexity:
     active: false
 
 ktlint:
+  BlankLineBetweenWhenConditions:
+    active: false
   ChainMethodContinuation:
     active: false
   ChainWrapping:
