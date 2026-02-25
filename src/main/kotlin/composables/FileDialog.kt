@@ -3,6 +3,7 @@ package org.ossreviewtoolkit.workbench.composables
 import androidx.compose.runtime.Composable
 
 import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
 import io.github.vinceglb.filekit.dialogs.FileKitMode
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
@@ -21,7 +22,9 @@ fun FileDialog(
     require(isLoad)
 
     val fileType = FileKitType.File(fileExtensionFilter)
-    val pickedFile = runBlocking { FileKit.openFilePicker(fileType, FileKitMode.Single, title) }
+    val pickedFile = runBlocking {
+        FileKit.openFilePicker(fileType, FileKitMode.Single, directory = null, FileKitDialogSettings(title))
+    }
 
     pickedFile?.run { onResult(file.toPath()) }
 }
