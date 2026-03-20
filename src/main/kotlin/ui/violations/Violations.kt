@@ -349,6 +349,8 @@ private fun CurationsSaveBar(curationCount: Int, viewModel: ViolationsViewModel)
             Text(message, fontSize = 12.sp, color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f))
         }
 
+        ExportToOrtYmlButton(viewModel) { message -> saveMessage = message }
+
         Button(onClick = {
             viewModel.saveCurations().fold(
                 onSuccess = { count -> saveMessage = "Saved $count file(s) successfully." },
@@ -357,6 +359,26 @@ private fun CurationsSaveBar(curationCount: Int, viewModel: ViolationsViewModel)
         }) {
             Text("Save to Package Configurations")
         }
+    }
+}
+
+@Composable
+private fun ExportToOrtYmlButton(viewModel: ViolationsViewModel, onMessage: (String) -> Unit) {
+    OutlinedButton(onClick = {
+        val fileChooser = javax.swing.JFileChooser().apply {
+            dialogTitle = "Export to .ort.yml"
+            selectedFile = java.io.File(".ort.yml")
+            fileFilter = javax.swing.filechooser.FileNameExtensionFilter("ORT YAML files (*.yml)", "yml")
+        }
+
+        if (fileChooser.showSaveDialog(null) == javax.swing.JFileChooser.APPROVE_OPTION) {
+            viewModel.exportToOrtYml(fileChooser.selectedFile).fold(
+                onSuccess = { count -> onMessage("Exported $count config(s) to ${fileChooser.selectedFile.name}.") },
+                onFailure = { error -> onMessage("Export failed: ${error.message}") }
+            )
+        }
+    }) {
+        Text("Export to .ort.yml")
     }
 }
 

@@ -162,6 +162,8 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
         return ortModel.curationService.saveToPackageConfigDir(packageConfigDir)
     }
 
+    fun exportToOrtYml(file: File): Result<Int> = ortModel.curationService.exportToOrtYml(file)
+
     fun getPackageConfigDir(): String {
         val configDir = File(ortModel.settings.value.ortConfigDir)
 
