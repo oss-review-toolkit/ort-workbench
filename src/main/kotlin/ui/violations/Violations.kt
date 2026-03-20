@@ -1,25 +1,46 @@
 package org.ossreviewtoolkit.workbench.ui.violations
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.LicenseSource
 import org.ossreviewtoolkit.model.Severity
+import org.ossreviewtoolkit.model.TextLocation
+import org.ossreviewtoolkit.model.config.LicenseFindingCurationReason
 import org.ossreviewtoolkit.model.config.RuleViolationResolution
 import org.ossreviewtoolkit.model.config.RuleViolationResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
@@ -34,8 +55,10 @@ import org.ossreviewtoolkit.workbench.composables.ListScreenContent
 import org.ossreviewtoolkit.workbench.composables.ListScreenList
 import org.ossreviewtoolkit.workbench.composables.Preview
 import org.ossreviewtoolkit.workbench.composables.SeverityIcon
+import org.ossreviewtoolkit.workbench.model.LicenseFindingWithProvenance
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.ResolvedRuleViolation
+import org.ossreviewtoolkit.workbench.model.SourceCodeResult
 
 @Composable
 @Preview
@@ -53,7 +76,7 @@ fun Violations(viewModel: ViolationsViewModel) {
                     ListScreenList(
                         items = state.violations,
                         itemsEmptyText = "No violations found.",
-                        item = { ViolationCard(it) }
+                        item = { ViolationCard(it, viewModel) }
                     )
                 },
                 filterPanel = { showFilterPanel ->
@@ -74,7 +97,7 @@ fun Violations(viewModel: ViolationsViewModel) {
 }
 
 @Composable
-fun ViolationCard(violation: ResolvedRuleViolation) {
+fun ViolationCard(violation: ResolvedRuleViolation, viewModel: ViolationsViewModel? = null) {
     Card(modifier = Modifier.fillMaxWidth(), elevation = 8.dp) {
         Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -96,9 +119,219 @@ fun ViolationCard(violation: ResolvedRuleViolation) {
 
             if (violation.message.isNotBlank()) ExpandableText(violation.message)
             if (violation.howToFix.isNotBlank()) ExpandableMarkdown(violation.howToFix)
+
+            if (viewModel != null && violation.hasDetectedLicense()) {
+                LicenseFindingsSection(violation, viewModel)
+            }
         }
     }
 }
+
+@Composable
+private fun LicenseFindingsSection(violation: ResolvedRuleViolation, viewModel: ViolationsViewModel) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    Divider()
+
+    if (!expanded) {
+        TextButton(onClick = { expanded = true }) {
+            Text("Show License Findings")
+        }
+    } else {
+        Text("License Findings", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
+
+        val findings = remember(violation) { viewModel.getLicenseFindings(violation) }
+
+        if (findings.isEmpty()) {
+            Text(
+                "No matching license findings found in scan results.",
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+            )
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                findings.forEach { finding ->
+                    LicenseFindingItem(finding, viewModel)
+                }
+            }
+        }
+
+        TextButton(onClick = { expanded = false }) {
+            Text("Hide License Findings")
+        }
+    }
+}
+
+@Composable
+private fun LicenseFindingItem(finding: LicenseFindingWithProvenance, viewModel: ViolationsViewModel) {
+    val location = finding.finding.location
+    val findingKey = finding.key()
+    val sourceState by viewModel.getSourceCodeState(findingKey).collectAsState()
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 2.dp,
+        backgroundColor = MaterialTheme.colors.surface
+    ) {
+        Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            LicenseFindingHeader(
+                finding = finding,
+                location = location,
+                isCurated = isCurated,
+                sourceState = sourceState,
+                onShowSource = { viewModel.loadSourceCode(finding, packageId) },
+                onMarkFalsePositive = { viewModel.openCurationDialog(finding, packageId) },
+                onRemoveCuration = { viewModel.removeCuration(finding, packageId) }
+            )
+
+            when (val state = sourceState) {
+                is SourceCodeState.Loaded -> SourceCodeView(
+                    result = state.result,
+                    detectedLicense = finding.finding.license.toString()
+                )
+                is SourceCodeState.Error -> {
+                    Text(
+                        "Error loading source: ${state.message}",
+                        color = MaterialTheme.colors.error,
+                        fontSize = 12.sp
+                    )
+                }
+
+                else -> {
+                    // Nothing to show.
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LicenseFindingHeader(
+    finding: LicenseFindingWithProvenance,
+    location: TextLocation,
+    isCurated: Boolean,
+    sourceState: SourceCodeState,
+    onShowSource: () -> Unit,
+    onMarkFalsePositive: () -> Unit,
+    onRemoveCuration: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            "\uD83D\uDCC4 ${location.path}",
+            fontFamily = FontFamily.Monospace,
+            fontSize = 13.sp,
+            modifier = Modifier.weight(1f)
+        )
+
+        Text(
+            "lines ${location.startLine}–${location.endLine}",
+            fontSize = 12.sp,
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+        )
+
+        finding.finding.score?.let { score ->
+            Text(
+                "score: ${"%.0f".format(score)}",
+                fontSize = 12.sp,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+            )
+        }
+
+        if (isCurated) {
+            CuratedBadge(onRemoveCuration)
+        } else {
+            FalsePositiveButton(onMarkFalsePositive)
+        }
+
+        when (sourceState) {
+            is SourceCodeState.Idle -> {
+                Button(
+                    onClick = onShowSource,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                        contentColor = MaterialTheme.colors.primary
+                    )
+                ) {
+                    Text("Show Source", fontSize = 12.sp)
+                }
+            }
+
+            is SourceCodeState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    strokeWidth = 2.dp
+                )
+            }
+
+            is SourceCodeState.Loaded, is SourceCodeState.Error -> {
+                // Source already shown below.
+            }
+        }
+    }
+}
+
+@Composable
+private fun SourceCodeView(result: SourceCodeResult, detectedLicense: String) {
+    val highlightColor = MaterialTheme.colors.secondary.copy(alpha = 0.15f)
+
+    SelectionContainer {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = MAX_SOURCE_VIEW_HEIGHT)
+                .background(Color(0xFF2B2B2B))
+                .padding(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Detected: $detectedLicense",
+                    color = Color(0xFFCC7832),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            result.lines.forEachIndexed { index, line ->
+                val lineNumber = result.firstLineNumber + index
+                val isHighlighted = lineNumber in result.findingStartLine..result.findingEndLine
+
+                val annotatedLine = buildAnnotatedString {
+                    withStyle(SpanStyle(color = Color(0xFF606366))) {
+                        append("%4d".format(lineNumber))
+                        append("  ")
+                    }
+
+                    withStyle(SpanStyle(color = Color(0xFFA9B7C6))) {
+                        append(line)
+                    }
+                }
+
+                Text(
+                    text = annotatedLine,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 12.sp,
+                    softWrap = false,
+                    modifier = if (isHighlighted) {
+                        Modifier.fillMaxWidth().background(highlightColor)
+                    } else {
+                        Modifier.fillMaxWidth()
+                    }
+                )
+            }
+        }
+    }
+}
+
+private val MAX_SOURCE_VIEW_HEIGHT = 400.dp
+
+private fun ResolvedRuleViolation.hasDetectedLicense(): Boolean =
+    license != null && LicenseSource.DETECTED in licenseSources
 
 @Composable
 @Preview

@@ -8,6 +8,8 @@ import org.ossreviewtoolkit.model.CuratedPackage
 import org.ossreviewtoolkit.model.EvaluatorRun
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Issue
+import org.ossreviewtoolkit.model.KnownProvenance
+import org.ossreviewtoolkit.model.LicenseFinding
 import org.ossreviewtoolkit.model.LicenseSource
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.Package
@@ -209,6 +211,25 @@ class OrtApi(
 
     fun getScanResults(id: Identifier): List<ScanResult> = result.getScanResultsForId(id)
 
+    fun getLicenseFindingsForViolation(violation: ResolvedRuleViolation): List<LicenseFindingWithProvenance> {
+        val pkg = violation.pkg
+        val license = violation.license?.toString()
+
+        if (pkg == null || license == null || LicenseSource.DETECTED !in violation.licenseSources) {
+            return emptyList()
+        }
+
+        return getScanResults(pkg).flatMap { scanResult ->
+            val provenance = scanResult.provenance as? KnownProvenance
+
+            provenance?.let {
+                scanResult.summary.licenseFindings
+                    .filter { finding -> finding.license.toString() == license }
+                    .map { finding -> LicenseFindingWithProvenance(finding, it) }
+            }.orEmpty()
+        }
+    }
+
     fun getViolations(): List<ResolvedRuleViolation> = result.getRuleViolations().toViolations(resolutionProvider)
 
     fun getVulnerabilities(): List<ResolvedVulnerability> =
@@ -310,3 +331,8 @@ private fun List<RuleViolation>.toRuleViolationStatistics(severityThreshold: Sev
 
 private fun List<RuleViolation>.toViolations(resolutionProvider: ResolutionProvider) =
     map { violation -> ResolvedRuleViolation(resolutionProvider.getResolutionsFor(violation), violation) }
+
+data class LicenseFindingWithProvenance(
+    val finding: LicenseFinding,
+    val provenance: KnownProvenance
+)

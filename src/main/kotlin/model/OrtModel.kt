@@ -58,6 +58,9 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
     private val _api = MutableStateFlow(OrtApi.EMPTY)
     val api: StateFlow<OrtApi> = _api
 
+    private var _sourceCodeService = SourceCodeService()
+    val sourceCodeService: SourceCodeService get() = _sourceCodeService
+
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
@@ -165,6 +168,9 @@ class OrtModel(val settings: StateFlow<WorkbenchSettings>) {
             ?: OrtConfiguration()
 
         LicenseFilePatterns.configure(config.licenseFilePatterns)
+
+        _sourceCodeService.cleanup()
+        _sourceCodeService = SourceCodeService(config.downloader)
 
         val copyrightGarbage =
             configDir.resolve(ORT_COPYRIGHT_GARBAGE_FILENAME).takeIf { it.isFile }?.readValue()
