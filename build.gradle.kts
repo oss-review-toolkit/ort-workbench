@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.logbackClassic)
     implementation(libs.moleculeRuntime)
     implementation(ortLibs.analyzer)
+    implementation(ortLibs.downloader)
     implementation(ortLibs.model)
     implementation(ortLibs.reporter)
     implementation(platform(ortLibs.ortPlugins.packageConfigurationProviders))

@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
+import org.ossreviewtoolkit.model.ArtifactProvenance
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.LicenseSource
+import org.ossreviewtoolkit.model.RepositoryProvenance
 import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.FilterData
+import org.ossreviewtoolkit.workbench.model.LicenseFindingWithProvenance
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.ResolvedRuleViolation
@@ -31,6 +34,8 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     private val _state = MutableStateFlow<ViolationsState>(ViolationsState.Loading)
     val state: StateFlow<ViolationsState> = _state
 
+    private val sourceCodeStates = mutableMapOf<String, MutableStateFlow<SourceCodeState>>()
+
     init {
         defaultScope.launch { ortModel.api.collect { violations.value = it.getViolations() } }
 
@@ -47,6 +52,38 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
                     ViolationsState.Loading
                 }
             }.collect { _state.value = it }
+        }
+    }
+
+    fun getLicenseFindings(violation: ResolvedRuleViolation): List<LicenseFindingWithProvenance> =
+        ortModel.api.value.getLicenseFindingsForViolation(violation)
+
+    fun getSourceCodeState(findingKey: String): StateFlow<SourceCodeState> =
+        sourceCodeStates.getOrPut(findingKey) { MutableStateFlow(SourceCodeState.Idle) }
+
+    fun loadSourceCode(finding: LicenseFindingWithProvenance, packageId: Identifier?) {
+        val key = finding.key()
+        val stateFlow = sourceCodeStates.getOrPut(key) { MutableStateFlow(SourceCodeState.Idle) }
+
+        if (stateFlow.value is SourceCodeState.Loaded) return
+
+        val id = packageId ?: return
+
+        stateFlow.value = SourceCodeState.Loading
+
+        scope.launch {
+            val result = ortModel.sourceCodeService.getSourceLines(
+                provenance = finding.provenance,
+                packageId = id,
+                path = finding.finding.location.path,
+                startLine = finding.finding.location.startLine,
+                endLine = finding.finding.location.endLine
+            )
+
+            stateFlow.value = result.fold(
+                onSuccess = { SourceCodeState.Loaded(it) },
+                onFailure = { SourceCodeState.Error(it.message ?: "Unknown error") }
+            )
         }
     }
 
@@ -89,6 +126,15 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     fun updateSeverityFilter(severity: Severity?) {
         filter.value = filter.value.copy(severity = filter.value.severity.copy(selectedItem = severity))
     }
+}
+
+fun LicenseFindingWithProvenance.key(): String {
+    val provenanceKey = when (val p = provenance) {
+        is ArtifactProvenance -> p.sourceArtifact.url
+        is RepositoryProvenance -> "${p.vcsInfo.url}@${p.resolvedRevision}"
+    }
+
+    return "$provenanceKey:${finding.location.path}:${finding.location.startLine}-${finding.location.endLine}"
 }
 
 data class ViolationsFilter(
