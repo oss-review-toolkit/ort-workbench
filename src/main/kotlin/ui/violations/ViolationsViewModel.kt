@@ -1,5 +1,7 @@
 package org.ossreviewtoolkit.workbench.ui.violations
 
+import java.io.File
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +14,8 @@ import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.LicenseSource
 import org.ossreviewtoolkit.model.RepositoryProvenance
 import org.ossreviewtoolkit.model.Severity
+import org.ossreviewtoolkit.model.config.LicenseFindingCurationReason
+import org.ossreviewtoolkit.utils.ort.ORT_PACKAGE_CONFIGURATIONS_DIRNAME
 import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.lifecycle.ViewModel
 import org.ossreviewtoolkit.workbench.model.FilterData
@@ -19,6 +23,7 @@ import org.ossreviewtoolkit.workbench.model.LicenseFindingWithProvenance
 import org.ossreviewtoolkit.workbench.model.OrtModel
 import org.ossreviewtoolkit.workbench.model.ResolutionStatus
 import org.ossreviewtoolkit.workbench.model.ResolvedRuleViolation
+import org.ossreviewtoolkit.workbench.model.createLicenseFindingCuration
 import org.ossreviewtoolkit.workbench.utils.SpdxExpressionStringComparator
 import org.ossreviewtoolkit.workbench.utils.matchResolutionStatus
 import org.ossreviewtoolkit.workbench.utils.matchString
@@ -35,6 +40,14 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
     val state: StateFlow<ViolationsState> = _state
 
     private val sourceCodeStates = mutableMapOf<String, MutableStateFlow<SourceCodeState>>()
+
+    private val _curationDialogState = MutableStateFlow<CurationDialogData?>(null)
+    val curationDialogState: StateFlow<CurationDialogData?> = _curationDialogState
+
+    val curationCount: StateFlow<Int> = ortModel.curationService.curationCount
+
+    private val _curatedFindingKeys = MutableStateFlow(setOf<String>())
+    val curatedFindingKeys: StateFlow<Set<String>> = _curatedFindingKeys
 
     init {
         defaultScope.launch { ortModel.api.collect { violations.value = it.getViolations() } }
@@ -85,6 +98,74 @@ class ViolationsViewModel(private val ortModel: OrtModel) : ViewModel() {
                 onFailure = { SourceCodeState.Error(it.message ?: "Unknown error") }
             )
         }
+    }
+
+    fun openCurationDialog(finding: LicenseFindingWithProvenance, packageId: Identifier?) {
+        _curationDialogState.value = CurationDialogData(
+            finding = finding,
+            packageId = packageId,
+            detectedLicense = finding.finding.license.toString(),
+            path = finding.finding.location.path,
+            startLine = finding.finding.location.startLine,
+            endLine = finding.finding.location.endLine
+        )
+    }
+
+    fun closeCurationDialog() {
+        _curationDialogState.value = null
+    }
+
+    fun submitCuration(reason: LicenseFindingCurationReason, concludedLicense: String, comment: String) {
+        val dialogData = _curationDialogState.value ?: return
+        val finding = dialogData.finding
+        val id = dialogData.packageId ?: return
+
+        val curation = createLicenseFindingCuration(
+            path = dialogData.path,
+            startLine = dialogData.startLine,
+            endLine = dialogData.endLine,
+            detectedLicense = dialogData.detectedLicense,
+            concludedLicense = concludedLicense,
+            reason = reason,
+            comment = comment
+        )
+
+        ortModel.curationService.addCuration(
+            id = id,
+            provenance = finding.provenance,
+            findingKey = finding.key(),
+            curation = curation
+        )
+
+        _curatedFindingKeys.value = _curatedFindingKeys.value + finding.key()
+        _curationDialogState.value = null
+    }
+
+    fun removeCuration(finding: LicenseFindingWithProvenance, packageId: Identifier?) {
+        val id = packageId ?: return
+
+        ortModel.curationService.removeCuration(
+            id = id,
+            provenance = finding.provenance,
+            findingKey = finding.key()
+        )
+
+        _curatedFindingKeys.value = _curatedFindingKeys.value - finding.key()
+    }
+
+    fun hasCuration(findingKey: String): Boolean = ortModel.curationService.hasCuration(findingKey)
+
+    fun saveCurations(): Result<Int> {
+        val configDir = File(ortModel.settings.value.ortConfigDir)
+        val packageConfigDir = configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME)
+
+        return ortModel.curationService.saveToPackageConfigDir(packageConfigDir)
+    }
+
+    fun getPackageConfigDir(): String {
+        val configDir = File(ortModel.settings.value.ortConfigDir)
+
+        return configDir.resolve(ORT_PACKAGE_CONFIGURATIONS_DIRNAME).absolutePath
     }
 
     private fun initFilter(violations: List<ResolvedRuleViolation>) {

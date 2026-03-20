@@ -9,12 +9,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -64,35 +69,53 @@ import org.ossreviewtoolkit.workbench.model.SourceCodeResult
 @Preview
 fun Violations(viewModel: ViolationsViewModel) {
     val stateState = viewModel.state.collectAsState()
+    val curationDialogData by viewModel.curationDialogState.collectAsState()
+    val curationCount by viewModel.curationCount.collectAsState()
 
     when (val state = stateState.value) {
         is ViolationsState.Loading -> CircularProgressBox()
 
         is ViolationsState.Success -> {
-            ListScreenContent(
-                filterText = state.filter.text,
-                onUpdateFilterText = viewModel::updateTextFilter,
-                list = {
-                    ListScreenList(
-                        items = state.violations,
-                        itemsEmptyText = "No violations found.",
-                        item = { ViolationCard(it, viewModel) }
-                    )
-                },
-                filterPanel = { showFilterPanel ->
-                    ViolationsFilterPanel(
-                        visible = showFilterPanel,
-                        state = state,
-                        onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
-                        onUpdateLicenseFilter = viewModel::updateLicenseFilter,
-                        onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
-                        onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
-                        onUpdateRuleFilter = viewModel::updateRuleFilter,
-                        onUpdateSeverityFilter = viewModel::updateSeverityFilter
-                    )
+            Column {
+                if (curationCount > 0) {
+                    CurationsSaveBar(curationCount, viewModel)
                 }
-            )
+
+                ListScreenContent(
+                    filterText = state.filter.text,
+                    onUpdateFilterText = viewModel::updateTextFilter,
+                    list = {
+                        ListScreenList(
+                            items = state.violations,
+                            itemsEmptyText = "No violations found.",
+                            item = { ViolationCard(it, viewModel) }
+                        )
+                    },
+                    filterPanel = { showFilterPanel ->
+                        ViolationsFilterPanel(
+                            visible = showFilterPanel,
+                            state = state,
+                            onUpdateIdentifierFilter = viewModel::updateIdentifierFilter,
+                            onUpdateLicenseFilter = viewModel::updateLicenseFilter,
+                            onUpdateLicenseSourceFilter = viewModel::updateLicenseSourceFilter,
+                            onUpdateResolutionStatusFilter = viewModel::updateResolutionStatusFilter,
+                            onUpdateRuleFilter = viewModel::updateRuleFilter,
+                            onUpdateSeverityFilter = viewModel::updateSeverityFilter
+                        )
+                    }
+                )
+            }
         }
+    }
+
+    curationDialogData?.let { data ->
+        CurationDialog(
+            data = data,
+            onDismiss = viewModel::closeCurationDialog,
+            onConfirm = { reason, concludedLicense, comment ->
+                viewModel.submitCuration(reason, concludedLicense, comment)
+            }
+        )
     }
 }
 
@@ -150,7 +173,7 @@ private fun LicenseFindingsSection(violation: ResolvedRuleViolation, viewModel: 
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 findings.forEach { finding ->
-                    LicenseFindingItem(finding, viewModel)
+                    LicenseFindingItem(finding, violation.pkg, viewModel)
                 }
             }
         }
@@ -162,15 +185,25 @@ private fun LicenseFindingsSection(violation: ResolvedRuleViolation, viewModel: 
 }
 
 @Composable
-private fun LicenseFindingItem(finding: LicenseFindingWithProvenance, viewModel: ViolationsViewModel) {
+private fun LicenseFindingItem(
+    finding: LicenseFindingWithProvenance,
+    packageId: Identifier?,
+    viewModel: ViolationsViewModel
+) {
     val location = finding.finding.location
     val findingKey = finding.key()
     val sourceState by viewModel.getSourceCodeState(findingKey).collectAsState()
+    val curatedKeys by viewModel.curatedFindingKeys.collectAsState()
+    val isCurated = findingKey in curatedKeys
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = 2.dp,
-        backgroundColor = MaterialTheme.colors.surface
+        backgroundColor = if (isCurated) {
+            MaterialTheme.colors.primary.copy(alpha = 0.05f)
+        } else {
+            MaterialTheme.colors.surface
+        }
     ) {
         Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             LicenseFindingHeader(
@@ -271,6 +304,142 @@ private fun LicenseFindingHeader(
         }
     }
 }
+
+@Composable
+private fun FalsePositiveButton(onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.error)
+    ) {
+        Text("Mark as False Positive", fontSize = 12.sp)
+    }
+}
+
+@Composable
+private fun CuratedBadge(onRemove: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text("✓ Curated", fontSize = 12.sp, color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
+        TextButton(onClick = onRemove) {
+            Text("Remove", fontSize = 11.sp, color = MaterialTheme.colors.error)
+        }
+    }
+}
+
+@Composable
+private fun CurationsSaveBar(curationCount: Int, viewModel: ViolationsViewModel) {
+    var saveMessage by remember { mutableStateOf<String?>(null) }
+    val targetDir = remember { viewModel.getPackageConfigDir() }
+
+    Row(
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colors.primary.copy(alpha = 0.08f)).padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text("$curationCount curation(s) pending", fontWeight = FontWeight.Bold)
+            Text(
+                "Target: $targetDir",
+                fontSize = 11.sp,
+                fontFamily = FontFamily.Monospace,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+            )
+        }
+
+        saveMessage?.let { message ->
+            Text(message, fontSize = 12.sp, color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f))
+        }
+
+        Button(onClick = {
+            viewModel.saveCurations().fold(
+                onSuccess = { count -> saveMessage = "Saved $count file(s) successfully." },
+                onFailure = { error -> saveMessage = "Save failed: ${error.message}" }
+            )
+        }) {
+            Text("Save to Package Configurations")
+        }
+    }
+}
+
+@Composable
+private fun CurationDialog(
+    data: CurationDialogData,
+    onDismiss: () -> Unit,
+    onConfirm: (LicenseFindingCurationReason, String, String) -> Unit
+) {
+    var reason by remember { mutableStateOf(data.reason) }
+    var concludedLicense by remember { mutableStateOf(data.concludedLicense) }
+    var comment by remember { mutableStateOf(data.comment) }
+    var reasonDropdownExpanded by remember { mutableStateOf(false) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Mark as False Positive") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("Package: ${data.packageId?.toCoordinates().orEmpty()}", fontSize = 13.sp)
+                Text("File: ${data.path}", fontSize = 13.sp, fontFamily = FontFamily.Monospace)
+                Text("Lines: ${data.startLine}–${data.endLine}", fontSize = 13.sp)
+                Text("Detected License: ${data.detectedLicense}", fontSize = 13.sp, fontWeight = FontWeight.Bold)
+
+                Divider()
+
+                Text("Reason:", fontWeight = FontWeight.Bold)
+
+                Box {
+                    OutlinedButton(onClick = { reasonDropdownExpanded = true }) {
+                        Text(reason.name)
+                    }
+
+                    DropdownMenu(
+                        expanded = reasonDropdownExpanded,
+                        onDismissRequest = { reasonDropdownExpanded = false }
+                    ) {
+                        LicenseFindingCurationReason.entries.forEach { entry ->
+                            DropdownMenuItem(onClick = {
+                                reason = entry
+                                reasonDropdownExpanded = false
+                            }) {
+                                Text(entry.name)
+                            }
+                        }
+                    }
+                }
+
+                OutlinedTextField(
+                    value = concludedLicense,
+                    onValueChange = { concludedLicense = it },
+                    label = { Text("Concluded License (NONE = false positive)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = comment,
+                    onValueChange = { comment = it },
+                    label = { Text("Comment") },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = COMMENT_FIELD_MIN_HEIGHT),
+                    maxLines = COMMENT_FIELD_MAX_LINES
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(reason, concludedLicense, comment) },
+                enabled = concludedLicense.isNotBlank() && comment.isNotBlank()
+            ) {
+                Text("Add Curation")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+private val COMMENT_FIELD_MIN_HEIGHT = 80.dp
+private const val COMMENT_FIELD_MAX_LINES = 5
 
 @Composable
 private fun SourceCodeView(result: SourceCodeResult, detectedLicense: String) {
