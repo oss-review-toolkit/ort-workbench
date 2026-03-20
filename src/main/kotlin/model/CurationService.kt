@@ -14,6 +14,7 @@ import org.ossreviewtoolkit.model.RepositoryProvenance
 import org.ossreviewtoolkit.model.config.LicenseFindingCuration
 import org.ossreviewtoolkit.model.config.LicenseFindingCurationReason
 import org.ossreviewtoolkit.model.config.PackageConfiguration
+import org.ossreviewtoolkit.model.config.RepositoryConfiguration
 import org.ossreviewtoolkit.model.config.VcsMatcher
 import org.ossreviewtoolkit.model.readValue
 import org.ossreviewtoolkit.model.yamlMapper
@@ -91,6 +92,30 @@ class CurationService {
         fileCount
     }
 
+    /**
+     * Export all pending curations as `package_configurations` in a `.ort.yml` file. If the file already exists,
+     * the new package configurations are merged into the existing `RepositoryConfiguration`.
+     */
+    fun exportToOrtYml(file: File): Result<Int> = runCatching {
+        val newConfigs = buildPackageConfigurations()
+
+        val repoConfig = if (file.isFile) {
+            mergeIntoRepoConfig(file, newConfigs)
+        } else {
+            RepositoryConfiguration(packageConfigurations = newConfigs)
+        }
+
+        file.parentFile?.mkdirs()
+        yamlMapper.writeValue(file, repoConfig)
+
+        logger.info { "Exported ${newConfigs.size} package configuration(s) to ${file.absolutePath}" }
+
+        newConfigs.size
+    }
+
+    internal fun buildPackageConfigurations(): List<PackageConfiguration> =
+        curations.map { (key, curationList) -> createNewConfig(key, curationList) }
+
     fun clear() {
         curations.clear()
         curatedFindingKeys.clear()
@@ -148,6 +173,36 @@ private fun createNewConfig(
 
 private fun List<LicenseFindingCuration>.isDuplicate(other: LicenseFindingCuration): Boolean =
     any { it.path == other.path && it.startLines == other.startLines && it.lineCount == other.lineCount }
+
+private fun mergeIntoRepoConfig(file: File, newConfigs: List<PackageConfiguration>): RepositoryConfiguration {
+    val existing = file.readValue<RepositoryConfiguration>()
+    val merged = existing.packageConfigurations.toMutableList()
+
+    newConfigs.forEach { newConfig ->
+        val existingIndex = merged.indexOfFirst { it.id == newConfig.id && it.matches(newConfig) }
+
+        if (existingIndex >= 0) {
+            val existingConfig = merged[existingIndex]
+            val mergedCurations = existingConfig.licenseFindingCurations +
+                newConfig.licenseFindingCurations.filter { new ->
+                    !existingConfig.licenseFindingCurations.isDuplicate(new)
+                }
+
+            merged[existingIndex] = existingConfig.copy(licenseFindingCurations = mergedCurations)
+        } else {
+            merged.add(newConfig)
+        }
+    }
+
+    return existing.copy(packageConfigurations = merged)
+}
+
+/**
+ * Check if two [PackageConfiguration]s match based on their provenance (source artifact URL or VCS matcher).
+ */
+private fun PackageConfiguration.matches(other: PackageConfiguration): Boolean =
+    (sourceArtifactUrl != null && sourceArtifactUrl == other.sourceArtifactUrl) ||
+        (vcs != null && vcs == other.vcs)
 
 /**
  * Check if a [LicenseFindingCuration] matches a finding key of the form "prefix:path:startLine-endLine".
