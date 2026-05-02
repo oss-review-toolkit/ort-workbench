@@ -4,7 +4,7 @@ composePlugin = "1.10.3"
 kotlinPlugin = "2.3.21"
 
 dataTableMaterial = "0.8.1"
-fileKit = "0.13.0"
+fileKit = "0.14.0"
 jackson = "2.21.3"
 kotlinxCoroutines = "1.10.2"
 log4jApi = "2.25.4"
