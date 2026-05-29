@@ -22,7 +22,7 @@ dependencyResolutionManagement {
 
     versionCatalogs {
        create("ortLibs") {
-           from("org.ossreviewtoolkit:version-catalog:87.2.0")
+           from("org.ossreviewtoolkit:version-catalog:87.3.0")
        }
     }
 }
