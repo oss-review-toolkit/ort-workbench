@@ -1,6 +1,6 @@
 package org.ossreviewtoolkit.workbench.utils
 
-import org.ossreviewtoolkit.utils.spdx.SpdxExpression
+import org.ossreviewtoolkit.utils.spdxexpression.SpdxExpression
 
 class SpdxExpressionStringComparator : Comparator<SpdxExpression> {
     override fun compare(left: SpdxExpression?, right: SpdxExpression?): Int =

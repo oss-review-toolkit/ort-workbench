@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.utils.common.titlecase
-import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
+import org.ossreviewtoolkit.utils.spdxexpression.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.FilterButton
 import org.ossreviewtoolkit.workbench.composables.FilterPanel

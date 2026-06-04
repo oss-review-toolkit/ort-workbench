@@ -56,6 +56,8 @@ dependencies {
     implementation(ortLibs.analyzer)
     implementation(ortLibs.model)
     implementation(ortLibs.reporter)
+    implementation(ortLibs.utils.common)
+    implementation(ortLibs.utils.spdxExpression)
     implementation(platform(ortLibs.ortPlugins.packageConfigurationProviders))
 
     detektPlugins(libs.detektFormatting)
