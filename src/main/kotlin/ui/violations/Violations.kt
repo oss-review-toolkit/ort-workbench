@@ -23,8 +23,8 @@ import org.ossreviewtoolkit.model.Severity
 import org.ossreviewtoolkit.model.config.RuleViolationResolution
 import org.ossreviewtoolkit.model.config.RuleViolationResolutionReason
 import org.ossreviewtoolkit.utils.common.titlecase
-import org.ossreviewtoolkit.utils.spdx.SpdxLicenseIdExpression
-import org.ossreviewtoolkit.utils.spdx.SpdxSingleLicenseExpression
+import org.ossreviewtoolkit.utils.spdxexpression.SpdxLicenseIdExpression
+import org.ossreviewtoolkit.utils.spdxexpression.SpdxSingleLicenseExpression
 import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
 import org.ossreviewtoolkit.workbench.composables.ExpandableMarkdown
 import org.ossreviewtoolkit.workbench.composables.ExpandableText

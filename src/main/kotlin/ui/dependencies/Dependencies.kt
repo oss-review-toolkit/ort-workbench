@@ -56,9 +56,9 @@ import org.ossreviewtoolkit.model.licenses.LicenseInfo
 import org.ossreviewtoolkit.model.licenses.LicenseView
 import org.ossreviewtoolkit.model.licenses.ResolvedLicenseInfo
 import org.ossreviewtoolkit.utils.ort.ProcessedDeclaredLicense
-import org.ossreviewtoolkit.utils.spdx.SpdxExpression
 import org.ossreviewtoolkit.utils.spdx.SpdxLicense
-import org.ossreviewtoolkit.utils.spdx.toExpression
+import org.ossreviewtoolkit.utils.spdxexpression.SpdxExpression
+import org.ossreviewtoolkit.utils.spdxexpression.toExpression
 import org.ossreviewtoolkit.workbench.composables.CaptionedColumn
 import org.ossreviewtoolkit.workbench.composables.CaptionedText
 import org.ossreviewtoolkit.workbench.composables.CircularProgressBox
