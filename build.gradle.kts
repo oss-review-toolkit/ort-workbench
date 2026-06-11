@@ -71,6 +71,11 @@ java {
     }
 }
 
+tasks.named<UpdateDaemonJvm>("updateDaemonJvm") {
+    languageVersion = JavaLanguageVersion.of(javaLanguageVersion)
+    vendor = JvmVendorSpec.ADOPTIUM
+}
+
 val maxKotlinJvmTarget = runCatching { JvmTarget.fromTarget(javaLanguageVersion) }
     .getOrDefault(enumValues<JvmTarget>().max())
 
