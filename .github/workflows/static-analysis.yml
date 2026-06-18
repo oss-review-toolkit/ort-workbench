@@ -12,7 +12,7 @@ jobs:
   commit-lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
@@ -24,7 +24,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
       - name: Run Detekt
@@ -38,13 +38,13 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
     - name: Validate Renovate Config
       run: npx -y --package renovate@latest -- renovate-config-validator renovate.json
   reuse:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - name: Check REUSE Compliance
         uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6
