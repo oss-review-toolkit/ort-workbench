@@ -4,7 +4,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val javaLanguageVersion: String by project
+val javaLanguageVersion = project.property("javaLanguageVersion") as String
 
 plugins {
     alias(libs.plugins.compose)
