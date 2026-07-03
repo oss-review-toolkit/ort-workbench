@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 
 import org.ossreviewtoolkit.utils.ort.ORT_CONFIG_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_COPYRIGHT_GARBAGE_FILENAME
-import org.ossreviewtoolkit.utils.ort.ORT_CUSTOM_LICENSE_TEXTS_DIRNAME
 import org.ossreviewtoolkit.utils.ort.ORT_EVALUATOR_RULES_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_HOW_TO_FIX_TEXT_PROVIDER_FILENAME
 import org.ossreviewtoolkit.utils.ort.ORT_LICENSE_CLASSIFICATIONS_FILENAME
@@ -127,13 +126,6 @@ private val ORT_CONFIG_FILES = listOf(
         description = "A directory containing package curation files.",
         documentationUrl = "https://github.com/oss-review-toolkit/ort/blob/master/docs/config-file-curations-yml.md",
         fileName = ORT_PACKAGE_CONFIGURATIONS_DIRNAME,
-        fileType = FileType.DIRECTORY
-    ),
-    OrtConfigFile(
-        name = "Custom license texts directory",
-        description = "A directory that contains license texts which are not provided by ORT.",
-        documentationUrl = "https://github.com/oss-review-toolkit/ort/blob/master/docs/dir-custom-license-texts.md",
-        fileName = ORT_CUSTOM_LICENSE_TEXTS_DIRNAME,
         fileType = FileType.DIRECTORY
     ),
     OrtConfigFile(
