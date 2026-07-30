@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import java.nio.file.Path
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 import org.ossreviewtoolkit.workbench.composables.BrowseDirectoryLink
 import org.ossreviewtoolkit.workbench.composables.DirectoryChooser
@@ -50,6 +49,7 @@ import org.ossreviewtoolkit.workbench.ui.WorkbenchController
 @Composable
 fun Settings(viewModel: SettingsViewModel) {
     val tab by viewModel.tab.collectAsState()
+    val scope = rememberCoroutineScope()
 
     Column {
         val scrollState = rememberScrollState()
@@ -61,7 +61,7 @@ fun Settings(viewModel: SettingsViewModel) {
                     selected = it == tab,
                     onClick = {
                         viewModel.setTab(it)
-                        runBlocking { scrollState.scrollTo(0) }
+                        scope.launch { scrollState.scrollTo(0) }
                     }
                 )
             }
