@@ -1,6 +1,5 @@
 package org.ossreviewtoolkit.workbench.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,6 @@ import java.io.File
 
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 import org.jetbrains.compose.resources.imageResource
 
@@ -61,7 +59,6 @@ import org.ossreviewtoolkit.workbench.ui.summary.Summary
 import org.ossreviewtoolkit.workbench.ui.violations.Violations
 import org.ossreviewtoolkit.workbench.ui.vulnerabilities.Vulnerabilities
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun App(controller: WorkbenchController) {
     val settings by controller.settings.collectAsState()
@@ -101,7 +98,7 @@ fun App(controller: WorkbenchController) {
                         @Suppress("UNCHECKED_CAST")
                         val files = getTransferData(DataFlavor.javaFileListFlavor) as List<File>
 
-                        runBlocking {
+                        scope.launch {
                             files.forEach { file -> controller.openOrtResult(file) }
                         }
 
