@@ -10,7 +10,7 @@ on:
 
 jobs:
   commit-lint:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -19,7 +19,7 @@ jobs:
         with:
           configFile: .commitlintrc.yml
   detekt:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
@@ -35,14 +35,14 @@ jobs:
         with:
           sarif_file: build/reports/detekt/detekt.sarif
   renovate-validation:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - name: Checkout Repository
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Validate Renovate Config
       run: npx -y --package renovate@latest -- renovate-config-validator renovate.json
   reuse:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
