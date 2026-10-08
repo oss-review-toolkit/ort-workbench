@@ -1,7 +1,7 @@
 [versions]
 detektPlugin = "2.0.0-alpha.6"
 composePlugin = "1.12.1"
-kotlinPlugin = "2.4.20"
+kotlinPlugin = "2.4.21"
 
 dataTableMaterial = "0.8.1"
 fileKit = "0.16.0"
